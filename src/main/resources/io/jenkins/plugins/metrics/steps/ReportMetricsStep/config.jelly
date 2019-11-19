@@ -1,0 +1,10 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
+
+  ReportMetricsStep
+
+  <f:entry title="File Pattern" description="Which files are analyzed? (Ant file-pattern)" field="file-pattern">
+    <f:textbox default="**/*.java"/>
+  </f:entry>
+
+</j:jelly>

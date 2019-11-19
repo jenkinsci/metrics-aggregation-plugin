@@ -1,0 +1,6 @@
+License for FontAwesome icons 
+
+https://fontawesome.com/license
+
+- metrics-24x24.png
+- metrics-48x48.png
