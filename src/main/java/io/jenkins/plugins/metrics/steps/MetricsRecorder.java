@@ -89,7 +89,7 @@ public class MetricsRecorder extends Recorder implements SimpleBuildStep {
         MetricsReport metricsReport = workspace.act(new MetricsActor(filePattern));
 
         for (String info : metricsReport.getInfoMessages()) {
-            log.printf("[Metrics] %s", info);
+            log.printf("[Metrics] %s\n", info);
         }
 
         for (String error : metricsReport.getErrorMessages()) {

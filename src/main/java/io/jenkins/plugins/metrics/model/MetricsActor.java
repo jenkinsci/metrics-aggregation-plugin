@@ -93,7 +93,8 @@ public class MetricsActor extends MasterToSlaveFileCallable<MetricsReport> {
             files.add(new FileDataSource(file));
         }
 
-        RuleSetFactory ruleSetFactory = RulesetsFactoryUtils.getRulesetFactory(configuration, new ResourceLoader());
+        RuleSetFactory ruleSetFactory = RulesetsFactoryUtils.getRulesetFactory(configuration,
+                new ResourceLoader(getClass().getClassLoader()));
 
         PMD.processFiles(configuration, ruleSetFactory, files, ruleContext,
                 Collections.singletonList(new MetricsLogRenderer()));

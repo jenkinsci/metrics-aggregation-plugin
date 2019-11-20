@@ -10,21 +10,21 @@
     <l:main-panel>
 
       <issues:bootstrap-css/>
-      <link rel="stylesheet" href="${resURL}/plugin/warnings-ng/css/datatables.min.css"/>
-      <link rel="stylesheet" href="${resURL}/plugin/warnings-ng/css/custom-style.css"/>
-      <link rel="stylesheet" href="${resURL}/plugin/warnings-ng/css/bootstrap-select.min.css"/>
+      <link rel="stylesheet" href="${resURL}/plugin/metrics-analysis/css/datatables.min.css"/>
+      <link rel="stylesheet" href="${resURL}/plugin/metrics-analysis/css/custom-style.css"/>
+      <link rel="stylesheet" href="${resURL}/plugin/metrics-analysis/css/bootstrap-select.min.css"/>
       <issues:fontawesome-css/>
 
-      <script src="${resURL}/plugin/warnings-ng/js/libs/jquery.min.js"/>
-      <script src="${resURL}/plugin/warnings-ng/js/libs/popper.min.js"/>
-      <script src="${resURL}/plugin/warnings-ng/js/libs/bootstrap.min.js"/>
-      <script src="${resURL}/plugin/warnings-ng/js/libs/bootstrap-select.min.js"/>
-      <script src="${resURL}/plugin/warnings-ng/js/libs/datatables.min.js"/>
-      <script src="${resURL}/plugin/warnings-ng/js/libs/echarts.min.js"/>
+      <script src="${resURL}/plugin/metrics-analysis/js/libs/jquery.min.js"/>
+      <script src="${resURL}/plugin/metrics-analysis/js/libs/popper.min.js"/>
+      <script src="${resURL}/plugin/metrics-analysis/js/libs/bootstrap.min.js"/>
+      <script src="${resURL}/plugin/metrics-analysis/js/libs/bootstrap-select.min.js"/>
+      <script src="${resURL}/plugin/metrics-analysis/js/libs/datatables.min.js"/>
+      <script src="${resURL}/plugin/metrics-analysis/js/libs/echarts.min.js"/>
 
-      <script type="text/javascript" src="${resURL}/plugin/warnings-ng/js/no-prototype.js"/>
-      <script src="${resURL}/plugin/warnings-ng/js/libs/math.min.js"/>
-      <script src="${resURL}/plugin/warnings-ng/js/libs/math.js"/>
+      <script type="text/javascript" src="${resURL}/plugin/metrics-analysis/js/no-prototype.js"/>
+      <script src="${resURL}/plugin/metrics-analysis/js/libs/math.min.js"/>
+      <script src="${resURL}/plugin/metrics-analysis/js/libs/math.js"/>
 
       <script>
         var metrics = ${it.metrics};
@@ -33,7 +33,7 @@
         var metricsTree = ${it.metricsTree};
       </script>
 
-      <script src="${resURL}/plugin/warnings-ng/js/metrics.js"/>
+      <script src="${resURL}/plugin/metrics-analysis/js/metrics.js"/>
 
       <div class="fluid-container">
 
