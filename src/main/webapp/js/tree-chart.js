@@ -6,32 +6,28 @@
          *
          * @param {String} model - the chart model
          */
-        renderTreeChart: function (model) {
+        renderTreeChart: function (model, metricTitle) {
             var treeModel = JSON.parse(model);
             var chart = echarts.init($(this)[0]);
             var options = {
                 title: {
-                    text: 'Lines of Code',
+                    text: metricTitle,
                     left: 'center'
                 },
 
                 tooltip: {
                     formatter: function (info) {
-                        var treePathInfo = info.treePathInfo;
-                        var treePath = [];
+                        var fileName = info.treePathInfo
+                            .map(i => i.name)
+                            .join('.');
 
-                        for (var i = 1; i < treePathInfo.length; i++) {
-                            treePath.push(treePathInfo[i].name);
-                        }
-
-                        return '<b>' + echarts.format.encodeHTML(treePath.join('.')) + '</b><br/>' +
-                            echarts.format.addCommas(info.value) + ' Lines';
+                        return echarts.format.encodeHTML(fileName) + ' ' + echarts.format.addCommas(info.value);
                     }
                 },
 
                 series: [
                     {
-                        name: 'Lines of Code',
+                        name: metricTitle,
                         type: 'treemap',
                         label: {
                             show: true,

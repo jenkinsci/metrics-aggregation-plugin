@@ -8,30 +8,36 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.OptionalDouble;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class MetricsTreeNode {
 
     private String name;
-    @JsonIgnore
-    private final OptionalDouble value;
+    private double value;
 
     @JsonIgnore
     private Map<String, MetricsTreeNode> childrenMap = new HashMap<>();
 
-    public MetricsTreeNode(final OptionalDouble value, final String name) {
+    public MetricsTreeNode(final String name) {
+        this(name, 0.0);
+    }
+
+    public MetricsTreeNode(final String name, final double value) {
         this.value = value;
         this.name = name;
     }
 
     public double getValue() {
-        return value.orElseGet(() ->
-                getChildren().stream()
-                        .map(MetricsTreeNode::getValue)
-                        .reduce(0.0, Double::sum)
-        );
+        return value;
+    }
+
+    public void setValue(final double value) {
+        this.value = value;
+    }
+
+    public void addValue(final double amount) {
+        this.value += amount;
     }
 
     public String getName() {
@@ -72,14 +78,13 @@ public class MetricsTreeNode {
     public void insertNode(final MetricsTreeNode node, final Deque<String> levels) {
         String nextLevelName = levels.pop();
 
+        addValue(node.getValue());
         if (levels.isEmpty()) {
-            System.out.printf("insert last %s \n", node);
             node.setName(nextLevelName);
             childrenMap.put(nextLevelName, node);
         }
         else {
-            System.out.printf("insert %s at %s \n", node, levels);
-            childrenMap.putIfAbsent(nextLevelName, new MetricsTreeNode(OptionalDouble.empty(), nextLevelName));
+            childrenMap.putIfAbsent(nextLevelName, new MetricsTreeNode(nextLevelName));
             childrenMap.get(nextLevelName).insertNode(node, levels);
         }
     }

@@ -1,6 +1,7 @@
 package io.jenkins.plugins.metrics.model;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -16,14 +17,13 @@ import org.objectweb.asm.Opcodes;
 import net.sourceforge.pmd.PMD;
 import net.sourceforge.pmd.PMDConfiguration;
 import net.sourceforge.pmd.Report;
+import net.sourceforge.pmd.Report.ConfigurationError;
 import net.sourceforge.pmd.Report.ProcessingError;
 import net.sourceforge.pmd.RuleContext;
 import net.sourceforge.pmd.RuleSetFactory;
 import net.sourceforge.pmd.RuleViolation;
 import net.sourceforge.pmd.RulesetsFactoryUtils;
-import net.sourceforge.pmd.ThreadSafeReportListener;
 import net.sourceforge.pmd.renderers.AbstractRenderer;
-import net.sourceforge.pmd.stat.Metric;
 import net.sourceforge.pmd.util.ResourceLoader;
 import net.sourceforge.pmd.util.datasource.DataSource;
 import net.sourceforge.pmd.util.datasource.FileDataSource;
@@ -53,35 +53,6 @@ public class MetricsActor extends MasterToSlaveFileCallable<MetricsReport> {
         configuration.setRuleSets("io/jenkins/plugins/metrics/metricsRuleset.xml");
 
         RuleContext ruleContext = new RuleContext();
-        ruleContext.getReport().addListener(new ThreadSafeReportListener() {
-            @Override
-            public void ruleViolationAdded(RuleViolation ruleViolation) {
-
-                MetricsMeasurement metricsMeasurement = new MetricsMeasurement();
-                metricsMeasurement.setFileName(ruleViolation.getFilename());
-                metricsMeasurement.setBeginLine(ruleViolation.getBeginLine());
-                metricsMeasurement.setBeginColumn(ruleViolation.getBeginColumn());
-                metricsMeasurement.setEndLine(ruleViolation.getEndLine());
-                metricsMeasurement.setEndColumn(ruleViolation.getEndLine());
-                metricsMeasurement.setPackageName(ruleViolation.getPackageName());
-                metricsMeasurement.setClassName(ruleViolation.getClassName());
-                metricsMeasurement.setMethodName(ruleViolation.getMethodName());
-                metricsMeasurement.setVariableName(ruleViolation.getVariableName());
-
-                String[] metrics = ruleViolation.getDescription().split(",");
-                for (String metric : metrics) {
-                    String[] keyValue = metric.split("=");
-                    metricsMeasurement.addMetric(keyValue[0], Double.parseDouble(keyValue[1]));
-                }
-
-                metricsReport.add(metricsMeasurement);
-            }
-
-            @Override
-            public void metricAdded(Metric metric) {
-                // nothing here
-            }
-        });
 
         FileFinder fileFinder = new FileFinder(filePattern);
         String[] srcFiles = fileFinder.find(workspace);
@@ -134,44 +105,62 @@ public class MetricsActor extends MasterToSlaveFileCallable<MetricsReport> {
 
     private static class MetricsLogRenderer extends AbstractRenderer {
 
-        MetricsReport report;
+        private final MetricsReport metricsReport;
 
-        MetricsLogRenderer(MetricsReport report) {
+        MetricsLogRenderer(final MetricsReport metricsReport) {
             super("log-metrics", "Metrics logging renderer");
-            this.report = report;
+            this.metricsReport = metricsReport;
         }
 
         @Override
-        public void start() {
-            // Nothing to do
-        }
+        public void renderFileReport(final Report report) throws IOException {
+            for (final RuleViolation ruleViolation : report) {
+                MetricsMeasurement metricsMeasurement = new MetricsMeasurement();
+                metricsMeasurement.setFileName(ruleViolation.getFilename());
+                metricsMeasurement.setBeginLine(ruleViolation.getBeginLine());
+                metricsMeasurement.setBeginColumn(ruleViolation.getBeginColumn());
+                metricsMeasurement.setEndLine(ruleViolation.getEndLine());
+                metricsMeasurement.setEndColumn(ruleViolation.getEndLine());
+                metricsMeasurement.setPackageName(ruleViolation.getPackageName());
+                metricsMeasurement.setClassName(ruleViolation.getClassName());
+                metricsMeasurement.setMethodName(ruleViolation.getMethodName());
+                metricsMeasurement.setVariableName(ruleViolation.getVariableName());
 
-        @Override
-        public void startFileAnalysis(final DataSource dataSource) {
-            //System.out.println("Processing file: " + dataSource.getNiceFileName(false, ""));            
-        }
-
-        @Override
-        public void renderFileReport(final Report r) {
-            if (r.hasErrors()) {
-                for (Iterator<ProcessingError> it = r.errors(); it.hasNext(); ) {
-                    ProcessingError error = it.next();
-                    report.logError(error.getDetail());
+                String[] metrics = ruleViolation.getDescription().split(",");
+                for (String metric : metrics) {
+                    String[] keyValue = metric.split("=");
+                    metricsMeasurement.addMetric(keyValue[0], Double.parseDouble(keyValue[1]));
                 }
-            }
-            else {
-                report.logInfo("Report with size %d collected successfully.", r.size());
-            }
-        }
 
-        @Override
-        public void end() {
-            // Nothing to do
+                metricsReport.add(metricsMeasurement);
+            }
+
+            for (Iterator<ProcessingError> i = report.errors(); i.hasNext(); ) {
+                metricsReport.logError("Error: %s", i.next().getDetail());
+            }
+
+            for (Iterator<ConfigurationError> i = report.configErrors(); i.hasNext(); ) {
+                ConfigurationError error = i.next();
+                metricsReport.logError("Configuration error in rule %s: %s", error.rule(), error.issue());
+            }
         }
 
         @Override
         public String defaultFileExtension() {
             return null;
-        } // not relevant
+        }
+
+        @Override
+        public void start() {
+        }
+
+        @Override
+        public void startFileAnalysis(final DataSource dataSource) {
+        }
+
+        @Override
+        public void end() {
+        }
+
     }
 }

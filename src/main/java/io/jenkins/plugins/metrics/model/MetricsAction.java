@@ -44,7 +44,7 @@ public class MetricsAction implements RunAction2, LastBuildAction, StaplerProxy 
 
     @Override
     public Collection<? extends Action> getProjectActions() {
-        return Collections.singleton(new MetricsJobAction(owner.getParent()));
+        return Collections.singleton(new JobAction(owner.getParent()));
     }
 
     @Override
@@ -58,16 +58,12 @@ public class MetricsAction implements RunAction2, LastBuildAction, StaplerProxy 
     }
 
     /**
-     * Returns the detail view for issues for all Stapler requests.
+     * Returns the detail view for metrics for all Stapler requests.
      *
-     * @return the detail view for issues
+     * @return the detail view for metrics
      */
     @Override
     public Object getTarget() {
         return new MetricsDetail(owner, metricsMeasurements);
-    }
-
-    public List<MetricsMeasurement> getMetricsMeasurements() {
-        return this.metricsMeasurements;
     }
 }

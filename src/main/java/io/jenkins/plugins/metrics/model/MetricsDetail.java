@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.OptionalDouble;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -31,9 +30,9 @@ import io.jenkins.plugins.forensics.miner.RepositoryStatistics;
 import io.jenkins.plugins.metrics.util.JacksonFacade;
 
 /**
- * Build view that shows the details for a subset of issues.
+ * Build view for metrics.
  *
- * @author Ullrich Hafner
+ * @author Andreas Pabst
  */
 @SuppressWarnings({"PMD.ExcessiveImports", "ClassDataAbstractionCoupling", "ClassFanOutComplexity"})
 @ExportedBean
@@ -171,13 +170,13 @@ public class MetricsDetail implements ModelObject {
                 .filter(m -> m.getMethodName() == null || m.getMethodName().isEmpty())
                 .map(measurement -> {
                     double value = measurement.getMetrics().getOrDefault(valueKey, 0.0);
-                    String qualifiedName = String.format("%s.%s.java",
+                    String qualifiedName = String.format("%s.%s",
                             measurement.getPackageName(),
                             measurement.getClassName());
 
-                    return new MetricsTreeNode(OptionalDouble.of(value), qualifiedName);
+                    return new MetricsTreeNode(qualifiedName, value);
                 })
-                .reduce(new MetricsTreeNode(OptionalDouble.empty(), ""), (acc, node) -> {
+                .reduce(new MetricsTreeNode(""), (acc, node) -> {
                     acc.insertNode(node);
                     return acc;
                 });

@@ -267,9 +267,10 @@
 
         function drawTreeChart() {
             var metric = $('#treechart-picker').val();
+            var metricTitle = $('#treechart-picker :selected').text();
 
             view.getMetricsTree(metric, function (res) {
-                $('#treechart').renderTreeChart(res.responseJSON);
+                $('#treechart').renderTreeChart(res.responseJSON, metricTitle);
             });
         }
 

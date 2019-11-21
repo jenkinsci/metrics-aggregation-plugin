@@ -2,8 +2,6 @@ package io.jenkins.plugins.metrics.model;
 
 import java.io.IOException;
 
-import edu.umd.cs.findbugs.annotations.Nullable;
-
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import hudson.model.Action;
@@ -15,26 +13,17 @@ import hudson.model.Run;
  *
  * @author Andreas Pabst
  */
-public class MetricsJobAction implements Action {
+public class JobAction implements Action {
     private final Job<?, ?> owner;
 
     /**
-     * Creates a new instance of {@link MetricsJobAction}.
+     * Creates a new instance of {@link JobAction}.
      *
      * @param owner
      *         the job that owns this action
      */
-    public MetricsJobAction(final Job<?, ?> owner) {
+    public JobAction(final Job<?, ?> owner) {
         this.owner = owner;
-    }
-
-    /**
-     * Returns the ID of this action and the ID of the associated results.
-     *
-     * @return the ID
-     */
-    public String getId() {
-        return MetricsAction.ID;
     }
 
     @Override
@@ -43,17 +32,7 @@ public class MetricsJobAction implements Action {
     }
 
     /**
-     * Returns the job this action belongs to.
-     *
-     * @return the job
-     */
-    public Job<?, ?> getOwner() {
-        return owner;
-    }
-
-    /**
-     * Returns the icon URL for the side-panel in the job screen. If there is no valid result yet, then {@code null} is
-     * returned.
+     * Returns the icon URL for the side-panel in the job screen.
      *
      * @return the icon URL for the side-panel in the job screen
      */
