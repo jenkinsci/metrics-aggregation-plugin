@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.OptionalDouble;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -27,6 +28,7 @@ import io.jenkins.plugins.forensics.blame.Blames;
 import io.jenkins.plugins.forensics.blame.FileBlame;
 import io.jenkins.plugins.forensics.miner.FileStatistics;
 import io.jenkins.plugins.forensics.miner.RepositoryStatistics;
+import io.jenkins.plugins.metrics.util.JacksonFacade;
 
 /**
  * Build view that shows the details for a subset of issues.
@@ -165,11 +167,17 @@ public class MetricsDetail implements ModelObject {
     @JavaScriptMethod
     @SuppressWarnings("unused") // used by jelly view
     public String getMetricsTree(final String valueKey) {
-        MetricsNode root = metricsMeasurements.stream()
+        MetricsTreeNode root = metricsMeasurements.stream()
                 .filter(m -> m.getMethodName() == null || m.getMethodName().isEmpty())
-                .map(MetricsNode::new)
-                .peek(metricsNode -> metricsNode.setValueKey(valueKey))
-                .reduce(new MetricsNode(""), (acc, node) -> {
+                .map(measurement -> {
+                    double value = measurement.getMetrics().getOrDefault(valueKey, 0.0);
+                    String qualifiedName = String.format("%s.%s.java",
+                            measurement.getPackageName(),
+                            measurement.getClassName());
+
+                    return new MetricsTreeNode(OptionalDouble.of(value), qualifiedName);
+                })
+                .reduce(new MetricsTreeNode(OptionalDouble.empty(), ""), (acc, node) -> {
                     acc.insertNode(node);
                     return acc;
                 });

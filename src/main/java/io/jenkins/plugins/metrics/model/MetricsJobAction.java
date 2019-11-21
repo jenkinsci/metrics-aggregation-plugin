@@ -58,7 +58,6 @@ public class MetricsJobAction implements Action {
      * @return the icon URL for the side-panel in the job screen
      */
     @Override
-    @Nullable
     public String getIconFileName() {
         return MetricsAction.ICON;
     }
@@ -86,10 +85,5 @@ public class MetricsJobAction implements Action {
         if (lastCompletedBuild != null) {
             response.sendRedirect2(String.format("../%d/%s", lastCompletedBuild.getNumber(), MetricsAction.ID));
         }
-    }
-
-    @Override
-    public String toString() {
-        return getClass().getName();
     }
 }

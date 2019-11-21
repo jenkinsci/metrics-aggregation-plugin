@@ -1,9 +1,7 @@
-package io.jenkins.plugins.metrics.model;
+package io.jenkins.plugins.metrics.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Facade for Jackson that does wrap an exception into a {@link RuntimeException}.
