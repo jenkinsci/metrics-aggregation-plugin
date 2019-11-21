@@ -11,15 +11,14 @@ import com.google.common.collect.Lists;
 
 import edu.hm.hafner.analysis.Issue;
 import edu.hm.hafner.analysis.Report;
-import edu.hm.hafner.util.VisibleForTesting;
 
+import org.kohsuke.stapler.bind.JavaScriptMethod;
 import org.kohsuke.stapler.export.ExportedBean;
 import hudson.model.ModelObject;
 import hudson.model.Run;
 
 import io.jenkins.plugins.analysis.core.model.AnalysisResult;
 import io.jenkins.plugins.analysis.core.model.ResultAction;
-import io.jenkins.plugins.analysis.core.util.JacksonFacade;
 import io.jenkins.plugins.coverage.CoverageAction;
 import io.jenkins.plugins.coverage.targets.CoverageElement;
 import io.jenkins.plugins.coverage.targets.CoverageResult;
@@ -131,7 +130,7 @@ public class MetricsDetail implements ModelObject {
                             List<MetricsMeasurement> group = entry.getValue();
 
                             Optional<MetricsMeasurement> optionalClassMeasurement = group.stream()
-                                    .filter(m -> m.getMethodName().isEmpty())
+                                    .filter(m -> m.getMethodName() == null || m.getMethodName().isEmpty())
                                     .findFirst();
 
                             if (optionalClassMeasurement.isPresent()) {
@@ -163,11 +162,13 @@ public class MetricsDetail implements ModelObject {
         );
     }
 
+    @JavaScriptMethod
     @SuppressWarnings("unused") // used by jelly view
-    public String getMetricsTree() {
+    public String getMetricsTree(final String valueKey) {
         MetricsNode root = metricsMeasurements.stream()
                 .filter(m -> m.getMethodName() == null || m.getMethodName().isEmpty())
                 .map(MetricsNode::new)
+                .peek(metricsNode -> metricsNode.setValueKey(valueKey))
                 .reduce(new MetricsNode(""), (acc, node) -> {
                     acc.insertNode(node);
                     return acc;

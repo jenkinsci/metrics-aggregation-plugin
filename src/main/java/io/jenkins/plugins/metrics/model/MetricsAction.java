@@ -18,7 +18,7 @@ public class MetricsAction implements RunAction2, LastBuildAction, StaplerProxy 
 
     public static final String ID = "metrics";
     public static final String NAME = "Metrics";
-    public static final String ICON = "/plugin/warnings-ng/icons/metrics-24x24.png";
+    public static final String ICON = "/plugin/metrics-analysis/icons/metrics-24x24.png";
 
     public MetricsAction(final MetricsReport metricsReport) {
         this.metricsMeasurements = metricsReport;

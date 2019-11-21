@@ -29,10 +29,8 @@
       <script>
         var metrics = ${it.metrics};
       </script>
-      <script>
-        var metricsTree = ${it.metricsTree};
-      </script>
 
+      <script src="${resURL}/plugin/metrics-analysis/js/tree-chart.js"/>
       <script src="${resURL}/plugin/metrics-analysis/js/metrics.js"/>
 
       <div class="fluid-container">
@@ -40,6 +38,22 @@
         <h3>${it.displayName}</h3>
 
         <h4>Lines of Code</h4>
+
+        <div class="form-group">
+          <label for="column-picker">Select metric to display</label>
+          <select class="selectpicker form-control form-control-sm" id="treechart-picker">
+            <option value="ATFD">Access to foreign data</option>
+            <option value="CLASS_FAN_OUT">Fan out</option>
+            <option value="LOC" selected="true">Lines of Code</option>
+            <option value="NCSS">Non-comment</option>
+            <option value="NOAM">Accessor methods</option>
+            <option value="NOPA">Public Attributes</option>
+            <option value="TCC">Class cohesion</option>
+            <option value="WMC">W. method count</option>
+            <option value="WOC">Weight of class</option>
+            <option value="ISSUES">Issues</option>
+          </select>
+        </div>
 
         <div id="treechart" style="width: 100%; min-height: 400px"/>
 
@@ -52,6 +66,7 @@
             <label for="table-filter">Filter</label>
             <input type="text" class="form-control form-control-sm" id="table-filter"
                    placeholder="LOC > 10 and ISSUES > 1"/>
+            <div class="invalid-feedback"></div>
             <small class="form-text text-muted">
               Variablen: ATFD, CLASS_FAN_OUT, LOC, NCSS, NOAM, NOPA, TCC, WMC, WOC, ISSUES
             </small>

@@ -1,12 +1,17 @@
 package io.jenkins.plugins.metrics.model;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.objectweb.asm.Opcodes;
 
 import net.sourceforge.pmd.PMD;
 import net.sourceforge.pmd.PMDConfiguration;
@@ -44,7 +49,6 @@ public class MetricsActor extends MasterToSlaveFileCallable<MetricsReport> {
 
         PMDConfiguration configuration = new PMDConfiguration();
         configuration.setDebug(true);
-        configuration.setThreads(0);
         configuration.setIgnoreIncrementalAnalysis(true);
         configuration.setRuleSets("io/jenkins/plugins/metrics/metricsRuleset.xml");
 
@@ -96,8 +100,15 @@ public class MetricsActor extends MasterToSlaveFileCallable<MetricsReport> {
         RuleSetFactory ruleSetFactory = RulesetsFactoryUtils.getRulesetFactory(configuration,
                 new ResourceLoader(getClass().getClassLoader()));
 
+        Field[] opcodesFields = Opcodes.class.getDeclaredFields();
+        String asmFields = Arrays.stream(opcodesFields)
+                .map(Field::getName)
+                .filter(f -> f.startsWith("ASM"))
+                .collect(Collectors.joining(","));
+        metricsReport.logInfo("Opcodes with asm: %s", asmFields);
+
         PMD.processFiles(configuration, ruleSetFactory, files, ruleContext,
-                Collections.singletonList(new MetricsLogRenderer()));
+                Collections.singletonList(new MetricsLogRenderer(metricsReport)));
 
         return metricsReport;
     }
@@ -123,8 +134,11 @@ public class MetricsActor extends MasterToSlaveFileCallable<MetricsReport> {
 
     private static class MetricsLogRenderer extends AbstractRenderer {
 
-        MetricsLogRenderer() {
+        MetricsReport report;
+
+        MetricsLogRenderer(MetricsReport report) {
             super("log-metrics", "Metrics logging renderer");
+            this.report = report;
         }
 
         @Override
@@ -134,15 +148,19 @@ public class MetricsActor extends MasterToSlaveFileCallable<MetricsReport> {
 
         @Override
         public void startFileAnalysis(final DataSource dataSource) {
-            System.out.println("Processing file: " + dataSource.getNiceFileName(false, ""));
+            //System.out.println("Processing file: " + dataSource.getNiceFileName(false, ""));            
         }
 
         @Override
         public void renderFileReport(final Report r) {
-            System.out.println("Report with size:" + r.size());
-            for (Iterator<ProcessingError> it = r.errors(); it.hasNext(); ) {
-                ProcessingError error = it.next();
-                System.out.println(error);
+            if (r.hasErrors()) {
+                for (Iterator<ProcessingError> it = r.errors(); it.hasNext(); ) {
+                    ProcessingError error = it.next();
+                    report.logError(error.getDetail());
+                }
+            }
+            else {
+                report.logInfo("Report with size %d collected successfully.", r.size());
             }
         }
 

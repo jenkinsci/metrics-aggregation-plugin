@@ -12,20 +12,20 @@ public class JacksonFacade {
     private final ObjectMapper mapper = new ObjectMapper();
 
     /**
-     * Creates a JSON representation of the specified bean using Jackson data binding.
+     * Creates a JSON representation of the specified object using Jackson data binding.
      *
-     * @param bean
-     *         the bean to convert
+     * @param object
+     *         the object to convert
      *
      * @return the JSON representation (as a String)
      */
-    public String toJson(final Object bean) {
+    public String toJson(final Object object) {
         try {
-            return mapper.writeValueAsString(bean);
+            return mapper.writeValueAsString(object);
         }
         catch (JsonProcessingException exception) {
             throw new IllegalArgumentException(
-                    String.format("Can't convert %s to JSON object", bean), exception);
+                    String.format("Can't convert %s to JSON object", object), exception);
         }
     }
 }

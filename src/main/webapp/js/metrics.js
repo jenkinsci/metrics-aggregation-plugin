@@ -1,9 +1,44 @@
-/* global jQuery, echarts, metrics, metricsTree, math */
+/* global jQuery, view, echarts, metrics, metricsTree, math */
 (function ($) {
     var maxLOC = Math.max(...metrics.map(d => d.metrics.LOC));
     var childTables = {};
     var columnsVisible = {};
     var visibleColumns = [];
+    var filterExpression = math.compile('true');
+
+    function debounce(func, wait) {
+        var timeoutId;
+        return function () {
+            clearTimeout(timeoutId);
+
+            var context = this, args = arguments;
+            timeoutId = setTimeout(function () {
+                timeoutId = null;
+                func.apply(context, args);
+            }, wait);
+        };
+    }
+
+    /**
+     * Filter the data of a row with the user defined filter.
+     *
+     * @param data the data of a row to filter
+     * @param {boolean} [rethrow] whether to rethrow any caught exceptions
+     * @returns {boolean|*} the result for the filter expression
+     */
+    function filterData(data, rethrow) {
+        try {
+            $('#table-filter').removeClass('is-invalid');
+            return filterExpression.evaluate(data)
+        } catch (e) {
+            $('#table-filter ~ .invalid-feedback').text(e.message);
+            $('#table-filter').addClass('is-invalid');
+            if (rethrow) {
+                throw e;
+            }
+            return true;
+        }
+    }
 
     $.fn.dataTable.ext.search.push(
         function (settings, rawData, dataIndex) {
@@ -20,8 +55,7 @@
                 ISSUES: rawData[12]
             };
 
-            var filter = $('#table-filter').val() || 'true';
-            return math.evaluate(filter, data);
+            return filterData(data);
         }
     );
 
@@ -126,8 +160,32 @@
             ]
         });
 
-        $('#table-filter').keyup(function () {
+        var redrawTableDebounced = debounce(function () {
             table.draw();
+        }, 250);
+
+        $('#table-filter').on('input', function () {
+            try {
+                $('#table-filter').removeClass('is-invalid');
+                filterExpression = math.compile($('#table-filter').val());
+            } catch (e) {
+                $('#table-filter ~ .invalid-feedback').text(e.message);
+                $('#table-filter').addClass('is-invalid');
+            }
+
+            var emptyData = {
+                ATFD: 0, CLASS_FAN_OUT: 0, LOC: 0,
+                NCSS: 0, NOAM: 0, NOPA: 0, TCC: 0,
+                WMC: 0, WOC: 0, ISSUES: 0
+            };
+
+            // try filtering the data to detect any errors in the input
+            try {
+                filterData(emptyData, true);
+                redrawTableDebounced();
+            } catch {
+                // ignored, already caught in filter data
+            }
         });
 
         // Add event listener for opening and closing details
@@ -207,66 +265,19 @@
                                             tree chart
          ------------------------------------------------------------------------------ */
 
-        var formatUtil = echarts.format;
+        function drawTreeChart() {
+            var metric = $('#treechart-picker').val();
 
-        var treeChart = echarts
-            .init(document.getElementById('treechart'))
-            .setOption({
-                title: {
-                    text: 'Lines of Code',
-                    left: 'center'
-                },
-
-                tooltip: {
-                    formatter: function (info) {
-                        var treePathInfo = info.treePathInfo;
-                        var treePath = [];
-
-                        for (var i = 1; i < treePathInfo.length; i++) {
-                            treePath.push(treePathInfo[i].name);
-                        }
-
-                        return '<b>' + formatUtil.encodeHTML(treePath.join('.')) + '</b><br/>' +
-                            formatUtil.addCommas(info.value) + ' Lines';
-                    }
-                },
-
-                series: [
-                    {
-                        name: 'Lines of Code',
-                        type: 'treemap',
-                        label: {
-                            show: true,
-                            formatter: '{b}'
-                        },
-                        itemStyle: {
-                            normal: {
-                                borderColor: '#aaa',
-                                gapWidth: 4
-                            }
-                        },
-                        levels: [
-                            {
-                                // top level empty
-                            },
-                            {
-                                itemStyle: {
-                                    normal: {
-                                        borderColor: '#888',
-                                        borderWidth: 5,
-                                        gapWidth: 5
-                                    }
-                                }
-                            }
-                        ],
-                        data: [metricsTree]
-                    }
-                ]
+            view.getMetricsTree(metric, function (res) {
+                $('#treechart').renderTreeChart(res.responseJSON);
             });
+        }
 
-        $(window).on('resize', function () {
-            if (treeChart) {
-                treeChart.resize();
+        drawTreeChart();
+
+        $('#treechart-picker').on('changed.bs.select', function (e, _clickedIndex, _isSelected, previousValue) {
+            if (previousValue && previousValue !== $(e.target).val()) {
+                drawTreeChart();
             }
         });
     });

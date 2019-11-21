@@ -16,6 +16,8 @@ public class MetricsNode {
     @JsonIgnore
     private Map<String, MetricsNode> childrenMap = new HashMap<>();
     private String name = "";
+    @JsonIgnore
+    private String valueKey = "";
 
     public MetricsNode() {
     }
@@ -66,8 +68,18 @@ public class MetricsNode {
             return childrenMap.values().stream().map(MetricsNode::getValue).reduce(0, Integer::sum);
         }
         else {
-            return data.getMetrics().getOrDefault("LOC", 0.0).intValue();
+            return data.getMetrics().getOrDefault(valueKey, 0.0).intValue();
         }
+    }
+
+    @JsonIgnore
+    public String getValueKey() {
+        return valueKey;
+    }
+
+    @JsonIgnore
+    public void setValueKey(final String valueKey) {
+        this.valueKey = valueKey;
     }
 
     public String getName() {
