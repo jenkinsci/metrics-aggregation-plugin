@@ -21,13 +21,14 @@ class MetricsActorTest {
 
         MetricsReport measurements = new MetricsActor("Test.java")
                 .invoke(workspace, null);
+        measurements.getInfoMessages().forEach(System.out::println);
 
         MetricsReportAssert.assertThat(measurements).hasNoErrorMessages();
         MetricsReportAssert.assertThat(measurements)
                 .hasInfoMessages("Analyzing 1 files matching the pattern Test.java in " + workspace);
 
         assertThat(measurements.size()).isEqualTo(9);
-        double cfo = measurements.get(0).getMetrics().get("CLASS_FAN_OUT");
+        double cfo = measurements.get(0).getMetrics().getOrDefault("CLASS_FAN_OUT", -1.0);
         assertThat(cfo).isEqualTo(6);
     }
 }

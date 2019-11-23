@@ -105,7 +105,11 @@
                 {
                     data: 'metrics.LOC',
                     name: 'metrics.LOC',
-                    defaultContent: ''
+                    defaultContent: '',
+                    createdCell: function (td, cellData, _rowData, _row, _col) {
+                        var lightness = (1 - cellData / maxLOC) * 60 + 35;
+                        $(td).css('background', 'hsl(0, 100%, ' + lightness + '%)');
+                    }
                 },
                 {
                     data: 'metrics.NCSS',
@@ -150,13 +154,6 @@
                     targets: 0,
                     width: '10px'
                 },
-                {
-                    targets: 5,
-                    createdCell: function (td, cellData, _rowData, _row, _col) {
-                        var lightness = (1 - cellData / maxLOC) * 60 + 35;
-                        $(td).css('background', 'hsl(0, 100%, ' + lightness + '%)');
-                    }
-                }
             ]
         });
 
@@ -167,7 +164,8 @@
         $('#table-filter').on('input', function () {
             try {
                 $('#table-filter').removeClass('is-invalid');
-                filterExpression = math.compile($('#table-filter').val());
+                var filterString = $('#table-filter').val() || 'true';
+                filterExpression = math.compile(filterString);
             } catch (e) {
                 $('#table-filter ~ .invalid-feedback').text(e.message);
                 $('#table-filter').addClass('is-invalid');
@@ -204,8 +202,8 @@
                 var child = '<table id="lines-of-code_' + row.index() + '" class="ml-5">' +
                     '<thead>' +
                     '<th>Method</th>' +
-                    '<th>Lines of Code</th>' +
-                    '<th>Non-comment</th>' +
+                    '<th class="hideable">Lines of Code</th>' +
+                    '<th class="hideable">Non-comment</th>' +
                     '</thead>' +
                     '</table>';
 
@@ -225,12 +223,12 @@
                         {
                             data: 'metrics.LOC',
                             name: 'metrics.LOC',
-                            visible: columnsVisible['metrics.LOC:name'] !== false
+                            visible: visibleColumns.indexOf('metrics.LOC') <= -1
                         },
                         {
                             data: 'metrics.NCSS',
                             name: 'metrics.NCSS',
-                            visible: columnsVisible['metrics.NCSS:name'] !== false
+                            visible: visibleColumns.indexOf('metrics.NCSS') <= -1
                         }
                     ]
                 });
@@ -239,10 +237,6 @@
 
         // toggle column visibility
         function changeVisibility() {
-            if (this.name() === '' || this.name() === 'packageName' || this.name() === 'className') {
-                return;
-            }
-
             if (this.visible() && visibleColumns.indexOf(this.name()) <= -1) {
                 this.visible(false);
             } else if (!this.visible() && visibleColumns.indexOf(this.name()) > -1) {
@@ -254,11 +248,11 @@
             visibleColumns = $(e.target).val();
 
             // change visibilities in main table
-            table.columns().every(changeVisibility);
+            table.columns('.hideable').every(changeVisibility);
 
             // change visibilities in child tables
             Object.values(childTables)
-                .forEach(childTable => childTable.columns().every(changeVisibility));
+                .forEach(childTable => childTable.columns('.hideable').every(changeVisibility));
         });
 
         /* ------------------------------------------------------------------------------
@@ -267,11 +261,15 @@
 
         function drawTreeChart() {
             var metric = $('#treechart-picker').val();
-            var metricTitle = $('#treechart-picker :selected').text();
+            var metricName = $('#treechart-picker :selected').text();
 
             view.getMetricsTree(metric, function (res) {
-                $('#treechart').renderTreeChart(res.responseJSON, metricTitle);
+                $('#treechart').renderTreeChart(res.responseJSON, metricName);
             });
+
+            view.getHistogram(metric, function (res) {
+                $('#histogram').renderHistogram(res.responseJSON, metricName);
+            })
         }
 
         drawTreeChart();

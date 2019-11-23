@@ -31,6 +31,7 @@
       </script>
 
       <script src="${resURL}/plugin/metrics-analysis/js/tree-chart.js"/>
+      <script src="${resURL}/plugin/metrics-analysis/js/histogram.js"/>
       <script src="${resURL}/plugin/metrics-analysis/js/metrics.js"/>
 
       <div class="fluid-container">
@@ -57,6 +58,8 @@
 
         <div id="treechart" style="width: 100%; min-height: 400px"/>
 
+        <div id="histogram" style="width: 100%; min-height: 400px"/>
+
         <hr/>
         <hr/>
         <hr/>
@@ -75,14 +78,14 @@
             <label for="column-picker">Select columns</label>
             <select class="selectpicker form-control form-control-sm" multiple="true" id="column-picker">
               <option value="metrics.ATFD" selected="true">Access to foreign data</option>
-              <option value="metrics.CLASS_FAN_OUT">Fan out</option>
+              <option value="metrics.CLASS_FAN_OUT" selected="true">Fan out</option>
               <option value="metrics.LOC" selected="true">Lines of Code</option>
               <option value="metrics.NCSS" selected="true">Non-comment</option>
-              <option value="metrics.NOAM">Accessor methods</option>
-              <option value="metrics.NOPA">Public Attributes</option>
-              <option value="metrics.TCC">Class cohesion</option>
-              <option value="metrics.WMC">W. method count</option>
-              <option value="metrics.WOC">Weight of class</option>
+              <option value="metrics.NOAM" selected="true">Accessor methods</option>
+              <option value="metrics.NOPA" selected="true">Public Attributes</option>
+              <option value="metrics.TCC" selected="true">Class cohesion</option>
+              <option value="metrics.WMC" selected="true">W. method count</option>
+              <option value="metrics.WOC" selected="true">Weight of class</option>
               <option value="metrics.ISSUES" selected="true">Issues</option>
             </select>
           </div>
@@ -96,16 +99,16 @@
                   <th/>
                   <th>Package</th>
                   <th>Class</th>
-                  <th>Access to foreign data</th>
-                  <th>Fan out</th>
-                  <th>Lines of Code</th>
-                  <th>Non-comment</th>
-                  <th>Accessor methods</th>
-                  <th>Public attributes</th>
-                  <th>Class cohesion</th>
-                  <th>W. method count</th>
-                  <th>Weight of class</th>
-                  <th>Issues</th>
+                  <th class="hideable">Access to foreign data</th>
+                  <th class="hideable">Fan out</th>
+                  <th class="hideable">Lines of Code</th>
+                  <th class="hideable">Non-comment</th>
+                  <th class="hideable">Accessor methods</th>
+                  <th class="hideable">Public attributes</th>
+                  <th class="hideable">Class cohesion</th>
+                  <th class="hideable">W. method count</th>
+                  <th class="hideable">Weight of class</th>
+                  <th class="hideable">Issues</th>
                 </tr>
               </thead>
             </table>

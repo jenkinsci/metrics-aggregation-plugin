@@ -7,6 +7,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.math3.random.EmpiricalDistribution;
+import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
+
 import com.google.common.collect.Lists;
 
 import edu.hm.hafner.analysis.Issue;
@@ -184,6 +188,73 @@ public class MetricsDetail implements ModelObject {
         root.collapsePackage();
 
         return toJson(root);
+    }
+
+    @JavaScriptMethod
+    @SuppressWarnings("unused") // used by jelly view
+    public String getHistogram(final String valueKey) {
+        List<Double> values = metricsMeasurements.stream()
+                .filter(m -> m.getMethodName() == null || m.getMethodName().isEmpty())
+                .map(m -> m.getMetrics().getOrDefault(valueKey, Double.NaN))
+                .filter(d -> !d.isNaN())
+                .collect(Collectors.toList());
+
+        final int numBins = 10;
+        final int[] histogramData = new int[numBins];
+        final double min = values.stream().min(Double::compareTo).orElse(0.0);
+        final double max = values.stream().max(Double::compareTo).orElse(0.0);
+        final double binWidth = (max - min) / numBins;
+
+        for (double v : values) {
+            int binId = (int) ((v - min) / binWidth);
+            if (binId < 0) {
+                binId = 0;
+            }
+            else if (binId >= numBins) {
+                binId = numBins - 1;
+            }
+
+            histogramData[binId] += 1;
+        }
+
+        final String[] binLabels = new String[numBins];
+        for (int i = 0; i < numBins; i++) {
+            double left = min + i * binWidth;
+            double right = min + (i + 1) * binWidth;
+            binLabels[i] = String.format("%.1f - %.1f", left, right);
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("data", histogramData);
+        result.put("labels", binLabels);
+        return toJson(result);
+    }
+
+    @JavaScriptMethod
+    @SuppressWarnings("unused") // used by jelly view
+    public String getStatistics(final String valueKey) {
+        SummaryStatistics statistics = new SummaryStatistics();
+
+        metricsMeasurements.stream()
+                .filter(m -> m.getMethodName() == null || m.getMethodName().isEmpty())
+                .map(m -> m.getMetrics().getOrDefault(valueKey, Double.NaN))
+                .filter(d -> !d.isNaN())
+                .forEach(statistics::addValue);
+
+        Double[] values = metricsMeasurements.stream()
+                .filter(m -> m.getMethodName() == null || m.getMethodName().isEmpty())
+                .map(m -> m.getMetrics().getOrDefault(valueKey, Double.NaN))
+                .filter(d -> !d.isNaN())
+                .toArray(Double[]::new);
+
+        EmpiricalDistribution distribution = new EmpiricalDistribution();
+        distribution.load(ArrayUtils.toPrimitive(values));
+
+        distribution.getBinCount();
+        distribution.getNumericalVariance();
+        distribution.getNumericalMean();
+
+        return "";
     }
 
     private Stream<AnalysisResult> getAnalysisResults() {

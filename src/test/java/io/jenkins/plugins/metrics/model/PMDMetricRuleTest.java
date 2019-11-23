@@ -2,7 +2,7 @@ package io.jenkins.plugins.metrics.model;
 
 import org.junit.jupiter.api.Test;
 
-import net.sourceforge.pmd.lang.ast.Node;
+import shaded.net.sourceforge.pmd.lang.ast.Node;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;

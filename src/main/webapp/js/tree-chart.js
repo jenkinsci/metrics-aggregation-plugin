@@ -5,29 +5,34 @@
          * Renders a tree chart using ECharts.
          *
          * @param {String} model - the chart model
+         * @param {String} metricName - the name of the metric, used e.g. as title for the graph
          */
-        renderTreeChart: function (model, metricTitle) {
+        renderTreeChart: function (model, metricName) {
             var treeModel = JSON.parse(model);
             var chart = echarts.init($(this)[0]);
             var options = {
                 title: {
-                    text: metricTitle,
+                    text: metricName,
                     left: 'center'
                 },
 
                 tooltip: {
                     formatter: function (info) {
+                        // shift to remove the first level (name of the metric) from the path
+                        info.treePathInfo.shift();
+
                         var fileName = info.treePathInfo
                             .map(i => i.name)
                             .join('.');
 
-                        return echarts.format.encodeHTML(fileName) + ' ' + echarts.format.addCommas(info.value);
+                        return '<b>' + echarts.format.encodeHTML(fileName) + '</b><br/>'
+                            + metricName + ': ' + echarts.format.addCommas(info.value);
                     }
                 },
 
                 series: [
                     {
-                        name: metricTitle,
+                        name: metricName,
                         type: 'treemap',
                         label: {
                             show: true,
@@ -59,9 +64,6 @@
             };
             chart.setOption(options);
             chart.resize();
-            chart.on('click', function (params) {
-                window.location.assign(params.name);
-            });
             $(window).on('resize', function () {
                 chart.resize();
             });

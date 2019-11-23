@@ -14,19 +14,19 @@ import java.util.stream.Collectors;
 
 import org.objectweb.asm.Opcodes;
 
-import net.sourceforge.pmd.PMD;
-import net.sourceforge.pmd.PMDConfiguration;
-import net.sourceforge.pmd.Report;
-import net.sourceforge.pmd.Report.ConfigurationError;
-import net.sourceforge.pmd.Report.ProcessingError;
-import net.sourceforge.pmd.RuleContext;
-import net.sourceforge.pmd.RuleSetFactory;
-import net.sourceforge.pmd.RuleViolation;
-import net.sourceforge.pmd.RulesetsFactoryUtils;
-import net.sourceforge.pmd.renderers.AbstractRenderer;
-import net.sourceforge.pmd.util.ResourceLoader;
-import net.sourceforge.pmd.util.datasource.DataSource;
-import net.sourceforge.pmd.util.datasource.FileDataSource;
+import shaded.net.sourceforge.pmd.PMD;
+import shaded.net.sourceforge.pmd.PMDConfiguration;
+import shaded.net.sourceforge.pmd.Report;
+import shaded.net.sourceforge.pmd.Report.ConfigurationError;
+import shaded.net.sourceforge.pmd.Report.ProcessingError;
+import shaded.net.sourceforge.pmd.RuleContext;
+import shaded.net.sourceforge.pmd.RuleSetFactory;
+import shaded.net.sourceforge.pmd.RuleViolation;
+import shaded.net.sourceforge.pmd.RulesetsFactoryUtils;
+import shaded.net.sourceforge.pmd.renderers.AbstractRenderer;
+import shaded.net.sourceforge.pmd.util.ResourceLoader;
+import shaded.net.sourceforge.pmd.util.datasource.DataSource;
+import shaded.net.sourceforge.pmd.util.datasource.FileDataSource;
 
 import hudson.remoting.VirtualChannel;
 import jenkins.MasterToSlaveFileCallable;
@@ -76,8 +76,17 @@ public class MetricsActor extends MasterToSlaveFileCallable<MetricsReport> {
                 .map(Field::getName)
                 .filter(f -> f.startsWith("ASM"))
                 .collect(Collectors.joining(","));
-        metricsReport.logInfo("Opcodes with asm: %s", asmFields);
+        metricsReport.logInfo("Opcodes starting with asm: %s", asmFields);
 
+        Field[] shadedOpcodesFields = shaded.org.objectweb.asm.Opcodes.class.getDeclaredFields();
+        String shadedAsmFields = Arrays.stream(shadedOpcodesFields)
+                .map(Field::getName)
+                .filter(f -> f.startsWith("ASM"))
+                .collect(Collectors.joining(","));
+        metricsReport.logInfo("shaded Opcodes starting with asm: %s", shadedAsmFields);
+
+        metricsReport.logInfo("pmd version: %s", PMD.VERSION);                
+        
         PMD.processFiles(configuration, ruleSetFactory, files, ruleContext,
                 Collections.singletonList(new MetricsLogRenderer(metricsReport)));
 

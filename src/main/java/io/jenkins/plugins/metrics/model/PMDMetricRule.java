@@ -6,12 +6,12 @@ import java.util.stream.Stream;
 
 import com.google.common.annotations.VisibleForTesting;
 
-import net.sourceforge.pmd.RuleContext;
-import net.sourceforge.pmd.lang.LanguageRegistry;
-import net.sourceforge.pmd.lang.ast.Node;
-import net.sourceforge.pmd.lang.java.JavaLanguageModule;
-import net.sourceforge.pmd.lang.metrics.LanguageMetricsProvider;
-import net.sourceforge.pmd.lang.rule.AbstractRule;
+import shaded.net.sourceforge.pmd.RuleContext;
+import shaded.net.sourceforge.pmd.lang.LanguageRegistry;
+import shaded.net.sourceforge.pmd.lang.ast.Node;
+import shaded.net.sourceforge.pmd.lang.java.JavaLanguageModule;
+import shaded.net.sourceforge.pmd.lang.metrics.LanguageMetricsProvider;
+import shaded.net.sourceforge.pmd.lang.rule.AbstractRule;
 
 public class PMDMetricRule extends AbstractRule {
 
