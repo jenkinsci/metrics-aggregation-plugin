@@ -1,4 +1,4 @@
-package io.jenkins.plugins.metrics.model;
+package io.jenkins.plugins.metrics.view;
 
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +31,9 @@ import io.jenkins.plugins.forensics.blame.Blames;
 import io.jenkins.plugins.forensics.blame.FileBlame;
 import io.jenkins.plugins.forensics.miner.FileStatistics;
 import io.jenkins.plugins.forensics.miner.RepositoryStatistics;
+import io.jenkins.plugins.metrics.analysis.MetricsAction;
+import io.jenkins.plugins.metrics.model.MetricsMeasurement;
+import io.jenkins.plugins.metrics.model.MetricsTreeNode;
 import io.jenkins.plugins.metrics.util.JacksonFacade;
 
 /**
@@ -44,9 +47,15 @@ public class MetricsDetail implements ModelObject {
     private final Run<?, ?> owner;
     private final List<MetricsMeasurement> metricsMeasurements;
 
-    public MetricsDetail(final Run<?, ?> owner, List<MetricsMeasurement> metricsMeasurements) {
+    public MetricsDetail(final Run<?, ?> owner) {
         this.owner = owner;
-        this.metricsMeasurements = metricsMeasurements;
+        MetricsAction action = owner.getAction(MetricsAction.class);
+        if (action != null) {
+            metricsMeasurements = action.getMetricsMeasurements();
+        }
+        else {
+            metricsMeasurements = Lists.newArrayList();
+        }
     }
 
     @Override
@@ -59,6 +68,7 @@ public class MetricsDetail implements ModelObject {
      *
      * @return the owner
      */
+    @SuppressWarnings("unused") // used by jelly view
     public final Run<?, ?> getOwner() {
         return owner;
     }

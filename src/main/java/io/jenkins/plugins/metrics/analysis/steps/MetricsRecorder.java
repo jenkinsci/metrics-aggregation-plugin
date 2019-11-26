@@ -1,5 +1,5 @@
 
-package io.jenkins.plugins.metrics.steps;
+package io.jenkins.plugins.metrics.analysis.steps;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -23,8 +23,9 @@ import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import jenkins.tasks.SimpleBuildStep;
 
-import io.jenkins.plugins.metrics.model.MetricsAction;
-import io.jenkins.plugins.metrics.model.MetricsActor;
+import io.jenkins.plugins.metrics.analysis.MetricsAction;
+import io.jenkins.plugins.metrics.view.ViewAction;
+import io.jenkins.plugins.metrics.analysis.MetricsActor;
 import io.jenkins.plugins.metrics.model.MetricsReport;
 
 /**

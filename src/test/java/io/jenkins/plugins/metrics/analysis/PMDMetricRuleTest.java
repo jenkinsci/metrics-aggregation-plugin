@@ -1,8 +1,10 @@
-package io.jenkins.plugins.metrics.model;
+package io.jenkins.plugins.metrics.analysis;
 
 import org.junit.jupiter.api.Test;
 
 import shaded.net.sourceforge.pmd.lang.ast.Node;
+
+import io.jenkins.plugins.metrics.analysis.PMDMetricRule;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;

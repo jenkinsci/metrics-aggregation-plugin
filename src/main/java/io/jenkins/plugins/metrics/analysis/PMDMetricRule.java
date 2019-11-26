@@ -1,4 +1,4 @@
-package io.jenkins.plugins.metrics.model;
+package io.jenkins.plugins.metrics.analysis;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,17 +1,21 @@
-package io.jenkins.plugins.metrics.model;
-
-import java.util.ArrayList;
-import java.util.List;
+package io.jenkins.plugins.metrics.view;
 
 import org.junit.jupiter.api.Test;
 
+import hudson.model.Run;
+
+import io.jenkins.plugins.metrics.analysis.MetricsAction;
+import io.jenkins.plugins.metrics.model.MetricsMeasurement;
+import io.jenkins.plugins.metrics.model.MetricsReport;
+
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class MetricsDetailTest {
 
     @Test
     void shouldReturnQuotedCSV() {
-        MetricsDetail metricsDetail = new MetricsDetail(null, null);
+        MetricsDetail metricsDetail = new MetricsDetail(null);
 
         String result = metricsDetail.toCSV("hello", "world", "with,some,commas");
 
@@ -21,7 +25,7 @@ class MetricsDetailTest {
     @Test
     public void shouldGetHistogram() {
         final String key = "key";
-        List<MetricsMeasurement> measurements = new ArrayList<>();
+        MetricsReport measurements = new MetricsReport();
         measurements.add(getMeasurementWithMetric(key, 5.0));
         measurements.add(getMeasurementWithMetric(key, 2.0));
         measurements.add(getMeasurementWithMetric(key, 1.1));
@@ -31,7 +35,9 @@ class MetricsDetailTest {
 
         measurements.add(getMeasurementWithMetric(key + "foo", 3.0));
 
-        MetricsDetail metricsDetail = new MetricsDetail(null, measurements);
+        Run run = mock(Run.class);
+        when(run.getAction(MetricsAction.class)).thenReturn(new MetricsAction(measurements));
+        MetricsDetail metricsDetail = new MetricsDetail(run);
 
         String json = metricsDetail.getHistogram(key);
         assertThat(json).isEqualTo("{\"data\":[3,0,1,0,0,1,0,0,0,1],"
@@ -43,7 +49,7 @@ class MetricsDetailTest {
     public void shouldGetStatistics() {
         final String key = "key";
 
-        List<MetricsMeasurement> measurements = new ArrayList<>();
+        MetricsReport measurements = new MetricsReport();
         measurements.add(getMeasurementWithMetric(key, 5.0));
         measurements.add(getMeasurementWithMetric(key, 2.0));
         measurements.add(getMeasurementWithMetric(key, 1.1));
@@ -51,10 +57,12 @@ class MetricsDetailTest {
         measurements.add(getMeasurementWithMetric(key, 1.0));
         measurements.add(getMeasurementWithMetric(key, 17.0));
 
-        MetricsDetail metricsDetail = new MetricsDetail(null, measurements);
+        Run run = mock(Run.class);
+        when(run.getAction(MetricsAction.class)).thenReturn(new MetricsAction(measurements));
+        MetricsDetail metricsDetail = new MetricsDetail(run);
 
         String json = metricsDetail.getStatistics(key);
-        
+
     }
 
     private MetricsMeasurement getMeasurementWithMetric(final String key, final double value) {

@@ -1,12 +1,18 @@
-package io.jenkins.plugins.metrics.model;
+package io.jenkins.plugins.metrics.view;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
+
+import javax.annotation.Nonnull;
 
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
+import hudson.Extension;
 import hudson.model.Action;
 import hudson.model.Job;
 import hudson.model.Run;
+import jenkins.model.TransientActionFactory;
 
 /**
  * A job action displays a link on the side panel of a job.
@@ -28,7 +34,7 @@ public class JobAction implements Action {
 
     @Override
     public String getDisplayName() {
-        return MetricsAction.NAME;
+        return ViewAction.NAME;
     }
 
     /**
@@ -38,12 +44,12 @@ public class JobAction implements Action {
      */
     @Override
     public String getIconFileName() {
-        return MetricsAction.ICON;
+        return ViewAction.ICON;
     }
 
     @Override
     public String getUrlName() {
-        return MetricsAction.ID;
+        return ViewAction.ID;
     }
 
     /**
@@ -62,7 +68,23 @@ public class JobAction implements Action {
         final Run<?, ?> lastCompletedBuild = owner.getLastCompletedBuild();
 
         if (lastCompletedBuild != null) {
-            response.sendRedirect2(String.format("../%d/%s", lastCompletedBuild.getNumber(), MetricsAction.ID));
+            response.sendRedirect2(String.format("../%d/%s", lastCompletedBuild.getNumber(), ViewAction.ID));
         }
     }
+
+    @Extension
+    public static class JobActionFactory extends TransientActionFactory<Job> {
+
+        @Override
+        public Class<Job> type() {
+            return Job.class;
+        }
+
+        @Nonnull
+        @Override
+        public Collection<? extends Action> createFor(@Nonnull final Job target) {
+            return Collections.singleton(new JobAction(target));
+        }
+    }
+
 }

@@ -1,4 +1,4 @@
-package io.jenkins.plugins.metrics.model;
+package io.jenkins.plugins.metrics.analysis;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -6,19 +6,18 @@ import java.util.List;
 
 import edu.umd.cs.findbugs.annotations.Nullable;
 
-import org.kohsuke.stapler.StaplerProxy;
 import hudson.model.Action;
 import hudson.model.Run;
 import jenkins.model.RunAction2;
 import jenkins.tasks.SimpleBuildStep.LastBuildAction;
 
-public class MetricsAction implements RunAction2, LastBuildAction, StaplerProxy {
+import io.jenkins.plugins.metrics.model.MetricsMeasurement;
+import io.jenkins.plugins.metrics.model.MetricsReport;
+import io.jenkins.plugins.metrics.view.JobAction;
+
+public class MetricsAction implements RunAction2, LastBuildAction {
     private transient Run<?, ?> owner;
     private final List<MetricsMeasurement> metricsMeasurements;
-
-    public static final String ID = "metrics";
-    public static final String NAME = "Metrics";
-    public static final String ICON = "/plugin/metrics-analysis/icons/metrics-24x24.png";
 
     public MetricsAction(final MetricsReport metricsReport) {
         this.metricsMeasurements = metricsReport;
@@ -27,19 +26,19 @@ public class MetricsAction implements RunAction2, LastBuildAction, StaplerProxy 
     @Nullable
     @Override
     public String getIconFileName() {
-        return ICON;
+        return null;
     }
 
     @Nullable
     @Override
     public String getDisplayName() {
-        return NAME;
+        return null;
     }
 
     @Nullable
     @Override
     public String getUrlName() {
-        return ID;
+        return null;
     }
 
     @Override
@@ -57,13 +56,7 @@ public class MetricsAction implements RunAction2, LastBuildAction, StaplerProxy 
         owner = r;
     }
 
-    /**
-     * Returns the detail view for metrics for all Stapler requests.
-     *
-     * @return the detail view for metrics
-     */
-    @Override
-    public Object getTarget() {
-        return new MetricsDetail(owner, metricsMeasurements);
+    public final List<MetricsMeasurement> getMetricsMeasurements() {
+        return metricsMeasurements;
     }
 }

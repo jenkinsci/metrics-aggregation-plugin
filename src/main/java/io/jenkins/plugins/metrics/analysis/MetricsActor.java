@@ -1,4 +1,4 @@
-package io.jenkins.plugins.metrics.model;
+package io.jenkins.plugins.metrics.analysis;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,6 +31,8 @@ import shaded.net.sourceforge.pmd.util.datasource.FileDataSource;
 import hudson.remoting.VirtualChannel;
 import jenkins.MasterToSlaveFileCallable;
 
+import io.jenkins.plugins.metrics.model.MetricsMeasurement;
+import io.jenkins.plugins.metrics.model.MetricsReport;
 import io.jenkins.plugins.metrics.util.FileFinder;
 
 public class MetricsActor extends MasterToSlaveFileCallable<MetricsReport> {

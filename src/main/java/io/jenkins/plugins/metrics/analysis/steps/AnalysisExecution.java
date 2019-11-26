@@ -1,4 +1,4 @@
-package io.jenkins.plugins.metrics.steps;
+package io.jenkins.plugins.metrics.analysis.steps;
 
 import java.io.IOException;
 import java.nio.charset.Charset;

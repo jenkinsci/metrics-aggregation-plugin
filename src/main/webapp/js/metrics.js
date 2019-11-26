@@ -78,7 +78,7 @@
             columns: [
                 {
                     className: '',
-                    orderable: false,
+                    ordering: false,
                     data: null,
                     defaultContent: "<div class='details-control'/>"
                 },
@@ -154,7 +154,10 @@
                     targets: 0,
                     width: '10px'
                 },
-            ]
+            ],
+            responsive: {
+                details: false
+            }
         });
 
         var redrawTableDebounced = debounce(function () {
@@ -199,7 +202,7 @@
                 delete childTables[row.index()];
             } else {
                 // Open this row
-                var child = '<table id="lines-of-code_' + row.index() + '" class="ml-5">' +
+                var child = '<table id="child_' + row.index() + '" class="ml-5">' +
                     '<thead>' +
                     '<th>Method</th>' +
                     '<th class="hideable">Lines of Code</th>' +
@@ -210,7 +213,7 @@
                 row.child(child).show();
                 tr.addClass('shown');
 
-                childTables[row.index()] = $('#lines-of-code_' + row.index()).DataTable({
+                childTables[row.index()] = $('#child_' + row.index()).DataTable({
                     info: false,
                     paging: false,
                     searching: false,
