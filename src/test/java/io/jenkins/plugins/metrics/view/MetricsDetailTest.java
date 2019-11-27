@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import hudson.model.Run;
 
 import io.jenkins.plugins.metrics.analysis.MetricsAction;
+import io.jenkins.plugins.metrics.model.ClassMetricsMeasurement;
+import io.jenkins.plugins.metrics.model.Metric;
 import io.jenkins.plugins.metrics.model.MetricsMeasurement;
 import io.jenkins.plugins.metrics.model.MetricsReport;
 
@@ -66,8 +68,8 @@ class MetricsDetailTest {
     }
 
     private MetricsMeasurement getMeasurementWithMetric(final String key, final double value) {
-        MetricsMeasurement metricsMeasurement = new MetricsMeasurement();
-        metricsMeasurement.addMetric(key, value);
+        MetricsMeasurement metricsMeasurement = new ClassMetricsMeasurement();
+        metricsMeasurement.addMetric(new Metric(key, key, key, value));
         return metricsMeasurement;
     }
 }

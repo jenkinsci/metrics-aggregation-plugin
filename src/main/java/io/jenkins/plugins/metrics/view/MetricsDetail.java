@@ -3,7 +3,7 @@ package io.jenkins.plugins.metrics.view;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -13,7 +13,6 @@ import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
 import com.google.common.collect.Lists;
 
-import edu.hm.hafner.analysis.Issue;
 import edu.hm.hafner.analysis.Report;
 
 import org.kohsuke.stapler.bind.JavaScriptMethod;
@@ -31,8 +30,9 @@ import io.jenkins.plugins.forensics.blame.Blames;
 import io.jenkins.plugins.forensics.blame.FileBlame;
 import io.jenkins.plugins.forensics.miner.FileStatistics;
 import io.jenkins.plugins.forensics.miner.RepositoryStatistics;
-import io.jenkins.plugins.metrics.analysis.MetricsAction;
+import io.jenkins.plugins.metrics.extension.MetricsProviderFactory;
 import io.jenkins.plugins.metrics.model.MetricsMeasurement;
+import io.jenkins.plugins.metrics.model.MetricsProvider;
 import io.jenkins.plugins.metrics.model.MetricsTreeNode;
 import io.jenkins.plugins.metrics.util.JacksonFacade;
 
@@ -49,18 +49,21 @@ public class MetricsDetail implements ModelObject {
 
     public MetricsDetail(final Run<?, ?> owner) {
         this.owner = owner;
-        MetricsAction action = owner.getAction(MetricsAction.class);
-        if (action != null) {
-            metricsMeasurements = action.getMetricsMeasurements();
-        }
-        else {
-            metricsMeasurements = Lists.newArrayList();
-        }
+        metricsMeasurements = MetricsProviderFactory.getAllFor(owner.getAllActions())
+                .stream()
+                .map(MetricsProvider::getMetricsMeasurements)
+                .flatMap(List::stream)
+                .collect(Collectors.groupingBy(MetricsMeasurement::getQualifiedClassName))
+                .values().stream()
+                .map(perFileMeasurements -> perFileMeasurements.stream().reduce(MetricsMeasurement::merge)
+                        .orElse(null))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     @Override
     public String getDisplayName() {
-        return "Metrics Detail View";
+        return "Metrics";
     }
 
     /**
@@ -83,22 +86,6 @@ public class MetricsDetail implements ModelObject {
         final String separator = quote + "," + quote;
 
         return quote + String.join(separator, values) + quote;
-    }
-
-    private static final String ISSUES_NAMES = "package,basename,linestart,origin,severity,category,type,message";
-
-    private String issueAsCSV(final Issue issue) {
-        return toCSV(
-                issue.getPackageName(),
-                issue.getBaseName(),
-                Integer.toString(issue.getLineStart()),
-                //Integer.toString(issue.getLineEnd()),
-                issue.getOrigin(),
-                issue.getSeverity().getName(),
-                issue.getCategory(),
-                issue.getType(),
-                issue.getMessage()
-        );
     }
 
     private static final String STATISTICS_NAMES = "creationtime,lastmodified,authors,commits";
@@ -127,59 +114,13 @@ public class MetricsDetail implements ModelObject {
 
     @SuppressWarnings("unused") // used by jelly view
     public String getMetrics() {
-        Map<String, Report> issues = getAnalysisResults()
-                .map(AnalysisResult::getIssues)
-                .map(r -> r.groupByProperty("fileName"))
-                .reduce(new HashMap<>(), (acc, map) -> {
-                    map.forEach((key, report) -> acc.merge(key, report,
-                            Report::addAll));
-                    return acc;
-                });
-
-        return toJson(
-                metricsMeasurements.stream()
-                        .collect(Collectors.groupingBy(m -> m.getPackageName() + ";" + m.getClassName()))
-                        .entrySet()
-                        .stream()
-                        .map(entry -> {
-                            List<MetricsMeasurement> group = entry.getValue();
-
-                            Optional<MetricsMeasurement> optionalClassMeasurement = group.stream()
-                                    .filter(m -> m.getMethodName() == null || m.getMethodName().isEmpty())
-                                    .findFirst();
-
-                            if (optionalClassMeasurement.isPresent()) {
-                                MetricsMeasurement classMeasurement = optionalClassMeasurement.get();
-                                List<MetricsMeasurement> children = group.stream()
-                                        .filter(m -> !m.equals(classMeasurement))
-                                        .collect(Collectors.toList());
-
-                                classMeasurement.setChildren(children);
-                                return classMeasurement;
-                            }
-                            else {
-                                MetricsMeasurement classMeasurement = new MetricsMeasurement();
-                                String[] name = entry.getKey().split(";");
-                                classMeasurement.setPackageName(name[0]);
-                                classMeasurement.setClassName(name[1]);
-
-                                classMeasurement.setChildren(group);
-                                return classMeasurement;
-                            }
-                        })
-                        .peek(measurement -> {
-                            final int numberOfIssues = issues
-                                    .getOrDefault(measurement.getFileName(), new Report())
-                                    .getSize();
-                            measurement.addMetric("ISSUES", numberOfIssues);
-                        })
-                        .collect(Collectors.toList())
-        );
+        return toJson(metricsMeasurements);
     }
 
     @JavaScriptMethod
     @SuppressWarnings("unused") // used by jelly view
     public String getMetricsTree(final String valueKey) {
+        /*
         MetricsTreeNode root = metricsMeasurements.stream()
                 .filter(m -> m.getMethodName() == null || m.getMethodName().isEmpty())
                 .map(measurement -> {
@@ -194,7 +135,9 @@ public class MetricsDetail implements ModelObject {
                     acc.insertNode(node);
                     return acc;
                 });
+         */
 
+        MetricsTreeNode root = new MetricsTreeNode("");
         root.collapsePackage();
 
         return toJson(root);
@@ -203,11 +146,15 @@ public class MetricsDetail implements ModelObject {
     @JavaScriptMethod
     @SuppressWarnings("unused") // used by jelly view
     public String getHistogram(final String valueKey) {
+        /*
         List<Double> values = metricsMeasurements.stream()
                 .filter(m -> m.getMethodName() == null || m.getMethodName().isEmpty())
                 .map(m -> m.getMetrics().getOrDefault(valueKey, Double.NaN))
                 .filter(d -> !d.isNaN())
                 .collect(Collectors.toList());
+         */
+
+        List<Double> values = Lists.newArrayList();
 
         final int numBins = 10;
         final int[] histogramData = new int[numBins];
@@ -245,8 +192,9 @@ public class MetricsDetail implements ModelObject {
     public String getStatistics(final String valueKey) {
         SummaryStatistics statistics = new SummaryStatistics();
 
+        /*
         metricsMeasurements.stream()
-                .filter(m -> m.getMethodName() == null || m.getMethodName().isEmpty())
+                .filter(m -> m instanceof ClassMetricsMeasurement)
                 .map(m -> m.getMetrics().getOrDefault(valueKey, Double.NaN))
                 .filter(d -> !d.isNaN())
                 .forEach(statistics::addValue);
@@ -256,6 +204,8 @@ public class MetricsDetail implements ModelObject {
                 .map(m -> m.getMetrics().getOrDefault(valueKey, Double.NaN))
                 .filter(d -> !d.isNaN())
                 .toArray(Double[]::new);
+         */
+        Double[] values = {0.0};
 
         EmpiricalDistribution distribution = new EmpiricalDistribution();
         distribution.load(ArrayUtils.toPrimitive(values));
@@ -298,8 +248,6 @@ public class MetricsDetail implements ModelObject {
                 });
 
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(ISSUES_NAMES);
-        stringBuilder.append(",");
         stringBuilder.append(STATISTICS_NAMES);
         stringBuilder.append(",");
         stringBuilder.append(BLAME_NAMES);
@@ -310,8 +258,6 @@ public class MetricsDetail implements ModelObject {
             FileStatistics fileStatistics = stats.get(fileName);
 
             report.forEach(issue -> {
-                stringBuilder.append(issueAsCSV(issue));
-                stringBuilder.append(",");
                 stringBuilder.append(fileStatisticsAsCSV(fileStatistics));
                 stringBuilder.append(",");
                 stringBuilder.append(fileBlameAsCSV(fileBlame, issue.getLineStart()));

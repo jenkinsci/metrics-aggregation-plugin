@@ -3,6 +3,9 @@ package io.jenkins.plugins.metrics.analysis.steps;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 
@@ -24,6 +27,7 @@ import hudson.tasks.Recorder;
 import jenkins.tasks.SimpleBuildStep;
 
 import io.jenkins.plugins.metrics.analysis.MetricsAction;
+import io.jenkins.plugins.metrics.model.MetricsMeasurement;
 import io.jenkins.plugins.metrics.view.ViewAction;
 import io.jenkins.plugins.metrics.analysis.MetricsActor;
 import io.jenkins.plugins.metrics.model.MetricsReport;
@@ -97,7 +101,16 @@ public class MetricsRecorder extends Recorder implements SimpleBuildStep {
             listener.error(error);
         }
 
-        run.addAction(new MetricsAction(metricsReport));
+        // merge all the measurements together
+        List<MetricsMeasurement> metricsMeasurements = metricsReport.stream()
+                .collect(Collectors.groupingBy(MetricsMeasurement::getQualifiedClassName))
+                .values().stream()
+                .map(perFileMeasurements -> perFileMeasurements.stream().reduce(MetricsMeasurement::merge)
+                        .orElse(null))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        run.addAction(new MetricsAction(metricsMeasurements));
 
         log.println("[Metrics] Finished collecting metrics");
     }

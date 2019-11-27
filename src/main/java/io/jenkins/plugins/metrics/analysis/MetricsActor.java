@@ -31,6 +31,9 @@ import shaded.net.sourceforge.pmd.util.datasource.FileDataSource;
 import hudson.remoting.VirtualChannel;
 import jenkins.MasterToSlaveFileCallable;
 
+import io.jenkins.plugins.metrics.model.ClassMetricsMeasurement;
+import io.jenkins.plugins.metrics.model.MethodMetricsMeasurement;
+import io.jenkins.plugins.metrics.model.Metric;
 import io.jenkins.plugins.metrics.model.MetricsMeasurement;
 import io.jenkins.plugins.metrics.model.MetricsReport;
 import io.jenkins.plugins.metrics.util.FileFinder;
@@ -87,8 +90,8 @@ public class MetricsActor extends MasterToSlaveFileCallable<MetricsReport> {
                 .collect(Collectors.joining(","));
         metricsReport.logInfo("shaded Opcodes starting with asm: %s", shadedAsmFields);
 
-        metricsReport.logInfo("pmd version: %s", PMD.VERSION);                
-        
+        metricsReport.logInfo("pmd version: %s", PMD.VERSION);
+
         PMD.processFiles(configuration, ruleSetFactory, files, ruleContext,
                 Collections.singletonList(new MetricsLogRenderer(metricsReport)));
 
@@ -126,21 +129,35 @@ public class MetricsActor extends MasterToSlaveFileCallable<MetricsReport> {
         @Override
         public void renderFileReport(final Report report) throws IOException {
             for (final RuleViolation ruleViolation : report) {
-                MetricsMeasurement metricsMeasurement = new MetricsMeasurement();
-                metricsMeasurement.setFileName(ruleViolation.getFilename());
-                metricsMeasurement.setBeginLine(ruleViolation.getBeginLine());
-                metricsMeasurement.setBeginColumn(ruleViolation.getBeginColumn());
-                metricsMeasurement.setEndLine(ruleViolation.getEndLine());
-                metricsMeasurement.setEndColumn(ruleViolation.getEndLine());
-                metricsMeasurement.setPackageName(ruleViolation.getPackageName());
-                metricsMeasurement.setClassName(ruleViolation.getClassName());
-                metricsMeasurement.setMethodName(ruleViolation.getMethodName());
-                metricsMeasurement.setVariableName(ruleViolation.getVariableName());
+                MetricsMeasurement metricsMeasurement;
+                ClassMetricsMeasurement classMetricsMeasurement = new ClassMetricsMeasurement();
+                classMetricsMeasurement.setFileName(ruleViolation.getFilename());
+                classMetricsMeasurement.setPackageName(ruleViolation.getPackageName());
+                classMetricsMeasurement.setClassName(ruleViolation.getClassName());
+
+                if (ruleViolation.getMethodName().isEmpty()) {
+                    metricsMeasurement = classMetricsMeasurement;
+                }
+                else {
+                    MethodMetricsMeasurement methodMetricsMeasurement = new MethodMetricsMeasurement();
+                    methodMetricsMeasurement.setParent(classMetricsMeasurement);
+                    methodMetricsMeasurement.setBeginLine(ruleViolation.getBeginLine());
+                    methodMetricsMeasurement.setBeginColumn(ruleViolation.getBeginColumn());
+                    methodMetricsMeasurement.setEndLine(ruleViolation.getEndLine());
+                    methodMetricsMeasurement.setEndColumn(ruleViolation.getEndLine());
+                    methodMetricsMeasurement.setMethodName(ruleViolation.getMethodName());
+                    //methodMetricsMeasurement.setVariableName(ruleViolation.getVariableName());
+                    metricsMeasurement = methodMetricsMeasurement;
+                }
 
                 String[] metrics = ruleViolation.getDescription().split(",");
                 for (String metric : metrics) {
                     String[] keyValue = metric.split("=");
-                    metricsMeasurement.addMetric(keyValue[0], Double.parseDouble(keyValue[1]));
+                    metricsMeasurement.addMetric(new Metric(keyValue[0],
+                            keyValue[0].toLowerCase(),
+                            "",
+                            Double.parseDouble(keyValue[1])));
+
                 }
 
                 metricsReport.add(metricsMeasurement);

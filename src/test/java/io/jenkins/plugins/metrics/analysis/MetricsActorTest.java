@@ -31,7 +31,8 @@ class MetricsActorTest {
                 .hasInfoMessages("Analyzing 1 files matching the pattern Test.java in " + workspace);
 
         assertThat(measurements.size()).isEqualTo(9);
-        double cfo = measurements.get(0).getMetrics().getOrDefault("CLASS_FAN_OUT", -1.0);
+        //double cfo = measurements.get(0).getMetrics().getOrDefault("CLASS_FAN_OUT", -1.0);
+        double cfo = 0.0;
         assertThat(cfo).isEqualTo(6);
     }
 }

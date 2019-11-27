@@ -19,7 +19,7 @@ public class MetricsAction implements RunAction2, LastBuildAction {
     private transient Run<?, ?> owner;
     private final List<MetricsMeasurement> metricsMeasurements;
 
-    public MetricsAction(final MetricsReport metricsReport) {
+    public MetricsAction(final List<MetricsMeasurement> metricsReport) {
         this.metricsMeasurements = metricsReport;
     }
 
