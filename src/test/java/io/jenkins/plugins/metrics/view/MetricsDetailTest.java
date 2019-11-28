@@ -69,7 +69,7 @@ class MetricsDetailTest {
 
     private MetricsMeasurement getMeasurementWithMetric(final String key, final double value) {
         MetricsMeasurement metricsMeasurement = new ClassMetricsMeasurement();
-        metricsMeasurement.addMetric(new Metric(key, key, key, value));
+        metricsMeasurement.addMetric(new Metric(key), value);
         return metricsMeasurement;
     }
 }

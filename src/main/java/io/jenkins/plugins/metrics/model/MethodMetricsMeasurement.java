@@ -75,7 +75,7 @@ public class MethodMetricsMeasurement extends MetricsMeasurement {
             parent.merge(metricsMeasurement);
         }
         else if (metricsMeasurement instanceof MethodMetricsMeasurement) {
-            metrics.addAll(metricsMeasurement.getMetrics());
+            metrics.putAll(metricsMeasurement.getMetrics());
         }
         return this;
     }

@@ -153,10 +153,9 @@ public class MetricsActor extends MasterToSlaveFileCallable<MetricsReport> {
                 String[] metrics = ruleViolation.getDescription().split(",");
                 for (String metric : metrics) {
                     String[] keyValue = metric.split("=");
-                    metricsMeasurement.addMetric(new Metric(keyValue[0],
-                            keyValue[0].toLowerCase(),
-                            "",
-                            Double.parseDouble(keyValue[1])));
+                    metricsMeasurement.addMetric(new Metric(keyValue[0], keyValue[0].toLowerCase(),
+                                    "", "metrics-analysis-plugin"),
+                            Double.parseDouble(keyValue[1]));
 
                 }
 

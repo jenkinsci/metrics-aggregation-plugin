@@ -9,21 +9,17 @@ public class Metric implements Serializable {
     private String id;
     private String displayName;
     private String description;
-    private double value;
+    private String reportedBy;
 
-    public Metric(final String id, final String displayName, final String description, final double value) {
+    public Metric(final String id) {
+        this.id = id;
+    }
+
+    public Metric(final String id, final String displayName, final String description, final String reportedBy) {
         this.id = id;
         this.displayName = displayName;
         this.description = description;
-        this.value = value;
-    }
-
-    public double getValue() {
-        return value;
-    }
-
-    public void setValue(final double value) {
-        this.value = value;
+        this.reportedBy = reportedBy;
     }
 
     public String getDisplayName() {
@@ -50,9 +46,17 @@ public class Metric implements Serializable {
         this.description = description;
     }
 
+    public String getReportedBy() {
+        return reportedBy;
+    }
+
+    public void setReportedBy(final String reportedBy) {
+        this.reportedBy = reportedBy;
+    }
+
     @Override
     public String toString() {
-        return String.format("Metric %s: %f", id, value);
+        return String.format("Metric %s (%s)", id, reportedBy);
     }
 
     @Override
@@ -66,13 +70,11 @@ public class Metric implements Serializable {
         }
 
         Metric other = (Metric) o;
-        return Objects.equals(this.id, other.id)
-                && Objects.equals(this.displayName, other.displayName)
-                && this.value == other.value;
+        return Objects.equals(this.id, other.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, displayName, description, value);
+        return Objects.hash(id);
     }
 }

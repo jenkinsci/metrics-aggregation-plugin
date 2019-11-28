@@ -4,33 +4,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.math3.random.EmpiricalDistribution;
-import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
+import org.eclipse.collections.impl.factory.Sets;
 
 import com.google.common.collect.Lists;
-
-import edu.hm.hafner.analysis.Report;
 
 import org.kohsuke.stapler.bind.JavaScriptMethod;
 import org.kohsuke.stapler.export.ExportedBean;
 import hudson.model.ModelObject;
 import hudson.model.Run;
 
-import io.jenkins.plugins.analysis.core.model.AnalysisResult;
-import io.jenkins.plugins.analysis.core.model.ResultAction;
 import io.jenkins.plugins.coverage.CoverageAction;
 import io.jenkins.plugins.coverage.targets.CoverageElement;
 import io.jenkins.plugins.coverage.targets.CoverageResult;
 import io.jenkins.plugins.coverage.targets.Ratio;
-import io.jenkins.plugins.forensics.blame.Blames;
-import io.jenkins.plugins.forensics.blame.FileBlame;
-import io.jenkins.plugins.forensics.miner.FileStatistics;
-import io.jenkins.plugins.forensics.miner.RepositoryStatistics;
 import io.jenkins.plugins.metrics.extension.MetricsProviderFactory;
+import io.jenkins.plugins.metrics.model.Metric;
 import io.jenkins.plugins.metrics.model.MetricsMeasurement;
 import io.jenkins.plugins.metrics.model.MetricsProvider;
 import io.jenkins.plugins.metrics.model.MetricsTreeNode;
@@ -46,11 +37,12 @@ import io.jenkins.plugins.metrics.util.JacksonFacade;
 public class MetricsDetail implements ModelObject {
     private final Run<?, ?> owner;
     private final List<MetricsMeasurement> metricsMeasurements;
+    private final Set<Metric> supportedMetrics;
+    private final Map<Metric, Double> projectOverview;
 
     public MetricsDetail(final Run<?, ?> owner) {
         this.owner = owner;
-        metricsMeasurements = MetricsProviderFactory.getAllFor(owner.getAllActions())
-                .stream()
+        metricsMeasurements = MetricsProviderFactory.getAllFor(owner.getAllActions()).stream()
                 .map(MetricsProvider::getMetricsMeasurements)
                 .flatMap(List::stream)
                 .collect(Collectors.groupingBy(MetricsMeasurement::getQualifiedClassName))
@@ -59,6 +51,22 @@ public class MetricsDetail implements ModelObject {
                         .orElse(null))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
+
+        supportedMetrics = MetricsProviderFactory.all()
+                .stream()
+                .map(MetricsProviderFactory::supportedMetrics)
+                .reduce(Sets.mutable.empty(), (acc, metrics) -> {
+                    acc.addAll(metrics);
+                    return acc;
+                });
+
+        projectOverview = MetricsProviderFactory.getAllFor(owner.getAllActions()).stream()
+                .map(MetricsProvider::getProjectSummary)
+                .reduce(new HashMap<>(), (acc, summary) -> {
+                    acc.putAll(summary);
+                    return acc;
+                });
+
     }
 
     @Override
@@ -76,40 +84,20 @@ public class MetricsDetail implements ModelObject {
         return owner;
     }
 
+    @JavaScriptMethod
+    @SuppressWarnings("unused") // used by jelly view
+    public Set<Metric> getSupportedMetrics() {
+        return supportedMetrics;
+    }
+
+    @SuppressWarnings("unused") // used by jelly view
+    public Map<Metric, Double> getProjectOverview() {
+        return projectOverview;
+    }
+
     private String toJson(final Object object) {
         JacksonFacade facade = new JacksonFacade();
         return facade.toJson(object);
-    }
-
-    String toCSV(final String... values) {
-        final String quote = "\"";
-        final String separator = quote + "," + quote;
-
-        return quote + String.join(separator, values) + quote;
-    }
-
-    private static final String STATISTICS_NAMES = "creationtime,lastmodified,authors,commits";
-
-    private String fileStatisticsAsCSV(final FileStatistics stats) {
-        return toCSV(
-                //Integer.toString(stats.getCreationTime()),
-                //Integer.toString(stats.getLastModificationTime()),
-                "-1",
-                "-1",
-                Integer.toString(stats.getNumberOfAuthors()),
-                Integer.toString(stats.getNumberOfCommits())
-        );
-    }
-
-    private static final String BLAME_NAMES = "lastcommit,lastauthorname,lastauthoremail,lastcommittime";
-
-    private String fileBlameAsCSV(final FileBlame blame, int line) {
-        return toCSV(
-                blame.getCommit(line),
-                blame.getName(line),
-                blame.getEmail(line),
-                Integer.toString(blame.getTime(line))
-        );
     }
 
     @SuppressWarnings("unused") // used by jelly view
@@ -119,42 +107,32 @@ public class MetricsDetail implements ModelObject {
 
     @JavaScriptMethod
     @SuppressWarnings("unused") // used by jelly view
-    public String getMetricsTree(final String valueKey) {
-        /*
+    public MetricsTreeNode getMetricsTree(final String valueKey) {
         MetricsTreeNode root = metricsMeasurements.stream()
-                .filter(m -> m.getMethodName() == null || m.getMethodName().isEmpty())
-                .map(measurement -> {
-                    double value = measurement.getMetrics().getOrDefault(valueKey, 0.0);
-                    String qualifiedName = String.format("%s.%s",
-                            measurement.getPackageName(),
-                            measurement.getClassName());
-
-                    return new MetricsTreeNode(qualifiedName, value);
-                })
+                .map(measurement -> new MetricsTreeNode(
+                        measurement.getQualifiedClassName(),
+                        measurement.getMetric(valueKey).orElse(0.0)))
                 .reduce(new MetricsTreeNode(""), (acc, node) -> {
                     acc.insertNode(node);
                     return acc;
                 });
-         */
 
-        MetricsTreeNode root = new MetricsTreeNode("");
         root.collapsePackage();
 
-        return toJson(root);
+        return root;
+    }
+
+    private List<Double> getAllMetrics(final String metricId) {
+        return metricsMeasurements.stream()
+                .map(m -> m.getMetric(metricId).orElse(Double.NaN))
+                .filter(Double::isFinite)
+                .collect(Collectors.toList());
     }
 
     @JavaScriptMethod
     @SuppressWarnings("unused") // used by jelly view
-    public String getHistogram(final String valueKey) {
-        /*
-        List<Double> values = metricsMeasurements.stream()
-                .filter(m -> m.getMethodName() == null || m.getMethodName().isEmpty())
-                .map(m -> m.getMetrics().getOrDefault(valueKey, Double.NaN))
-                .filter(d -> !d.isNaN())
-                .collect(Collectors.toList());
-         */
-
-        List<Double> values = Lists.newArrayList();
+    public String getHistogram(final String metricId) {
+        List<Double> values = getAllMetrics(metricId);
 
         final int numBins = 10;
         final int[] histogramData = new int[numBins];
@@ -187,87 +165,11 @@ public class MetricsDetail implements ModelObject {
         return toJson(result);
     }
 
-    @JavaScriptMethod
-    @SuppressWarnings("unused") // used by jelly view
-    public String getStatistics(final String valueKey) {
-        SummaryStatistics statistics = new SummaryStatistics();
+    /*------------------ COVERAGE ------------------*/
 
-        /*
-        metricsMeasurements.stream()
-                .filter(m -> m instanceof ClassMetricsMeasurement)
-                .map(m -> m.getMetrics().getOrDefault(valueKey, Double.NaN))
-                .filter(d -> !d.isNaN())
-                .forEach(statistics::addValue);
+    private static final String COVERAGE_NAMES = "package,basename,classcoverage,methodcoverage,instructioncoverage,conditionalcoverage,linecoverage";
 
-        Double[] values = metricsMeasurements.stream()
-                .filter(m -> m.getMethodName() == null || m.getMethodName().isEmpty())
-                .map(m -> m.getMetrics().getOrDefault(valueKey, Double.NaN))
-                .filter(d -> !d.isNaN())
-                .toArray(Double[]::new);
-         */
-        Double[] values = {0.0};
-
-        EmpiricalDistribution distribution = new EmpiricalDistribution();
-        distribution.load(ArrayUtils.toPrimitive(values));
-
-        distribution.getBinCount();
-        distribution.getNumericalVariance();
-        distribution.getNumericalMean();
-
-        return "";
-    }
-
-    private Stream<AnalysisResult> getAnalysisResults() {
-        return owner.getActions(ResultAction.class)
-                .stream()
-                .map(ResultAction::getResult);
-    }
-
-    private String getIssues() {
-        Map<String, Report> issues = getAnalysisResults()
-                .map(AnalysisResult::getIssues)
-                .map(r -> r.groupByProperty("fileName"))
-                .reduce(new HashMap<>(), (acc, map) -> {
-                    map.forEach((key, report) -> acc.merge(key, report,
-                            Report::addAll));
-                    return acc;
-                });
-
-        Blames blames = getAnalysisResults()
-                .map(AnalysisResult::getBlames)
-                .reduce(new Blames(), (acc, b) -> {
-                    acc.addAll(b);
-                    return acc;
-                });
-
-        RepositoryStatistics stats = getAnalysisResults()
-                .map(AnalysisResult::getForensics)
-                .reduce(new RepositoryStatistics(), (acc, r) -> {
-                    acc.addAll(r);
-                    return acc;
-                });
-
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(STATISTICS_NAMES);
-        stringBuilder.append(",");
-        stringBuilder.append(BLAME_NAMES);
-        stringBuilder.append("\n");
-
-        issues.forEach((fileName, report) -> {
-            FileBlame fileBlame = blames.getBlame(fileName);
-            FileStatistics fileStatistics = stats.get(fileName);
-
-            report.forEach(issue -> {
-                stringBuilder.append(fileStatisticsAsCSV(fileStatistics));
-                stringBuilder.append(",");
-                stringBuilder.append(fileBlameAsCSV(fileBlame, issue.getLineStart()));
-                stringBuilder.append("\n");
-            });
-        });
-
-        return stringBuilder.toString();
-    }
-
+    // returns csv
     public String getCoverage() {
         return COVERAGE_NAMES + "\n"
                 + owner.getActions(CoverageAction.class)
@@ -280,7 +182,12 @@ public class MetricsDetail implements ModelObject {
                 .collect(Collectors.joining("\n"));
     }
 
-    private static final String COVERAGE_NAMES = "package,basename,classcoverage,methodcoverage,instructioncoverage,conditionalcoverage,linecoverage";
+    String toCSV(final String... values) {
+        final String quote = "\"";
+        final String separator = quote + "," + quote;
+
+        return quote + String.join(separator, values) + quote;
+    }
 
     private String coverageAsCSV(final CoverageResult result) {
         return toCSV(

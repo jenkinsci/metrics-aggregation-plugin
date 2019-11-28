@@ -1,6 +1,7 @@
 package io.jenkins.plugins.metrics.extension;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import hudson.ExtensionList;
@@ -8,6 +9,7 @@ import hudson.ExtensionPoint;
 import hudson.model.Action;
 import jenkins.model.Jenkins;
 
+import io.jenkins.plugins.metrics.model.Metric;
 import io.jenkins.plugins.metrics.model.MetricsMeasurement;
 import io.jenkins.plugins.metrics.model.MetricsProvider;
 
@@ -62,4 +64,11 @@ public abstract class MetricsProviderFactory<T extends Action> implements Extens
      * @return the {@link MetricsProvider} providing the actions
      */
     public abstract MetricsProvider getFor(final List<T> actions);
+
+    /**
+     * Returns all metrics this {@link MetricsProviderFactory} reports.
+     *
+     * @return a set containing all possibly reported metrics
+     */
+    public abstract Set<Metric> supportedMetrics();
 }

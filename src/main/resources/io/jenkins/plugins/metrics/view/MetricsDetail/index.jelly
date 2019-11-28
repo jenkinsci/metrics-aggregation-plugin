@@ -39,22 +39,24 @@
       <div class="fluid-container">
 
         <h3>${it.displayName}</h3>
+        
+        <h4>Project Overview</h4>
+        <ul>
+          <j:forEach var="summary" items="${it.projectOverview}">
+            <li>
+              ${summary.key.displayName}: ${summary.value}
+            </li>
+          </j:forEach>
+        </ul>
 
         <h4>Distribution</h4>
 
         <div class="form-group">
           <label for="column-picker">Select metric to display</label>
           <select class="selectpicker form-control form-control-sm" id="treechart-picker">
-            <option value="ATFD">Access to foreign data</option>
-            <option value="CLASS_FAN_OUT">Fan out</option>
-            <option value="LOC" selected="true">Lines of Code</option>
-            <option value="NCSS">Non-comment</option>
-            <option value="NOAM">Accessor methods</option>
-            <option value="NOPA">Public Attributes</option>
-            <option value="TCC">Class cohesion</option>
-            <option value="WMC">W. method count</option>
-            <option value="WOC">Weight of class</option>
-            <option value="ISSUES">Issues</option>
+            <j:forEach var="metric" items="${it.supportedMetrics}">
+              <option value="${metric.id}">${metric.displayName}</option>
+            </j:forEach>
           </select>
         </div>
 
@@ -98,7 +100,6 @@
           <thead>
             <tr>
               <th/>
-              <th>Package</th>
               <th>Class</th>
               <th class="hideable">Access to foreign data</th>
               <th class="hideable">Fan out</th>

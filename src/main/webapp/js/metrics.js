@@ -83,11 +83,6 @@
                     defaultContent: "<div class='details-control'/>"
                 },
                 {
-                    data: 'packageName',
-                    name: 'packageName',
-                    defaultContent: ''
-                },
-                {
                     data: 'className',
                     name: 'className',
                     defaultContent: ''

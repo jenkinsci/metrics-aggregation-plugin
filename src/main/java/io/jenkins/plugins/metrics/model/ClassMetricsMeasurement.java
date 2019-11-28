@@ -60,7 +60,7 @@ public class ClassMetricsMeasurement extends MetricsMeasurement {
     @Override
     public ClassMetricsMeasurement merge(final MetricsMeasurement metricsMeasurement) {
         if (metricsMeasurement instanceof ClassMetricsMeasurement) {
-            metrics.addAll(metricsMeasurement.getMetrics());
+            metrics.putAll(metricsMeasurement.getMetrics());
         }
         else if (metricsMeasurement instanceof MethodMetricsMeasurement) {
             addChild(metricsMeasurement);
