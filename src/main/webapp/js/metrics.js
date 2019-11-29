@@ -1,8 +1,10 @@
-/* global jQuery, view, echarts, metrics, metricsTree, math */
+/* global jQuery, view, echarts, metrics, supportedMetrics, math */
 (function ($) {
-    var maxLOC = Math.max(...metrics.map(d => d.metrics.LOC));
+    function max(metricId) {
+        return Math.max(...metrics.map(m => m.metrics[metricId]).filter(Boolean))
+    }
+
     var childTables = {};
-    var columnsVisible = {};
     var visibleColumns = [];
     var filterExpression = math.compile('true');
 
@@ -72,6 +74,7 @@
         }, 1);
     });
 
+
     $(document).ready(function () {
         var table = $('#lines-of-code').DataTable({
             data: metrics,
@@ -80,6 +83,7 @@
                     className: '',
                     ordering: false,
                     data: null,
+                    width: '10px',
                     defaultContent: "<div class='details-control'/>"
                 },
                 {
@@ -87,69 +91,15 @@
                     name: 'className',
                     defaultContent: ''
                 },
-                {
-                    data: 'metrics.ATFD',
-                    name: 'metrics.ATFD',
-                    defaultContent: ''
-                },
-                {
-                    data: 'metrics.CLASS_FAN_OUT',
-                    name: 'metrics.CLASS_FAN_OUT',
-                    defaultContent: ''
-                },
-                {
-                    data: 'metrics.LOC',
-                    name: 'metrics.LOC',
-                    defaultContent: '',
-                    createdCell: function (td, cellData, _rowData, _row, _col) {
-                        var lightness = (1 - cellData / maxLOC) * 60 + 35;
-                        $(td).css('background', 'hsl(0, 100%, ' + lightness + '%)');
-                    }
-                },
-                {
-                    data: 'metrics.NCSS',
-                    name: 'metrics.NCSS',
-                    defaultContent: ''
-                },
-                {
-                    data: 'metrics.NOAM',
-                    name: 'metrics.NOAM',
-                    defaultContent: ''
-                },
-                {
-                    data: 'metrics.NOPA',
-                    name: 'metrics.NOPA',
-                    defaultContent: ''
-                },
-                {
-                    data: 'metrics.TCC',
-                    name: 'metrics.TCC',
-                    defaultContent: '',
-                    render: $.fn.dataTable.render.number(',', '.', 2)
-                },
-                {
-                    data: 'metrics.WMC',
-                    name: 'metrics.WMC',
-                    defaultContent: ''
-                },
-                {
-                    data: 'metrics.WOC',
-                    name: 'metrics.WOC',
-                    defaultContent: '',
-                    render: $.fn.dataTable.render.number(',', '.', 2)
-                },
-                {
-                    data: 'metrics.ISSUES',
-                    name: 'metrics.ISSUES',
-                    defaultContent: ''
-                }
+                ...supportedMetrics.map(metric => ({
+                        data: 'metrics.' + metric.id,
+                        name: 'metrics.' + metric.id,
+                        defaultContent: '',
+                        render: $.fn.dataTable.render.number(',', '.', 2)
+                    })
+                )
             ],
-            columnDefs: [
-                {
-                    targets: 0,
-                    width: '10px'
-                },
-            ],
+            columnDefs: [],
             responsive: {
                 details: false
             }
@@ -251,6 +201,24 @@
             // change visibilities in child tables
             Object.values(childTables)
                 .forEach(childTable => childTable.columns('.hideable').every(changeVisibility));
+        });
+
+        $('#lines-of-code tbody').on('mouseenter', 'td', function () {
+            var column = table.column($(this));
+            var metricId = column.name().replace('metrics.', '');
+            var maxValue = max(metricId);
+            table.cells(undefined, column.index()).every(function () {
+                var lightness = (1 - this.data() / maxValue) * 60 + 35;
+                //$(this.node()).addClass('warning');
+                $(this.node()).css('background', 'hsl(200, 100%, ' + lightness + '%)');
+            });
+        });
+
+        $('#lines-of-code tbody').on('mouseleave', 'td', function () {
+            var column = table.column($(this));
+            table.cells(undefined, column.index()).every(function () {
+                $(this.node()).css('background', '');
+            });
         });
 
         /* ------------------------------------------------------------------------------

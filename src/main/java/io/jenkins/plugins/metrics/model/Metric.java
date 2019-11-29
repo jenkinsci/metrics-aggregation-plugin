@@ -56,7 +56,8 @@ public class Metric implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("Metric %s (%s)", id, reportedBy);
+        // needs to be the ID to be usable for jelly
+        return id;
     }
 
     @Override

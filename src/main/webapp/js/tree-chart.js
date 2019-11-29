@@ -4,11 +4,10 @@
         /**
          * Renders a tree chart using ECharts.
          *
-         * @param {String} model - the chart model
+         * @param {String} treeModel - the tree chart data model
          * @param {String} metricName - the name of the metric, used e.g. as title for the graph
          */
-        renderTreeChart: function (model, metricName) {
-            var treeModel = JSON.parse(model);
+        renderTreeChart: function (treeModel, metricName) {
             var chart = echarts.init($(this)[0]);
             var options = {
                 title: {

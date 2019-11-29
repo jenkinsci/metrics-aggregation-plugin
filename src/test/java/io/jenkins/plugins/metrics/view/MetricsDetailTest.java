@@ -63,7 +63,7 @@ class MetricsDetailTest {
         when(run.getAction(MetricsAction.class)).thenReturn(new MetricsAction(measurements));
         MetricsDetail metricsDetail = new MetricsDetail(run);
 
-        String json = metricsDetail.getStatistics(key);
+        //String json = metricsDetail.getStatistics(key);
 
     }
 

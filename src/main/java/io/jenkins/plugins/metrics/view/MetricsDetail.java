@@ -91,6 +91,11 @@ public class MetricsDetail implements ModelObject {
     }
 
     @SuppressWarnings("unused") // used by jelly view
+    public String getSupportedMetricsJSON() {
+        return toJson(supportedMetrics);
+    }
+
+    @SuppressWarnings("unused") // used by jelly view
     public Map<Metric, Double> getProjectOverview() {
         return projectOverview;
     }

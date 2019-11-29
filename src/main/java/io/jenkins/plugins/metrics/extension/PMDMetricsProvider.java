@@ -36,6 +36,16 @@ public class PMDMetricsProvider extends MetricsProviderFactory<MetricsAction> {
 
     @Override
     public Set<Metric> supportedMetrics() {
-        return Sets.mutable.empty();
+        return Sets.mutable.of(
+                new Metric("ATFD", "Access to foreign data", "", "metrics-analysis-plugin (pmd)"),
+                new Metric("CLASS_FAN_OUT", "Fan out", "", "metrics-analysis-plugin (pmd)"),
+                new Metric("LOC", "Lines of Code", "", "metrics-analysis-plugin (pmd)"),
+                new Metric("NCSS", "Non-comment", "", "metrics-analysis-plugin (pmd)"),
+                new Metric("NOAM", "Accessor methods", "", "metrics-analysis-plugin (pmd)"),
+                new Metric("NOPA", "Public Attributes", "", "metrics-analysis-plugin (pmd)"),
+                new Metric("TCC", "Class cohesion", "", "metrics-analysis-plugin (pmd)"),
+                new Metric("WMC", "W. method count", "", "metrics-analysis-plugin (pmd)"),
+                new Metric("WOC", "Weight of class", "", "metrics-analysis-plugin (pmd)")
+        );
     }
 }

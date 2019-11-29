@@ -30,6 +30,7 @@
 
       <script>
         var metrics = ${it.metrics};
+        var supportedMetrics = ${it.supportedMetricsJSON};
       </script>
 
       <script src="${resURL}/plugin/metrics-analysis/js/tree-chart.js"/>
@@ -39,7 +40,7 @@
       <div class="fluid-container">
 
         <h3>${it.displayName}</h3>
-        
+
         <h4>Project Overview</h4>
         <ul>
           <j:forEach var="summary" items="${it.projectOverview}">
@@ -76,22 +77,15 @@
                    placeholder="LOC > 10 and ISSUES > 1"/>
             <div class="invalid-feedback"/>
             <small class="form-text text-muted">
-              Variablen: ATFD, CLASS_FAN_OUT, LOC, NCSS, NOAM, NOPA, TCC, WMC, WOC, ISSUES
+              Variables: <j:forEach var="metric" items="${it.supportedMetrics}">${metric.id}, </j:forEach>
             </small>
           </div>
           <div class="form-group col-md-6">
             <label for="column-picker">Select columns</label>
             <select class="selectpicker form-control form-control-sm" multiple="true" id="column-picker">
-              <option value="metrics.ATFD" selected="true">Access to foreign data</option>
-              <option value="metrics.CLASS_FAN_OUT" selected="true">Fan out</option>
-              <option value="metrics.LOC" selected="true">Lines of Code</option>
-              <option value="metrics.NCSS" selected="true">Non-comment</option>
-              <option value="metrics.NOAM" selected="true">Accessor methods</option>
-              <option value="metrics.NOPA" selected="true">Public Attributes</option>
-              <option value="metrics.TCC" selected="true">Class cohesion</option>
-              <option value="metrics.WMC" selected="true">W. method count</option>
-              <option value="metrics.WOC" selected="true">Weight of class</option>
-              <option value="metrics.ISSUES" selected="true">Issues</option>
+              <j:forEach var="metric" items="${it.supportedMetrics}">
+                <option value="${metric.id}" selected="true">${metric.displayName}</option>
+              </j:forEach>
             </select>
           </div>
         </div>
@@ -101,16 +95,9 @@
             <tr>
               <th/>
               <th>Class</th>
-              <th class="hideable">Access to foreign data</th>
-              <th class="hideable">Fan out</th>
-              <th class="hideable">Lines of Code</th>
-              <th class="hideable">Non-comment</th>
-              <th class="hideable">Accessor methods</th>
-              <th class="hideable">Public attributes</th>
-              <th class="hideable">Class cohesion</th>
-              <th class="hideable">W. method count</th>
-              <th class="hideable">Weight of class</th>
-              <th class="hideable">Issues</th>
+              <j:forEach var="metric" items="${it.supportedMetrics}">
+                <th class="hideable">${metric.displayName}</th>
+              </j:forEach>
             </tr>
           </thead>
         </table>
