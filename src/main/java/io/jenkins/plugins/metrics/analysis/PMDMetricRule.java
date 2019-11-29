@@ -39,6 +39,7 @@ public class PMDMetricRule extends AbstractRule {
                             .map(entry -> entry.getKey().name() + "=" + entry.getValue())
                             .reduce("", (acc, entry) -> acc + entry + ",");
                     if (violation != null && !violation.isEmpty()) {
+                        violation = node.getXPathNodeName() + "::" + violation;
                         addViolationWithMessage(ruleContext, node, violation);
                     }
                 });

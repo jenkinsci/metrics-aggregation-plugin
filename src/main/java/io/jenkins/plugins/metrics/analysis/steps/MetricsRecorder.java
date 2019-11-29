@@ -91,15 +91,7 @@ public class MetricsRecorder extends Recorder implements SimpleBuildStep {
 
         log.println("[Metrics] Start collecting metrics");
 
-        MetricsReport metricsReport = workspace.act(new MetricsActor(filePattern));
-
-        for (String info : metricsReport.getInfoMessages()) {
-            log.printf("[Metrics] %s\n", info);
-        }
-
-        for (String error : metricsReport.getErrorMessages()) {
-            listener.error(error);
-        }
+        List<MetricsMeasurement> metricsReport = workspace.act(new MetricsActor(filePattern, listener));
 
         // merge all the measurements together
         List<MetricsMeasurement> metricsMeasurements = metricsReport.stream()

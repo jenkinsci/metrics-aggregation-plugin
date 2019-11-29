@@ -3,11 +3,13 @@ package io.jenkins.plugins.metrics.analysis;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import io.jenkins.plugins.metrics.model.MetricsReport;
-import io.jenkins.plugins.metrics.model.MetricsReportAssert;
+import hudson.util.StreamTaskListener;
+
+import io.jenkins.plugins.metrics.model.MetricsMeasurement;
 
 import static org.assertj.core.api.AssertionsForClassTypes.*;
 
@@ -22,13 +24,8 @@ class MetricsActorTest {
     void shouldParseInnerClasses() throws URISyntaxException {
         File workspace = Paths.get(MetricsActorTest.class.getResource("Test.java").toURI()).getParent().toFile();
 
-        MetricsReport measurements = new MetricsActor("Test.java")
+        List<MetricsMeasurement> measurements = new MetricsActor("Test.java", StreamTaskListener.fromStdout())
                 .invoke(workspace, null);
-        measurements.getInfoMessages().forEach(System.out::println);
-
-        MetricsReportAssert.assertThat(measurements).hasNoErrorMessages();
-        MetricsReportAssert.assertThat(measurements)
-                .hasInfoMessages("Analyzing 1 files matching the pattern Test.java in " + workspace);
 
         assertThat(measurements.size()).isEqualTo(9);
         //double cfo = measurements.get(0).getMetrics().getOrDefault("CLASS_FAN_OUT", -1.0);

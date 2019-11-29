@@ -2,17 +2,13 @@ package io.jenkins.plugins.metrics.analysis;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.nio.file.Path;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
-
-import org.objectweb.asm.Opcodes;
 
 import shaded.net.sourceforge.pmd.PMD;
 import shaded.net.sourceforge.pmd.PMDConfiguration;
@@ -28,6 +24,7 @@ import shaded.net.sourceforge.pmd.util.ResourceLoader;
 import shaded.net.sourceforge.pmd.util.datasource.DataSource;
 import shaded.net.sourceforge.pmd.util.datasource.FileDataSource;
 
+import hudson.model.TaskListener;
 import hudson.remoting.VirtualChannel;
 import jenkins.MasterToSlaveFileCallable;
 
@@ -35,22 +32,23 @@ import io.jenkins.plugins.metrics.model.ClassMetricsMeasurement;
 import io.jenkins.plugins.metrics.model.MethodMetricsMeasurement;
 import io.jenkins.plugins.metrics.model.Metric;
 import io.jenkins.plugins.metrics.model.MetricsMeasurement;
-import io.jenkins.plugins.metrics.model.MetricsReport;
 import io.jenkins.plugins.metrics.util.FileFinder;
 
-public class MetricsActor extends MasterToSlaveFileCallable<MetricsReport> {
+public class MetricsActor extends MasterToSlaveFileCallable<List<MetricsMeasurement>> {
     private static final long serialVersionUID = 2843497011946621955L;
 
     private final String filePattern;
+    private final TaskListener listener;
 
-    public MetricsActor(final String filePattern) {
+    public MetricsActor(final String filePattern, final TaskListener listener) {
         super();
         this.filePattern = filePattern;
+        this.listener = listener;
     }
 
     @Override
-    public MetricsReport invoke(final File workspace, final VirtualChannel channel) {
-        MetricsReport metricsReport = new MetricsReport();
+    public List<MetricsMeasurement> invoke(final File workspace, final VirtualChannel channel) {
+        List<MetricsMeasurement> metricsReport = new ArrayList<>();
 
         PMDConfiguration configuration = new PMDConfiguration();
         configuration.setDebug(true);
@@ -61,8 +59,9 @@ public class MetricsActor extends MasterToSlaveFileCallable<MetricsReport> {
 
         FileFinder fileFinder = new FileFinder(filePattern);
         String[] srcFiles = fileFinder.find(workspace);
-        metricsReport.logInfo("Analyzing %d files matching the pattern %s in %s", srcFiles.length, filePattern,
-                workspace);
+        listener.getLogger()
+                .printf("[Metrics] Analyzing %d files matching the pattern '%s' in %s\n",
+                        srcFiles.length, filePattern, workspace);
 
         Path workspaceRoot = workspace.toPath();
         configuration.setInputPaths(workspaceRoot.toString());
@@ -76,24 +75,8 @@ public class MetricsActor extends MasterToSlaveFileCallable<MetricsReport> {
         RuleSetFactory ruleSetFactory = RulesetsFactoryUtils.getRulesetFactory(configuration,
                 new ResourceLoader(getClass().getClassLoader()));
 
-        Field[] opcodesFields = Opcodes.class.getDeclaredFields();
-        String asmFields = Arrays.stream(opcodesFields)
-                .map(Field::getName)
-                .filter(f -> f.startsWith("ASM"))
-                .collect(Collectors.joining(","));
-        metricsReport.logInfo("Opcodes starting with asm: %s", asmFields);
-
-        Field[] shadedOpcodesFields = shaded.org.objectweb.asm.Opcodes.class.getDeclaredFields();
-        String shadedAsmFields = Arrays.stream(shadedOpcodesFields)
-                .map(Field::getName)
-                .filter(f -> f.startsWith("ASM"))
-                .collect(Collectors.joining(","));
-        metricsReport.logInfo("shaded Opcodes starting with asm: %s", shadedAsmFields);
-
-        metricsReport.logInfo("pmd version: %s", PMD.VERSION);
-
         PMD.processFiles(configuration, ruleSetFactory, files, ruleContext,
-                Collections.singletonList(new MetricsLogRenderer(metricsReport)));
+                Collections.singletonList(new MetricsLogRenderer(metricsReport, listener)));
 
         return metricsReport;
     }
@@ -119,11 +102,13 @@ public class MetricsActor extends MasterToSlaveFileCallable<MetricsReport> {
 
     private static class MetricsLogRenderer extends AbstractRenderer {
 
-        private final MetricsReport metricsReport;
+        private final List<MetricsMeasurement> metricsReport;
+        private final TaskListener listener;
 
-        MetricsLogRenderer(final MetricsReport metricsReport) {
+        MetricsLogRenderer(final List<MetricsMeasurement> metricsReport, final TaskListener listener) {
             super("log-metrics", "Metrics logging renderer");
             this.metricsReport = metricsReport;
+            this.listener = listener;
         }
 
         @Override
@@ -135,7 +120,8 @@ public class MetricsActor extends MasterToSlaveFileCallable<MetricsReport> {
                 classMetricsMeasurement.setPackageName(ruleViolation.getPackageName());
                 classMetricsMeasurement.setClassName(ruleViolation.getClassName());
 
-                if (ruleViolation.getMethodName().isEmpty()) {
+                String violationDescription = ruleViolation.getDescription();
+                if (violationDescription.startsWith("ClassOrInterfaceDeclaration::")) {
                     metricsMeasurement = classMetricsMeasurement;
                 }
                 else {
@@ -150,7 +136,9 @@ public class MetricsActor extends MasterToSlaveFileCallable<MetricsReport> {
                     metricsMeasurement = methodMetricsMeasurement;
                 }
 
-                String[] metrics = ruleViolation.getDescription().split(",");
+                violationDescription = violationDescription.replaceFirst(".*::", "");
+
+                String[] metrics = violationDescription.split(",");
                 for (String metric : metrics) {
                     String[] keyValue = metric.split("=");
                     metricsMeasurement.addMetric(new Metric(keyValue[0], keyValue[0].toLowerCase(),
@@ -163,12 +151,12 @@ public class MetricsActor extends MasterToSlaveFileCallable<MetricsReport> {
             }
 
             for (Iterator<ProcessingError> i = report.errors(); i.hasNext(); ) {
-                metricsReport.logError("Error: %s", i.next().getDetail());
+                listener.error("Error: %s", i.next().getDetail());
             }
 
             for (Iterator<ConfigurationError> i = report.configErrors(); i.hasNext(); ) {
                 ConfigurationError error = i.next();
-                metricsReport.logError("Configuration error in rule %s: %s", error.rule(), error.issue());
+                listener.error("Configuration error in rule %s: %s", error.rule(), error.issue());
             }
         }
 
