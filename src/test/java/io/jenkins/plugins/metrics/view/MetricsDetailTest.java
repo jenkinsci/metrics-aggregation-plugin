@@ -16,15 +16,6 @@ import static org.mockito.Mockito.*;
 class MetricsDetailTest {
 
     @Test
-    void shouldReturnQuotedCSV() {
-        MetricsDetail metricsDetail = new MetricsDetail(null);
-
-        String result = metricsDetail.toCSV("hello", "world", "with,some,commas");
-
-        assertThat(result).isEqualTo("\"hello\",\"world\",\"with,some,commas\"");
-    }
-
-    @Test
     public void shouldGetHistogram() {
         final String key = "key";
         MetricsReport measurements = new MetricsReport();

@@ -1,13 +1,15 @@
-/* global jQuery, view, echarts, metrics, supportedMetrics, math */
+/* global jQuery, view, echarts, metrics, supportedMetrics, metricsMaxima, math */
 (function ($) {
-    function max(metricId) {
-        return Math.max(...metrics.map(m => m.metrics[metricId]).filter(Boolean))
-    }
-
     var childTables = {};
     var visibleColumns = [];
     var filterExpression = math.compile('true');
 
+    /**
+     * TODO source
+     * @param func
+     * @param wait
+     * @returns {Function}
+     */
     function debounce(func, wait) {
         var timeoutId;
         return function () {
@@ -24,9 +26,9 @@
     /**
      * Filter the data of a row with the user defined filter.
      *
-     * @param data the data of a row to filter
-     * @param {boolean} [rethrow] whether to rethrow any caught exceptions
-     * @returns {boolean|*} the result for the filter expression
+     * @param data - the data of a row to filter
+     * @param {boolean} [rethrow] - whether to rethrow any caught exceptions
+     * @returns {boolean|*} - the result for the filter expression
      */
     function filterData(data, rethrow) {
         try {
@@ -43,24 +45,14 @@
     }
 
     $.fn.dataTable.ext.search.push(
-        function (settings, rawData, dataIndex) {
-            var data = {
-                ATFD: rawData[3],
-                CLASS_FAN_OUT: rawData[4],
-                LOC: rawData[5],
-                NCSS: rawData[6],
-                NOAM: rawData[7],
-                NOPA: rawData[8],
-                TCC: rawData[9],
-                WMC: rawData[10],
-                WOC: rawData[11],
-                ISSUES: rawData[12]
-            };
-
-            return filterData(data);
+        function (_settings, _searchData, _index, rowData, _counter) {
+            return filterData(rowData.metrics);
         }
     );
 
+    /**
+     * TODO source (datatables.net forum)
+     */
     $.fn.dataTable.Api.registerPlural('columns().names()', 'column().name()', function (setter) {
         return this.iterator('column', function (settings, column) {
             var col = settings.aoColumns[column];
@@ -76,12 +68,13 @@
 
 
     $(document).ready(function () {
-        var table = $('#lines-of-code').DataTable({
+        var table = $('#metrics-table').DataTable({
+            dom: 'Blfrtip',
             data: metrics,
             columns: [
                 {
-                    className: '',
-                    ordering: false,
+                    name: '',
+                    orderable: false,
                     data: null,
                     width: '10px',
                     defaultContent: "<div class='details-control'/>"
@@ -91,9 +84,9 @@
                     name: 'className',
                     defaultContent: ''
                 },
-                ...supportedMetrics.map(metric => ({
-                        data: 'metrics.' + metric.id,
-                        name: 'metrics.' + metric.id,
+                ...supportedMetrics.map(({id}) => ({
+                        data: 'metrics.' + id,
+                        name: 'metrics.' + id,
                         defaultContent: '',
                         render: $.fn.dataTable.render.number(',', '.', 2)
                     })
@@ -102,6 +95,39 @@
             columnDefs: [],
             responsive: {
                 details: false
+            },
+            colReorder: {
+                fixedColumnsLeft: 1
+            },
+            buttons: {
+                buttons: [{
+                    extend: 'columnsToggle',
+                    columns: '.hideable'
+                }],
+                dom: {
+                    container: {
+                        className: 'dropdown-menu'
+                    },
+                    button: {
+                        className: 'dropdown-item',
+                        tag: 'button',
+                        active: 'selected'
+                    },
+                    buttonLiner: {
+                        tag: null
+                    }
+                }
+            }
+        });
+        window.table = table
+
+        table.buttons().container().appendTo($('#column-dropdown'));
+
+        $('#column-dropdown').on('hide.bs.dropdown', function (event) {
+            if (event.clickEvent && $.contains(event.target, event.clickEvent.target)) {
+                // if a button inside the list has been clicked, do not close the dropdown
+                event.preventDefault();
+                return false;
             }
         });
 
@@ -119,11 +145,7 @@
                 $('#table-filter').addClass('is-invalid');
             }
 
-            var emptyData = {
-                ATFD: 0, CLASS_FAN_OUT: 0, LOC: 0,
-                NCSS: 0, NOAM: 0, NOPA: 0, TCC: 0,
-                WMC: 0, WOC: 0, ISSUES: 0
-            };
+            var emptyData = Object.fromEntries(supportedMetrics.map(({id}) => [id, 0]));
 
             // try filtering the data to detect any errors in the input
             try {
@@ -135,53 +157,75 @@
         });
 
         // Add event listener for opening and closing details
-        $('#lines-of-code tbody').on('click', 'div.details-control', function () {
-            var tr = $(this).closest('tr');
-            var row = table.row(tr);
+        $('#metrics-table tbody')
+            .on('click', 'div.details-control', function () {
+                var tr = $(this).closest('tr');
+                var row = table.row(tr);
 
-            if (row.child.isShown()) {
-                // This row is already open - close it
-                row.child.hide();
-                tr.removeClass('shown');
+                if (row.child.isShown()) {
+                    // This row is already open - close it
+                    row.child.hide();
+                    tr.removeClass('shown');
 
-                delete childTables[row.index()];
-            } else {
-                // Open this row
-                var child = '<table id="child_' + row.index() + '" class="ml-5">' +
-                    '<thead>' +
-                    '<th>Method</th>' +
-                    '<th class="hideable">Lines of Code</th>' +
-                    '<th class="hideable">Non-comment</th>' +
-                    '</thead>' +
-                    '</table>';
+                    delete childTables[row.index()];
+                } else {
+                    // Open this row
+                    var child = '<div>' +
+                        '<div>' +
+                        '<b>Package:</b> ' + row.data().packageName +
+                        '</div>' +
+                        '<table id="child_' + row.index() + '" class="ml-5">' +
+                        '<thead>' +
+                        '<th>Method</th>' +
+                        '<th class="hideable">Lines of Code</th>' +
+                        '<th class="hideable">Non-comment</th>' +
+                        '</thead>' +
+                        '</table>' +
+                        '</div>';
 
-                row.child(child).show();
-                tr.addClass('shown');
+                    row.child(child).show();
+                    tr.addClass('shown');
 
-                childTables[row.index()] = $('#child_' + row.index()).DataTable({
-                    info: false,
-                    paging: false,
-                    searching: false,
-                    data: row.data().children,
-                    columns: [
-                        {
-                            data: 'methodName',
-                            name: 'methodName'
-                        },
-                        {
-                            data: 'metrics.LOC',
-                            name: 'metrics.LOC',
-                            visible: visibleColumns.indexOf('metrics.LOC') <= -1
-                        },
-                        {
-                            data: 'metrics.NCSS',
-                            name: 'metrics.NCSS',
-                            visible: visibleColumns.indexOf('metrics.NCSS') <= -1
-                        }
-                    ]
+                    childTables[row.index()] = $('#child_' + row.index()).DataTable({
+                        info: false,
+                        paging: false,
+                        searching: false,
+                        data: row.data().children,
+                        columns: [
+                            {
+                                data: 'methodName',
+                                name: 'methodName'
+                            },
+                            {
+                                data: 'metrics.LOC',
+                                name: 'metrics.LOC',
+                                visible: visibleColumns.indexOf('metrics.LOC') <= -1
+                            },
+                            {
+                                data: 'metrics.NCSS',
+                                name: 'metrics.NCSS',
+                                visible: visibleColumns.indexOf('metrics.NCSS') <= -1
+                            }
+                        ]
+                    });
+                }
+            })
+            .on('mouseenter', 'td', function () {
+                var column = table.column($(this));
+                var metricId = column.name().replace('metrics.', '');
+                var maxValue = metricsMaxima[metricId];
+                table.cells(':visible', column.index()).every(function () {
+                    var lightness = (1 - this.data() / maxValue) * 60 + 35;
+                    //$(this.node()).addClass('warning');
+                    $(this.node()).css('background', 'hsl(200, 100%, ' + lightness + '%)');
                 });
-            }
-        });
+            })
+            .on('mouseleave', 'td', function () {
+                var column = table.column($(this));
+                table.cells(':visible', column.index()).every(function () {
+                    $(this.node()).css('background', '');
+                });
+            });
 
         // toggle column visibility
         function changeVisibility() {
@@ -192,7 +236,7 @@
             }
         }
 
-        $('#column-picker').on('changed.bs.select', function (e, _clickedIndex, _isSelected, _previousValue) {
+        $('#column-picker').on('changed.bs.select', function (e) {
             visibleColumns = $(e.target).val();
 
             // change visibilities in main table
@@ -201,24 +245,6 @@
             // change visibilities in child tables
             Object.values(childTables)
                 .forEach(childTable => childTable.columns('.hideable').every(changeVisibility));
-        });
-
-        $('#lines-of-code tbody').on('mouseenter', 'td', function () {
-            var column = table.column($(this));
-            var metricId = column.name().replace('metrics.', '');
-            var maxValue = max(metricId);
-            table.cells(undefined, column.index()).every(function () {
-                var lightness = (1 - this.data() / maxValue) * 60 + 35;
-                //$(this.node()).addClass('warning');
-                $(this.node()).css('background', 'hsl(200, 100%, ' + lightness + '%)');
-            });
-        });
-
-        $('#lines-of-code tbody').on('mouseleave', 'td', function () {
-            var column = table.column($(this));
-            table.cells(undefined, column.index()).every(function () {
-                $(this.node()).css('background', '');
-            });
         });
 
         /* ------------------------------------------------------------------------------

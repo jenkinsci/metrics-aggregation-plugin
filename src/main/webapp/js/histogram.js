@@ -9,14 +9,15 @@
          */
         renderHistogram: function (model, metricName) {
             var histogramData = JSON.parse(model);
-            var chart = echarts.init($(this)[0]);
+            var chart = echarts.init($(this)[0], 'light');
             var options = {
                 title: {
-                    text: metricName,
+                    text: 'Histogram of ' + metricName,
                     left: 'center'
                 },
                 tooltip: {
-                    trigger: 'axis'
+                    trigger: 'axis',
+                    formatter: '<b>' + metricName + ': {b}</b><br/>{c} Classes'
                 },
                 xAxis: {
                     name: metricName,

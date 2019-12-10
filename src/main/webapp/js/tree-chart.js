@@ -8,10 +8,10 @@
          * @param {String} metricName - the name of the metric, used e.g. as title for the graph
          */
         renderTreeChart: function (treeModel, metricName) {
-            var chart = echarts.init($(this)[0]);
+            var chart = echarts.init($(this)[0], 'light');
             var options = {
                 title: {
-                    text: metricName,
+                    text: metricName + ' tree map',
                     left: 'center'
                 },
 
@@ -37,23 +37,34 @@
                             show: true,
                             formatter: '{b}'
                         },
+                        upperLabel: {
+                            show: true,
+                            height: 22
+                        },
                         itemStyle: {
-                            normal: {
-                                borderColor: '#aaa',
-                                gapWidth: 4
-                            }
+                            color: "#eee",
+                            borderColorSaturation: 0.4,
+                            borderWidth: 2,
+                            gapWidth: 2
                         },
                         levels: [
                             {
-                                // top level empty
+                                upperLabel: {
+                                    show: false
+                                }
                             },
                             {
+                                // echarts light theme color palette
+                                color: ["#37A2DA", "#32C5E9", "#67E0E3", "#9FE6B8", "#FFDB5C", "#ff9f7f", "#fb7293", "#E062AE", "#E690D1", "#e7bcf3", "#9d96f5", "#8378EA", "#96BFFF"],
                                 itemStyle: {
-                                    normal: {
-                                        borderColor: '#888',
-                                        borderWidth: 5,
-                                        gapWidth: 5
-                                    }
+                                    borderWidth: 4,
+                                    gapWidth: 3
+                                }
+                            },
+                            {
+                                colorSaturation: [0.35, 0.6],
+                                itemStyle: {
+                                    borderColorSaturation: 0.7
                                 }
                             }
                         ],

@@ -1,25 +1,20 @@
 package io.jenkins.plugins.metrics.view;
 
+import java.text.DecimalFormat;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.eclipse.collections.impl.factory.Sets;
-
-import com.google.common.collect.Lists;
-
 import org.kohsuke.stapler.bind.JavaScriptMethod;
 import org.kohsuke.stapler.export.ExportedBean;
 import hudson.model.ModelObject;
 import hudson.model.Run;
 
-import io.jenkins.plugins.coverage.CoverageAction;
-import io.jenkins.plugins.coverage.targets.CoverageElement;
-import io.jenkins.plugins.coverage.targets.CoverageResult;
-import io.jenkins.plugins.coverage.targets.Ratio;
 import io.jenkins.plugins.metrics.extension.MetricsProviderFactory;
 import io.jenkins.plugins.metrics.model.Metric;
 import io.jenkins.plugins.metrics.model.MetricsMeasurement;
@@ -37,8 +32,9 @@ import io.jenkins.plugins.metrics.util.JacksonFacade;
 public class MetricsDetail implements ModelObject {
     private final Run<?, ?> owner;
     private final List<MetricsMeasurement> metricsMeasurements;
-    private final Set<Metric> supportedMetrics;
-    private final Map<Metric, Double> projectOverview;
+    private final LinkedHashSet<Metric> supportedMetrics;
+    private final List<String> projectOverview;
+    private final Map<String, Double> metricsMaxima;
 
     public MetricsDetail(final Run<?, ?> owner) {
         this.owner = owner;
@@ -52,18 +48,21 @@ public class MetricsDetail implements ModelObject {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
-        supportedMetrics = MetricsProviderFactory.all()
-                .stream()
-                .map(MetricsProviderFactory::supportedMetrics)
-                .reduce(Sets.mutable.empty(), (acc, metrics) -> {
-                    acc.addAll(metrics);
-                    return acc;
-                });
+        supportedMetrics = MetricsProviderFactory.getAllSupportedMetricsFor(owner.getAllActions());
+
+        metricsMaxima = supportedMetrics.stream()
+                .collect(Collectors.toMap(Metric::getId, metric -> metricsMeasurements.stream()
+                        .map(metricsMeasurement -> metricsMeasurement.getMetric(metric.getId()))
+                        .map(d -> d.orElse(0.0))
+                        .filter(Double::isFinite)
+                        .max(Double::compare)
+                        .orElse(0.0))
+                );
 
         projectOverview = MetricsProviderFactory.getAllFor(owner.getAllActions()).stream()
-                .map(MetricsProvider::getProjectSummary)
-                .reduce(new HashMap<>(), (acc, summary) -> {
-                    acc.putAll(summary);
+                .map(MetricsProvider::getProjectSummaryEntries)
+                .reduce(new LinkedList<>(), (acc, summary) -> {
+                    acc.addAll(summary);
                     return acc;
                 });
 
@@ -96,8 +95,13 @@ public class MetricsDetail implements ModelObject {
     }
 
     @SuppressWarnings("unused") // used by jelly view
-    public Map<Metric, Double> getProjectOverview() {
+    public List<String> getProjectOverview() {
         return projectOverview;
+    }
+
+    @SuppressWarnings("unused") // used by jelly view
+    public String getMetricsMaximaJSON() {
+        return toJson(metricsMaxima);
     }
 
     private String toJson(final Object object) {
@@ -114,9 +118,13 @@ public class MetricsDetail implements ModelObject {
     @SuppressWarnings("unused") // used by jelly view
     public MetricsTreeNode getMetricsTree(final String valueKey) {
         MetricsTreeNode root = metricsMeasurements.stream()
-                .map(measurement -> new MetricsTreeNode(
-                        measurement.getQualifiedClassName(),
-                        measurement.getMetric(valueKey).orElse(0.0)))
+                .map(measurement -> {
+                    double value = measurement.getMetric(valueKey).orElse(0.0);
+                    if (!Double.isFinite(value)) {
+                        value = 0.0;
+                    }
+                    return new MetricsTreeNode(measurement.getQualifiedClassName(), value);
+                })
                 .reduce(new MetricsTreeNode(""), (acc, node) -> {
                     acc.insertNode(node);
                     return acc;
@@ -157,73 +165,17 @@ public class MetricsDetail implements ModelObject {
             histogramData[binId] += 1;
         }
 
+        final DecimalFormat labelFormat = new DecimalFormat("#.##");
         final String[] binLabels = new String[numBins];
         for (int i = 0; i < numBins; i++) {
             double left = min + i * binWidth;
             double right = min + (i + 1) * binWidth;
-            binLabels[i] = String.format("%.1f - %.1f", left, right);
+            binLabels[i] = String.format("%s - %s", labelFormat.format(left), labelFormat.format(right));
         }
 
         Map<String, Object> result = new HashMap<>();
         result.put("data", histogramData);
         result.put("labels", binLabels);
         return toJson(result);
-    }
-
-    /*------------------ COVERAGE ------------------*/
-
-    private static final String COVERAGE_NAMES = "package,basename,classcoverage,methodcoverage,instructioncoverage,conditionalcoverage,linecoverage";
-
-    // returns csv
-    public String getCoverage() {
-        return COVERAGE_NAMES + "\n"
-                + owner.getActions(CoverageAction.class)
-                .stream()
-                .map(CoverageAction::getResult)
-                .map(this::getChildrenRecursive)
-                .flatMap(List::stream)
-                .filter(r -> r.getElement().is("File"))
-                .map(this::coverageAsCSV)
-                .collect(Collectors.joining("\n"));
-    }
-
-    String toCSV(final String... values) {
-        final String quote = "\"";
-        final String separator = quote + "," + quote;
-
-        return quote + String.join(separator, values) + quote;
-    }
-
-    private String coverageAsCSV(final CoverageResult result) {
-        return toCSV(
-                normalizePackageName(result.getParent().getName()),
-                result.getName(),
-                ratioToString(result.getCoverage(CoverageElement.get("Class"))),
-                ratioToString(result.getCoverage(CoverageElement.get("Method"))),
-                ratioToString(result.getCoverage(CoverageElement.get("Instruction"))),
-                ratioToString(result.getCoverage(CoverageElement.get("Conditional"))),
-                ratioToString(result.getCoverage(CoverageElement.get("Line")))
-        );
-    }
-
-    private String normalizePackageName(final String packageName) {
-        return packageName != null ? packageName.replaceAll("/", ".") : "";
-    }
-
-    private String ratioToString(final Ratio ratio) {
-        if (ratio == null) {
-            return "";
-        }
-        return ratio.getPercentageString();
-    }
-
-    private List<CoverageResult> getChildrenRecursive(final CoverageResult result) {
-        List<CoverageResult> children = Lists.newArrayList(result);
-
-        for (CoverageResult res : result.getChildrenReal().values()) {
-            children.addAll(getChildrenRecursive(res));
-        }
-
-        return children;
     }
 }

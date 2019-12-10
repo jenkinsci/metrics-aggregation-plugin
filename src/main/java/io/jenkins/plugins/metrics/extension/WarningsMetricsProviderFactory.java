@@ -1,11 +1,10 @@
 package io.jenkins.plugins.metrics.extension;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
-
-import org.eclipse.collections.impl.factory.Sets;
 
 import edu.hm.hafner.analysis.Issue;
 import edu.hm.hafner.analysis.Report;
@@ -24,7 +23,7 @@ import io.jenkins.plugins.metrics.model.MetricsProvider;
 
 @Extension
 @SuppressWarnings("unused") // used via the extension
-public class WarningsMetricsProvider extends MetricsProviderFactory<ResultAction> {
+public class WarningsMetricsProviderFactory extends MetricsProviderFactory<ResultAction> {
 
     private static final Metric ERRORS = new Metric("ERRORS", "Errors",
             "An error, e.g. a compile error.", "warnings-ng-plugin");
@@ -66,11 +65,13 @@ public class WarningsMetricsProvider extends MetricsProviderFactory<ResultAction
                 .map(ResultAction::getResult)
                 .map(AnalysisResult::getIssues)
                 .peek(report -> {
-                    provider.addProjectSummaryEntry(ERRORS, (double) report.getSizeOf(Severity.ERROR));
-                    provider.addProjectSummaryEntry(WARNINGS_HIGH, (double) report.getSizeOf(Severity.WARNING_HIGH));
-                    provider.addProjectSummaryEntry(WARNINGS_NORMAL,
-                            (double) report.getSizeOf(Severity.WARNING_NORMAL));
-                    provider.addProjectSummaryEntry(WARNINGS_LOW, (double) report.getSizeOf(Severity.WARNING_LOW));
+                    provider.addProjectSummaryEntry(String.format("%d errors", report.getSizeOf(Severity.ERROR)));
+                    provider.addProjectSummaryEntry(String.format("%d warnings (%d high, %d normal, %d low)",
+                            (report.getSizeOf(Severity.WARNING_HIGH) + report.getSizeOf(Severity.WARNING_NORMAL)
+                                    + report.getSizeOf(Severity.WARNING_LOW)),
+                            report.getSizeOf(Severity.WARNING_HIGH),
+                            report.getSizeOf(Severity.WARNING_NORMAL),
+                            report.getSizeOf(Severity.WARNING_LOW)));
                 })
                 .map(report -> report.groupByProperty("fileName"))
                 .reduce(new HashMap<>(), (acc, map) -> {
@@ -108,8 +109,18 @@ public class WarningsMetricsProvider extends MetricsProviderFactory<ResultAction
     }
 
     @Override
-    public Set<Metric> supportedMetrics() {
-        return Sets.mutable.of(ERRORS, WARNINGS_HIGH, WARNINGS_NORMAL, WARNINGS_LOW, AUTHORS, COMMITS, CREATED,
-                LASTMODIFIED);
+    public LinkedHashSet<Metric> supportedMetricsFor(final List<ResultAction> actions) {
+        if (actions.isEmpty()) {
+            return new LinkedHashSet<>();
+        }
+
+        return new LinkedHashSet<>(Arrays.asList(ERRORS,
+                WARNINGS_HIGH,
+                WARNINGS_NORMAL,
+                WARNINGS_LOW,
+                AUTHORS,
+                COMMITS,
+                CREATED,
+                LASTMODIFIED));
     }
 }

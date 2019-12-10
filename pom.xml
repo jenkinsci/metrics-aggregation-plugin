@@ -116,6 +116,8 @@
       <artifactId>commons-math3</artifactId>
       <version>${commons.math.version}</version>
     </dependency>
+    
+    <!-- UI plugins -->
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>bootstrap4-api</artifactId>

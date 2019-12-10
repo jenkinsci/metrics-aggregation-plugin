@@ -1,7 +1,7 @@
 package io.jenkins.plugins.metrics.extension;
 
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import hudson.ExtensionList;
@@ -47,6 +47,30 @@ public abstract class MetricsProviderFactory<T extends Action> implements Extens
     }
 
     /**
+     * Get all {@link MetricsProvider}s for this actions, using all registered {@link MetricsProviderFactory}s
+     *
+     * @param actions
+     *         the actions of a run to use for getting the metrics
+     *
+     * @return a list of {@link MetricsProvider}s
+     */
+    @SuppressWarnings("unchecked")
+    public static LinkedHashSet<Metric> getAllSupportedMetricsFor(final List<? extends Action> actions) {
+        return all().stream()
+                .map(metricsProviderFactory -> {
+                    List<? extends Action> actionsOfType = actions.stream()
+                            .filter(action -> action.getClass().isAssignableFrom(metricsProviderFactory.type()))
+                            .collect(Collectors.toList());
+
+                    return metricsProviderFactory.supportedMetricsFor(actionsOfType);
+                })
+                .reduce(new LinkedHashSet<Metric>(), (acc, metrics) -> {
+                    acc.addAll(metrics);
+                    return acc;
+                });
+    }
+
+    /**
      * Get the type of action this {@link MetricsProviderFactory} is for. (This is necessary to be able to provide the
      * correct classes for the getFor(List) method.)
      *
@@ -66,9 +90,10 @@ public abstract class MetricsProviderFactory<T extends Action> implements Extens
     public abstract MetricsProvider getFor(final List<T> actions);
 
     /**
-     * Returns all metrics this {@link MetricsProviderFactory} reports.
+     * Returns all metrics this {@link MetricsProviderFactory} reports. A {@link LinkedHashSet} is used as return type
+     * to preserve the order of the metrics.
      *
      * @return a set containing all possibly reported metrics
      */
-    public abstract Set<Metric> supportedMetrics();
+    public abstract LinkedHashSet<Metric> supportedMetricsFor(final List<T> actions);
 }

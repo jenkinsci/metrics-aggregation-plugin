@@ -1,7 +1,8 @@
 package io.jenkins.plugins.metrics.model;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -9,7 +10,7 @@ public class MetricsProvider {
 
     private String origin;
     private List<MetricsMeasurement> metricsMeasurements = new ArrayList<>();
-    private Map<Metric, Double> projectSummary = new HashMap<>();
+    private List<String> projectSummaryEntries = new LinkedList<>();
 
     public List<MetricsMeasurement> getMetricsMeasurements() {
         return metricsMeasurements;
@@ -19,16 +20,16 @@ public class MetricsProvider {
         this.metricsMeasurements = metricsMeasurements;
     }
 
-    public Map<Metric, Double> getProjectSummary() {
-        return projectSummary;
+    public List<String> getProjectSummaryEntries() {
+        return projectSummaryEntries;
     }
 
-    public void setProjectSummary(final Map<Metric, Double> projectSummary) {
-        this.projectSummary = projectSummary;
+    public void setProjectSummaryEntries(final List<String> projectSummaryEntries) {
+        this.projectSummaryEntries = projectSummaryEntries;
     }
 
-    public void addProjectSummaryEntry(final Metric metric, final Double value) {
-        this.projectSummary.put(metric, value);
+    public void addProjectSummaryEntry(final String entry) {
+        this.projectSummaryEntries.add(entry);
     }
 
     public String getOrigin() {
