@@ -1,5 +1,6 @@
 package io.jenkins.plugins.metrics.extension;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -52,11 +53,11 @@ public abstract class MetricsProviderFactory<T extends Action> implements Extens
      * @param actions
      *         the actions of a run to use for getting the metrics
      *
-     * @return a list of {@link MetricsProvider}s
+     * @return a list of {@link MetricsProvider}s, ordered by their priorities
      */
     @SuppressWarnings("unchecked")
-    public static LinkedHashSet<Metric> getAllSupportedMetricsFor(final List<? extends Action> actions) {
-        return all().stream()
+    public static ArrayList<Metric> getAllSupportedMetricsFor(final List<? extends Action> actions) {
+        ArrayList<Metric> supportedMetrics = all().stream()
                 .map(metricsProviderFactory -> {
                     List<? extends Action> actionsOfType = actions.stream()
                             .filter(action -> action.getClass().isAssignableFrom(metricsProviderFactory.type()))
@@ -64,10 +65,21 @@ public abstract class MetricsProviderFactory<T extends Action> implements Extens
 
                     return metricsProviderFactory.supportedMetricsFor(actionsOfType);
                 })
-                .reduce(new LinkedHashSet<Metric>(), (acc, metrics) -> {
+                .reduce(new ArrayList<Metric>(), (acc, metrics) -> {
                     acc.addAll(metrics);
                     return acc;
                 });
+
+        // sort by priorities
+        supportedMetrics.sort((m1, m2) -> {
+            if (m1 == null || m2 == null) {
+                throw new NullPointerException("NullPointerException while comparing " + m1 + " and " + m2);
+            }
+
+            return Integer.compare(m1.getPriority(), m2.getPriority());
+        });
+
+        return supportedMetrics;
     }
 
     /**
@@ -90,10 +102,9 @@ public abstract class MetricsProviderFactory<T extends Action> implements Extens
     public abstract MetricsProvider getFor(final List<T> actions);
 
     /**
-     * Returns all metrics this {@link MetricsProviderFactory} reports. A {@link LinkedHashSet} is used as return type
-     * to preserve the order of the metrics.
+     * Returns all metrics this {@link MetricsProviderFactory} reports.
      *
      * @return a set containing all possibly reported metrics
      */
-    public abstract LinkedHashSet<Metric> supportedMetricsFor(final List<T> actions);
+    public abstract ArrayList<Metric> supportedMetricsFor(final List<T> actions);
 }

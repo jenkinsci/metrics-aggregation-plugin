@@ -1,7 +1,7 @@
 package io.jenkins.plugins.metrics.extension;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -10,7 +10,6 @@ import hudson.Extension;
 import io.jenkins.plugins.metrics.analysis.MetricsAction;
 import io.jenkins.plugins.metrics.model.ClassMetricsMeasurement;
 import io.jenkins.plugins.metrics.model.Metric;
-import io.jenkins.plugins.metrics.model.MetricsMeasurement;
 import io.jenkins.plugins.metrics.model.MetricsProvider;
 
 @Extension
@@ -50,21 +49,21 @@ public class PMDMetricsProviderFactory extends MetricsProviderFactory<MetricsAct
     }
 
     @Override
-    public LinkedHashSet<Metric> supportedMetricsFor(final List<MetricsAction> actions) {
+    public ArrayList<Metric> supportedMetricsFor(final List<MetricsAction> actions) {
         if (actions.isEmpty()) {
-            return new LinkedHashSet<>();
+            return new ArrayList<>();
         }
 
-        return new LinkedHashSet<>(Arrays.asList(
-                new Metric("ATFD", "Access to foreign data", "", "metrics-analysis-plugin (pmd)"),
-                new Metric("CLASS_FAN_OUT", "Fan out", "", "metrics-analysis-plugin (pmd)"),
-                new Metric("LOC", "Lines of Code", "", "metrics-analysis-plugin (pmd)"),
-                new Metric("NCSS", "Non-comment", "", "metrics-analysis-plugin (pmd)"),
-                new Metric("NOAM", "Accessor methods", "", "metrics-analysis-plugin (pmd)"),
-                new Metric("NOPA", "Public Attributes", "", "metrics-analysis-plugin (pmd)"),
-                new Metric("TCC", "Class cohesion", "", "metrics-analysis-plugin (pmd)"),
-                new Metric("WMC", "W. method count", "", "metrics-analysis-plugin (pmd)"),
-                new Metric("WOC", "Weight of class", "", "metrics-analysis-plugin (pmd)")
+        return new ArrayList<>(Arrays.asList(
+                new Metric("ATFD", "Access to foreign data", "", "metrics-analysis-plugin (pmd)", 20),
+                new Metric("CLASS_FAN_OUT", "Fan out", "", "metrics-analysis-plugin (pmd)", 20),
+                new Metric("LOC", "Lines of Code", "", "metrics-analysis-plugin (pmd)", 5),
+                new Metric("NCSS", "Non-comment", "", "metrics-analysis-plugin (pmd)", 5),
+                new Metric("NOAM", "Accessor methods", "", "metrics-analysis-plugin (pmd)", 20),
+                new Metric("NOPA", "Public Attributes", "", "metrics-analysis-plugin (pmd)", 20),
+                new Metric("TCC", "Class cohesion", "", "metrics-analysis-plugin (pmd)", 20),
+                new Metric("WMC", "W. method count", "", "metrics-analysis-plugin (pmd)", 20),
+                new Metric("WOC", "Weight of class", "", "metrics-analysis-plugin (pmd)", 20)
         ));
     }
 }

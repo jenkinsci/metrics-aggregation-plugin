@@ -2,12 +2,10 @@ package io.jenkins.plugins.metrics.view;
 
 import java.text.DecimalFormat;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.kohsuke.stapler.bind.JavaScriptMethod;
@@ -32,7 +30,7 @@ import io.jenkins.plugins.metrics.util.JacksonFacade;
 public class MetricsDetail implements ModelObject {
     private final Run<?, ?> owner;
     private final List<MetricsMeasurement> metricsMeasurements;
-    private final LinkedHashSet<Metric> supportedMetrics;
+    private final List<Metric> supportedMetrics;
     private final List<String> projectOverview;
     private final Map<String, Double> metricsMaxima;
 
@@ -85,7 +83,7 @@ public class MetricsDetail implements ModelObject {
 
     @JavaScriptMethod
     @SuppressWarnings("unused") // used by jelly view
-    public Set<Metric> getSupportedMetrics() {
+    public List<Metric> getSupportedMetrics() {
         return supportedMetrics;
     }
 

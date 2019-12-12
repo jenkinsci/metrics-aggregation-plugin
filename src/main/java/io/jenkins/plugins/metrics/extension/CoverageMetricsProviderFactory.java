@@ -1,7 +1,7 @@
 package io.jenkins.plugins.metrics.extension;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,13 +25,13 @@ import io.jenkins.plugins.metrics.model.MetricsProvider;
 public class CoverageMetricsProviderFactory extends MetricsProviderFactory<CoverageAction> {
 
     private static final Metric METHOD = new Metric("METHOD_COVERAGE", "Method coverage",
-            "TODO", "code-coverage-api");
+            "TODO", "code-coverage-api", 30);
     private static final Metric INSTRUCTION = new Metric("INSTRUCTION_COVERAGE", "Instruction coverage",
-            "TODO", "code-coverage-api");
+            "TODO", "code-coverage-api", 30);
     private static final Metric CONDITIONAL = new Metric("CONDITIONAL_COVERAGE", "Conditional coverage",
-            "TODO", "code-coverage-api");
+            "TODO", "code-coverage-api", 30);
     private static final Metric LINE = new Metric("LINE_COVERAGE", "Line coverage",
-            "TODO", "code-coverage-api");
+            "TODO", "code-coverage-api", 30);
 
     @Override
     public Class<CoverageAction> type() {
@@ -67,20 +67,21 @@ public class CoverageMetricsProviderFactory extends MetricsProviderFactory<Cover
 
         overallCoverage.ifPresent(coverageResult -> {
             Ratio classCoverage = coverageResult.getCoverage(CoverageElement.get("Class"));
-            provider.addProjectSummaryEntry(String.format("Total class coverage: %s Classes (%d%%)", classCoverage.toString(),
-                    classCoverage.getPercentage()));
+            provider.addProjectSummaryEntry(
+                    String.format("Total class coverage: %s Classes (%d%%)", classCoverage.toString(),
+                            classCoverage.getPercentage()));
         });
 
         return provider;
     }
 
     @Override
-    public LinkedHashSet<Metric> supportedMetricsFor(final List<CoverageAction> actions) {
+    public ArrayList<Metric> supportedMetricsFor(final List<CoverageAction> actions) {
         if (actions.isEmpty()) {
-            return new LinkedHashSet<>();
+            return new ArrayList<>();
         }
 
-        return new LinkedHashSet<>(Arrays.asList(METHOD, INSTRUCTION, CONDITIONAL, LINE));
+        return new ArrayList<>(Arrays.asList(METHOD, INSTRUCTION, CONDITIONAL, LINE));
     }
 
     private List<CoverageResult> getChildrenRecursive(final CoverageResult result) {

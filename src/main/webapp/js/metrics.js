@@ -66,7 +66,6 @@
         }, 1);
     });
 
-
     $(document).ready(function () {
         var table = $('#metrics-table').DataTable({
             dom: 'Blfrtip',
@@ -169,14 +168,16 @@
 
                     delete childTables[row.index()];
                 } else {
+                    var columnNames = Object.fromEntries(supportedMetrics.map(({id, displayName}) => ['metrics.' + id, displayName]));
+
                     // Open this row
                     var child = '<div>' +
-                        '<div>' +
-                        '<b>Package:</b> ' + row.data().packageName +
-                        '</div>' +
+                        '<table id="child_missingColumns_' + row.index() + '" class="ml-5" />' +
+                        '<div><b>Methods:</b></div>' +
                         '<table id="child_' + row.index() + '" class="ml-5">' +
                         '<thead>' +
                         '<th>Method</th>' +
+                        '<th>Line</th>' +
                         '<th class="hideable">Lines of Code</th>' +
                         '<th class="hideable">Non-comment</th>' +
                         '</thead>' +
@@ -185,6 +186,36 @@
 
                     row.child(child).show();
                     tr.addClass('shown');
+
+                    var hiddenColumns = [];
+                    table.columns(':hidden').every(function () {
+                        if (this.visible()) {
+                            hiddenColumns.push(this.name())
+                        }
+                    });
+
+                    $('#child_missingColumns_' + row.index()).DataTable({
+                        info: false,
+                        paging: false,
+                        searching: false,
+                        data: [row.data()],
+                        columns: [
+                            {
+                                data: 'packageName',
+                                name: 'packageName',
+                                title: 'Package',
+                                defaultContent: ''
+                            },
+                            ...hiddenColumns.map(metricId => ({
+                                    data: metricId,
+                                    name: metricId,
+                                    title: columnNames[metricId],
+                                    defaultContent: '',
+                                    render: $.fn.dataTable.render.number(',', '.', 2)
+                                })
+                            )
+                        ]
+                    });
 
                     childTables[row.index()] = $('#child_' + row.index()).DataTable({
                         info: false,
@@ -195,6 +226,10 @@
                             {
                                 data: 'methodName',
                                 name: 'methodName'
+                            },
+                            {
+                                data: 'beginLine',
+                                name: 'beginLine'
                             },
                             {
                                 data: 'metrics.LOC',
@@ -212,7 +247,7 @@
             })
             .on('mouseenter', 'td', function () {
                 var column = table.column($(this));
-                var metricId = column.name().replace('metrics.', '');
+                var metricId = (column.name() || '').replace('metrics.', '');
                 var maxValue = metricsMaxima[metricId];
                 table.cells(':visible', column.index()).every(function () {
                     var lightness = (1 - this.data() / maxValue) * 60 + 35;

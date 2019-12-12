@@ -10,16 +10,19 @@ public class Metric implements Serializable {
     private String displayName;
     private String description;
     private String reportedBy;
+    private int priority;
 
     public Metric(final String id) {
         this.id = id;
     }
 
-    public Metric(final String id, final String displayName, final String description, final String reportedBy) {
+    public Metric(final String id, final String displayName, final String description, final String reportedBy,
+            final int priority) {
         this.id = id;
         this.displayName = displayName;
         this.description = description;
         this.reportedBy = reportedBy;
+        this.priority = priority;
     }
 
     public String getDisplayName() {
@@ -53,6 +56,16 @@ public class Metric implements Serializable {
     public void setReportedBy(final String reportedBy) {
         this.reportedBy = reportedBy;
     }
+
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(final int priority) {
+        this.priority = priority;
+    }
+
+    //FIXME public abstract String renderValue();
 
     @Override
     public String toString() {

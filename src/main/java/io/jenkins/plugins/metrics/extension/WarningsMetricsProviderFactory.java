@@ -1,8 +1,8 @@
 package io.jenkins.plugins.metrics.extension;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,22 +26,18 @@ import io.jenkins.plugins.metrics.model.MetricsProvider;
 public class WarningsMetricsProviderFactory extends MetricsProviderFactory<ResultAction> {
 
     private static final Metric ERRORS = new Metric("ERRORS", "Errors",
-            "An error, e.g. a compile error.", "warnings-ng-plugin");
+            "An error, e.g. a compile error.", "warnings-ng-plugin", 10);
     private static final Metric WARNINGS_HIGH = new Metric("WARNING_HIGH", "Warning (high)",
-            "A warning with priority high.", "warnings-ng-plugin");
+            "A warning with priority high.", "warnings-ng-plugin", 10);
     private static final Metric WARNINGS_NORMAL = new Metric("WARNING_NORMAL", "Warning (normal)",
-            "A warning with priority normal.", "warnings-ng-plugin");
+            "A warning with priority normal.", "warnings-ng-plugin", 10);
     private static final Metric WARNINGS_LOW = new Metric("WARNING_LOW", "Warning (low)",
-            "A warning with priority low.", "warnings-ng-plugin");
+            "A warning with priority low.", "warnings-ng-plugin", 10);
 
     private static final Metric AUTHORS = new Metric("AUTHORS", "Authors",
-            "The number of authors for this file", "forensics-api-plugin");
+            "The number of authors for this file", "forensics-api-plugin", 20);
     private static final Metric COMMITS = new Metric("COMMITS", "Commits",
-            "The number of commits for this file", "warnings-ng-plugin");
-    private static final Metric CREATED = new Metric("CREATED", "Created",
-            "Time of file creation", "forensics-api-plugin");
-    private static final Metric LASTMODIFIED = new Metric("LASTMODIFIED", "Last modified",
-            "Time of last modification", "forensics-api-plugin");
+            "The number of commits for this file", "warnings-ng-plugin", 20);
 
     @Override
     public Class<ResultAction> type() {
@@ -96,9 +92,6 @@ public class WarningsMetricsProviderFactory extends MetricsProviderFactory<Resul
                     FileStatistics fileStatistics = stats.get(entry.getKey());
                     measurement.addMetric(AUTHORS, fileStatistics.getNumberOfAuthors());
                     measurement.addMetric(COMMITS, fileStatistics.getNumberOfCommits());
-                    // TODO change to absolute values once implemented upstream
-                    measurement.addMetric(CREATED, fileStatistics.getAgeInDays());
-                    measurement.addMetric(LASTMODIFIED, fileStatistics.getLastModifiedInDays());
 
                     return measurement;
                 })
@@ -109,18 +102,16 @@ public class WarningsMetricsProviderFactory extends MetricsProviderFactory<Resul
     }
 
     @Override
-    public LinkedHashSet<Metric> supportedMetricsFor(final List<ResultAction> actions) {
+    public ArrayList<Metric> supportedMetricsFor(final List<ResultAction> actions) {
         if (actions.isEmpty()) {
-            return new LinkedHashSet<>();
+            return new ArrayList<>();
         }
 
-        return new LinkedHashSet<>(Arrays.asList(ERRORS,
+        return new ArrayList<>(Arrays.asList(ERRORS,
                 WARNINGS_HIGH,
                 WARNINGS_NORMAL,
                 WARNINGS_LOW,
                 AUTHORS,
-                COMMITS,
-                CREATED,
-                LASTMODIFIED));
+                COMMITS));
     }
 }
