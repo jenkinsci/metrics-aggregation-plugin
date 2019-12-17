@@ -16,22 +16,35 @@ import io.jenkins.plugins.coverage.targets.CoverageElement;
 import io.jenkins.plugins.coverage.targets.CoverageResult;
 import io.jenkins.plugins.coverage.targets.Ratio;
 import io.jenkins.plugins.metrics.model.ClassMetricsMeasurement;
-import io.jenkins.plugins.metrics.model.Metric;
+import io.jenkins.plugins.metrics.model.MetricDefinition;
 import io.jenkins.plugins.metrics.model.MetricsMeasurement;
 import io.jenkins.plugins.metrics.model.MetricsProvider;
+import io.jenkins.plugins.metrics.model.PercentageMetric;
 
 @Extension
 @SuppressWarnings("unused") // used via the extension
 public class CoverageMetricsProviderFactory extends MetricsProviderFactory<CoverageAction> {
 
-    private static final Metric METHOD = new Metric("METHOD_COVERAGE", "Method coverage",
-            "TODO", "code-coverage-api", 30);
-    private static final Metric INSTRUCTION = new Metric("INSTRUCTION_COVERAGE", "Instruction coverage",
-            "TODO", "code-coverage-api", 30);
-    private static final Metric CONDITIONAL = new Metric("CONDITIONAL_COVERAGE", "Conditional coverage",
-            "TODO", "code-coverage-api", 30);
-    private static final Metric LINE = new Metric("LINE_COVERAGE", "Line coverage",
-            "TODO", "code-coverage-api", 30);
+    private static final MetricDefinition METHOD = new MetricDefinition("METHOD_COVERAGE",
+            "Method coverage",
+            "TODO",
+            "code-coverage-api",
+            30);
+    private static final MetricDefinition INSTRUCTION = new MetricDefinition("INSTRUCTION_COVERAGE",
+            "Instruction coverage",
+            "TODO",
+            "code-coverage-api",
+            30);
+    private static final MetricDefinition CONDITIONAL = new MetricDefinition("CONDITIONAL_COVERAGE",
+            "Conditional coverage",
+            "TODO",
+            "code-coverage-api",
+            30);
+    private static final MetricDefinition LINE = new MetricDefinition("LINE_COVERAGE",
+            "Line coverage",
+            "TODO",
+            "code-coverage-api",
+            30);
 
     @Override
     public Class<CoverageAction> type() {
@@ -76,7 +89,7 @@ public class CoverageMetricsProviderFactory extends MetricsProviderFactory<Cover
     }
 
     @Override
-    public ArrayList<Metric> supportedMetricsFor(final List<CoverageAction> actions) {
+    public ArrayList<MetricDefinition> supportedMetricsFor(final List<CoverageAction> actions) {
         if (actions.isEmpty()) {
             return new ArrayList<>();
         }
@@ -98,20 +111,20 @@ public class CoverageMetricsProviderFactory extends MetricsProviderFactory<Cover
         ClassMetricsMeasurement metricsMeasurement = new ClassMetricsMeasurement();
         metricsMeasurement.setPackageName(normalizePackageName(result.getParent().getName()));
         metricsMeasurement.setClassName(result.getName().replace(".java", ""));
-        metricsMeasurement.addMetric(METHOD, getCoverage(result, "Method"));
-        metricsMeasurement.addMetric(INSTRUCTION, getCoverage(result, "Instruction"));
-        metricsMeasurement.addMetric(CONDITIONAL, getCoverage(result, "Conditional"));
-        metricsMeasurement.addMetric(LINE, getCoverage(result, "Line"));
+        metricsMeasurement.addMetric(new PercentageMetric(METHOD, getCoverage(result, "Method")));
+        metricsMeasurement.addMetric(new PercentageMetric(INSTRUCTION, getCoverage(result, "Instruction")));
+        metricsMeasurement.addMetric(new PercentageMetric(CONDITIONAL, getCoverage(result, "Conditional")));
+        metricsMeasurement.addMetric(new PercentageMetric(LINE, getCoverage(result, "Line")));
         return metricsMeasurement;
     }
 
-    private double getCoverage(final CoverageResult result, final String id) {
+    private float getCoverage(final CoverageResult result, final String id) {
         Ratio ratio = result.getCoverage(CoverageElement.get("Instruction"));
         if (ratio != null) {
             return ratio.getPercentageFloat();
         }
         else {
-            return Double.NaN;
+            return Float.NaN;
         }
     }
 

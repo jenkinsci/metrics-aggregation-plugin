@@ -21,21 +21,9 @@ public class Test {
         //nothing to see here
     }
 
-    public static class StaticInnerclass {
+    public static class StaticInnerClass {
         public void staticInnerClassMethod() {
             Set<Double> anotherSet = new TreeSet<>();
-        }
-    }
-
-    public class InnerClass {
-        public void innerClassMethod() {
-
-        }
-    }
-
-    private class PrivateInnerClass {
-        public void privateInnerClassMethod() {
-
         }
     }
 }

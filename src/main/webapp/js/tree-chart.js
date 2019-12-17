@@ -11,7 +11,7 @@
             var chart = echarts.init($(this)[0], 'light');
             var options = {
                 title: {
-                    text: metricName + ' tree map',
+                    text: 'Tree Map for "' + metricName + '"',
                     left: 'center'
                 },
 

@@ -11,6 +11,7 @@ import hudson.model.Action;
 import jenkins.model.Jenkins;
 
 import io.jenkins.plugins.metrics.model.Metric;
+import io.jenkins.plugins.metrics.model.MetricDefinition;
 import io.jenkins.plugins.metrics.model.MetricsMeasurement;
 import io.jenkins.plugins.metrics.model.MetricsProvider;
 
@@ -56,8 +57,8 @@ public abstract class MetricsProviderFactory<T extends Action> implements Extens
      * @return a list of {@link MetricsProvider}s, ordered by their priorities
      */
     @SuppressWarnings("unchecked")
-    public static ArrayList<Metric> getAllSupportedMetricsFor(final List<? extends Action> actions) {
-        ArrayList<Metric> supportedMetrics = all().stream()
+    public static ArrayList<MetricDefinition> getAllSupportedMetricsFor(final List<? extends Action> actions) {
+        ArrayList<MetricDefinition> supportedMetrics = all().stream()
                 .map(metricsProviderFactory -> {
                     List<? extends Action> actionsOfType = actions.stream()
                             .filter(action -> action.getClass().isAssignableFrom(metricsProviderFactory.type()))
@@ -65,7 +66,7 @@ public abstract class MetricsProviderFactory<T extends Action> implements Extens
 
                     return metricsProviderFactory.supportedMetricsFor(actionsOfType);
                 })
-                .reduce(new ArrayList<Metric>(), (acc, metrics) -> {
+                .reduce(new ArrayList<MetricDefinition>(), (acc, metrics) -> {
                     acc.addAll(metrics);
                     return acc;
                 });
@@ -106,5 +107,5 @@ public abstract class MetricsProviderFactory<T extends Action> implements Extens
      *
      * @return a set containing all possibly reported metrics
      */
-    public abstract ArrayList<Metric> supportedMetricsFor(final List<T> actions);
+    public abstract ArrayList<MetricDefinition> supportedMetricsFor(final List<T> actions);
 }

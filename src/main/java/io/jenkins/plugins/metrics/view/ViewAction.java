@@ -2,7 +2,6 @@ package io.jenkins.plugins.metrics.view;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import javax.annotation.Nonnull;
 
@@ -14,10 +13,6 @@ import hudson.model.Action;
 import hudson.model.Run;
 import jenkins.model.RunAction2;
 import jenkins.model.TransientActionFactory;
-import jenkins.tasks.SimpleBuildStep.LastBuildAction;
-
-import io.jenkins.plugins.metrics.model.MetricsMeasurement;
-import io.jenkins.plugins.metrics.model.MetricsReport;
 
 public class ViewAction implements RunAction2, StaplerProxy {
     private transient Run<?, ?> owner;
@@ -65,7 +60,7 @@ public class ViewAction implements RunAction2, StaplerProxy {
      */
     @Override
     public Object getTarget() {
-        return new MetricsDetail(owner);
+        return new MetricsDetailView(owner);
     }
 
     @Extension

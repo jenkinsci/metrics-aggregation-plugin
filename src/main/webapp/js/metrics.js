@@ -1,7 +1,5 @@
 /* global jQuery, view, echarts, metrics, supportedMetrics, metricsMaxima, math */
 (function ($) {
-    var childTables = {};
-    var visibleColumns = [];
     var filterExpression = math.compile('true');
 
     /**
@@ -46,7 +44,7 @@
 
     $.fn.dataTable.ext.search.push(
         function (_settings, _searchData, _index, rowData, _counter) {
-            return filterData(rowData.metrics);
+            return filterData(rowData.metricsRaw);
         }
     );
 
@@ -66,9 +64,62 @@
         }, 1);
     });
 
+    function responsiveDetailsRenderer(api, rowIdx, columns) {
+        const hiddenRows = $('<table />');
+        hiddenRows.DataTable({
+            columns: [
+                {
+                    data: 'packageName',
+                    name: 'packageName',
+                    title: 'Package',
+                    defaultContent: ''
+                },
+                ...columns
+                    .filter(({hidden}) => hidden)
+                    .map(column => ({
+                        defaultContent: column.data,
+                        data: null,
+                        title: column.title
+                    }))
+            ]
+        });
+
+        const row = api.row(rowIdx);
+        const methodDetails = $('<table />');
+        methodDetails.DataTable({
+            info: false,
+            paging: false,
+            searching: false,
+            data: row.data().children,
+            columns: [
+                {
+                    data: 'methodName',
+                    name: 'methodName',
+                    title: 'Method'
+                },
+                {
+                    data: 'beginLine',
+                    name: 'beginLine',
+                    title: 'Line'
+                },
+                {
+                    data: 'metricsDisplay.LOC',
+                    name: 'metricsRaw.LOC'
+                },
+                {
+                    data: 'metricsDisplay.NCSS',
+                    name: 'metricsRaw.NCSS'
+                }
+            ]
+        });
+
+        return $('<div />')
+            .append(hiddenRows)
+            .append(methodDetails);
+    }
+
     $(document).ready(function () {
         var table = $('#metrics-table').DataTable({
-            dom: 'Blfrtip',
             data: metrics,
             columns: [
                 {
@@ -84,16 +135,18 @@
                     defaultContent: ''
                 },
                 ...supportedMetrics.map(({id}) => ({
-                        data: 'metrics.' + id,
-                        name: 'metrics.' + id,
-                        defaultContent: '',
-                        render: $.fn.dataTable.render.number(',', '.', 2)
+                        data: 'metricsDisplay.' + id,
+                        name: 'metricsRaw.' + id,
+                        defaultContent: ''
                     })
                 )
             ],
-            columnDefs: [],
+            order: [[1, 'asc']],
             responsive: {
-                details: false
+                details: {
+                    type: 'column',
+                    renderer: responsiveDetailsRenderer
+                }
             },
             colReorder: {
                 fixedColumnsLeft: 1
@@ -118,7 +171,6 @@
                 }
             }
         });
-        window.table = table
 
         table.buttons().container().appendTo($('#column-dropdown'));
 
@@ -155,96 +207,8 @@
             }
         });
 
-        // Add event listener for opening and closing details
+        // Event listener for coloring the table columns
         $('#metrics-table tbody')
-            .on('click', 'div.details-control', function () {
-                var tr = $(this).closest('tr');
-                var row = table.row(tr);
-
-                if (row.child.isShown()) {
-                    // This row is already open - close it
-                    row.child.hide();
-                    tr.removeClass('shown');
-
-                    delete childTables[row.index()];
-                } else {
-                    var columnNames = Object.fromEntries(supportedMetrics.map(({id, displayName}) => ['metrics.' + id, displayName]));
-
-                    // Open this row
-                    var child = '<div>' +
-                        '<table id="child_missingColumns_' + row.index() + '" class="ml-5" />' +
-                        '<div><b>Methods:</b></div>' +
-                        '<table id="child_' + row.index() + '" class="ml-5">' +
-                        '<thead>' +
-                        '<th>Method</th>' +
-                        '<th>Line</th>' +
-                        '<th class="hideable">Lines of Code</th>' +
-                        '<th class="hideable">Non-comment</th>' +
-                        '</thead>' +
-                        '</table>' +
-                        '</div>';
-
-                    row.child(child).show();
-                    tr.addClass('shown');
-
-                    var hiddenColumns = [];
-                    table.columns(':hidden').every(function () {
-                        if (this.visible()) {
-                            hiddenColumns.push(this.name())
-                        }
-                    });
-
-                    $('#child_missingColumns_' + row.index()).DataTable({
-                        info: false,
-                        paging: false,
-                        searching: false,
-                        data: [row.data()],
-                        columns: [
-                            {
-                                data: 'packageName',
-                                name: 'packageName',
-                                title: 'Package',
-                                defaultContent: ''
-                            },
-                            ...hiddenColumns.map(metricId => ({
-                                    data: metricId,
-                                    name: metricId,
-                                    title: columnNames[metricId],
-                                    defaultContent: '',
-                                    render: $.fn.dataTable.render.number(',', '.', 2)
-                                })
-                            )
-                        ]
-                    });
-
-                    childTables[row.index()] = $('#child_' + row.index()).DataTable({
-                        info: false,
-                        paging: false,
-                        searching: false,
-                        data: row.data().children,
-                        columns: [
-                            {
-                                data: 'methodName',
-                                name: 'methodName'
-                            },
-                            {
-                                data: 'beginLine',
-                                name: 'beginLine'
-                            },
-                            {
-                                data: 'metrics.LOC',
-                                name: 'metrics.LOC',
-                                visible: visibleColumns.indexOf('metrics.LOC') <= -1
-                            },
-                            {
-                                data: 'metrics.NCSS',
-                                name: 'metrics.NCSS',
-                                visible: visibleColumns.indexOf('metrics.NCSS') <= -1
-                            }
-                        ]
-                    });
-                }
-            })
             .on('mouseenter', 'td', function () {
                 var column = table.column($(this));
                 var metricId = (column.name() || '').replace('metrics.', '');
@@ -262,40 +226,20 @@
                 });
             });
 
-        // toggle column visibility
-        function changeVisibility() {
-            if (this.visible() && visibleColumns.indexOf(this.name()) <= -1) {
-                this.visible(false);
-            } else if (!this.visible() && visibleColumns.indexOf(this.name()) > -1) {
-                this.visible(true);
-            }
-        }
-
-        $('#column-picker').on('changed.bs.select', function (e) {
-            visibleColumns = $(e.target).val();
-
-            // change visibilities in main table
-            table.columns('.hideable').every(changeVisibility);
-
-            // change visibilities in child tables
-            Object.values(childTables)
-                .forEach(childTable => childTable.columns('.hideable').every(changeVisibility));
-        });
-
         /* ------------------------------------------------------------------------------
                                             tree chart
          ------------------------------------------------------------------------------ */
 
         function drawTreeChart() {
             var metric = $('#treechart-picker').val();
-            var metricName = $('#treechart-picker :selected').text();
+            var metricId = $('#treechart-picker :selected').text();
 
             view.getMetricsTree(metric, function (res) {
-                $('#treechart').renderTreeChart(res.responseJSON, metricName);
+                $('#treechart').renderTreeChart(res.responseJSON, metricId);
             });
 
             view.getHistogram(metric, function (res) {
-                $('#histogram').renderHistogram(res.responseJSON, metricName);
+                $('#histogram').renderHistogram(res.responseJSON, metricId);
             })
         }
 

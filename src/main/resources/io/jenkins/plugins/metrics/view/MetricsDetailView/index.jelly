@@ -1,0 +1,145 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:l="/lib/layout" xmlns:issues="/issues"
+         xmlns:bs="/bootstrap">
+
+  <st:header name="Content-Type" value="text/html;charset=UTF-8"/>
+
+  <issues:layout title="${it.displayName}" norefresh="true">
+
+    <st:include it="${it.owner}" page="sidepanel.jelly"/>
+
+    <l:main-panel>
+      <st:adjunct includes="io.jenkins.plugins.font-awesome"/>
+      <st:adjunct includes="io.jenkins.plugins.jquery3"/>
+      <st:adjunct includes="io.jenkins.plugins.popper"/>
+      <st:adjunct includes="io.jenkins.plugins.bootstrap4"/>
+      <st:adjunct includes="io.jenkins.plugins.data-tables"/>
+      <st:adjunct includes="io.jenkins.plugins.echarts"/>
+
+      <link rel="stylesheet" href="${resURL}/plugin/metrics-analysis/css/responsive.datatables.min.css"/>
+      <link rel="stylesheet" href="${resURL}/plugin/metrics-analysis/css/buttons.datatables.min.css"/>
+      <link rel="stylesheet" href="${resURL}/plugin/metrics-analysis/css/colreorder.datatables.min.css"/>
+
+      <link rel="stylesheet" href="${resURL}/plugin/metrics-analysis/css/bootstrap-select.min.css"/>
+
+      <link rel="stylesheet" href="${resURL}/plugin/metrics-analysis/css/custom-style.css"/>
+
+      <script src="${resURL}/plugin/metrics-analysis/js/libs/datatables.responsive.min.js"/>
+      <script src="${resURL}/plugin/metrics-analysis/js/libs/datatables.buttons.min.js"/>
+      <script src="${resURL}/plugin/metrics-analysis/js/libs/buttons.colvis.min.js"/>
+      <script src="${resURL}/plugin/metrics-analysis/js/libs/datatables.colreorder.min.js"/>
+
+      <script src="${resURL}/plugin/metrics-analysis/js/libs/bootstrap-select.min.js"/>
+
+      <script type="text/javascript" src="${resURL}/plugin/metrics-analysis/js/no-prototype.js"/>
+      <script src="${resURL}/plugin/metrics-analysis/js/libs/math.min.js"/>
+
+      <script>
+        var metrics = ${it.metrics};
+        var supportedMetrics = ${it.supportedMetricsJSON};
+        var metricsMaxima = ${it.metricsMaximaJSON};
+      </script>
+
+      <script src="${resURL}/plugin/metrics-analysis/js/tree-chart.js"/>
+      <script src="${resURL}/plugin/metrics-analysis/js/histogram.js"/>
+      <script src="${resURL}/plugin/metrics-analysis/js/metrics.js"/>
+
+      <div class="fluid-container">
+
+        <h2 class="mb-3">${it.displayName}</h2>
+
+        <bs:card title="Project Overview" fontAwesomeIcon="fa-list-alt" cardClass="mb-4">
+          <ul>
+            <j:forEach var="entry" items="${it.projectOverview}">
+              <li>${entry}</li>
+            </j:forEach>
+          </ul>
+
+          <button class="btn btn-outline-secondary" type="button" data-toggle="collapse"
+                  data-target="#metricsInformationCollapse"
+                  aria-expanded="false" aria-controls="metricsInformationCollapse">
+            Metrics information
+          </button>
+          <div class="row collapse" id="metricsInformationCollapse">
+            <j:forEach var="metric" items="${it.supportedMetrics}">
+              <div class="col-sm-6 col-lg-4">
+                <div class="card mb-2">
+                  <div class="card-body">
+                    <h5 class="card-title">${metric.displayName}</h5>
+                    <p class="card-subtitle mb-2 text-muted">${metric.id}</p>
+                    <p class="card-text">${metric.description}</p>
+                    <span class="text-muted">${metric.reportedBy}</span>
+                  </div>
+                </div>
+              </div>
+            </j:forEach>
+          </div>
+
+        </bs:card>
+
+        <bs:card title="Metrics Distribution" fontAwesomeIcon="fa-chart-bar" cardClass="mb-4">
+
+          <div class="form-group">
+            <label for="column-picker">Select metric to display</label>
+            <select class="selectpicker form-control form-control-sm" id="treechart-picker">
+              <j:forEach var="metric" items="${it.supportedMetrics}">
+                <option value="${metric.id}">${metric.displayName}</option>
+              </j:forEach>
+            </select>
+          </div>
+
+          <div id="treechart" style="width: 100%; min-height: 600px"/>
+          <hr class="my-5"/>
+          <div id="histogram" style="width: 100%; min-height: 400px"/>
+        </bs:card>
+
+        <bs:card title="Metrics Details" fontAwesomeIcon="fa-table">
+
+          <div class="row">
+            <div class="form-group col-md-6">
+              <label for="table-filter">Filter</label>
+              <input type="text" class="form-control form-control-sm" id="table-filter"
+                     placeholder="e.g. LOC > 10 and ISSUES > 1"/>
+              <div class="invalid-feedback"/>
+              <p class="form-text text-muted">
+                Variables:
+                <j:forEach var="metric" items="${it.supportedMetrics}">
+                  <span class="badge badge-light badge-pill mr-1" title="${metric.displayName}">${metric.id}</span>
+                </j:forEach>
+              </p>
+            </div>
+            <div class="form-group col-md-6">
+              <label for="column-dropdown">Columns</label>
+              <div class="dropdown" id="column-dropdown">
+                <button class="btn btn-block btn-outline-secondary btn-sm dropdown-toggle" type="button"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Select columns to display
+                </button>
+                <!-- dropdown is filled dynamically -->
+              </div>
+            </div>
+          </div>
+
+          <table class="table table-hover table-striped responsive display" id="metrics-table" width="100%">
+            <thead>
+              <tr>
+                <th/>
+                <th>Class</th>
+                <j:forEach var="metric" items="${it.supportedMetrics}">
+                  <th class="hideable">${metric.displayName}</th>
+                </j:forEach>
+              </tr>
+            </thead>
+          </table>
+        </bs:card>
+      </div>
+
+      <script>var view =
+        <st:bind value="${it}"/>
+      </script>
+
+    </l:main-panel>
+
+  </issues:layout>
+
+</j:jelly>

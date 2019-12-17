@@ -8,7 +8,10 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import shaded.net.sourceforge.pmd.PMD;
 import shaded.net.sourceforge.pmd.PMDConfiguration;
@@ -28,9 +31,12 @@ import hudson.model.TaskListener;
 import hudson.remoting.VirtualChannel;
 import jenkins.MasterToSlaveFileCallable;
 
+import io.jenkins.plugins.metrics.extension.PMDMetricsProviderFactory;
 import io.jenkins.plugins.metrics.model.ClassMetricsMeasurement;
+import io.jenkins.plugins.metrics.model.DoubleMetric;
+import io.jenkins.plugins.metrics.model.IntegerMetric;
 import io.jenkins.plugins.metrics.model.MethodMetricsMeasurement;
-import io.jenkins.plugins.metrics.model.Metric;
+import io.jenkins.plugins.metrics.model.MetricDefinition;
 import io.jenkins.plugins.metrics.model.MetricsMeasurement;
 import io.jenkins.plugins.metrics.util.FileFinder;
 
@@ -104,11 +110,14 @@ public class MetricsActor extends MasterToSlaveFileCallable<List<MetricsMeasurem
 
         private final List<MetricsMeasurement> metricsReport;
         private final TaskListener listener;
+        private final Map<String, MetricDefinition> supportedMetrics;
 
         MetricsLogRenderer(final List<MetricsMeasurement> metricsReport, final TaskListener listener) {
             super("log-metrics", "Metrics logging renderer");
             this.metricsReport = metricsReport;
             this.listener = listener;
+            supportedMetrics = PMDMetricsProviderFactory.getSupportedMetrics()
+                    .stream().collect(Collectors.toMap(MetricDefinition::getId, Function.identity()));
         }
 
         @Override
@@ -141,9 +150,35 @@ public class MetricsActor extends MasterToSlaveFileCallable<List<MetricsMeasurem
                 String[] metrics = violationDescription.split(",");
                 for (String metric : metrics) {
                     String[] keyValue = metric.split("=");
-                    metricsMeasurement.addMetric(new Metric(keyValue[0], keyValue[0].toLowerCase(),
-                                    "", "metrics-analysis-plugin", 20),
-                            Double.parseDouble(keyValue[1]));
+                    String metricName = keyValue[0];
+                    double metricValue = Double.parseDouble(keyValue[1]);
+
+                    MetricDefinition metricDefinition = supportedMetrics.get(metricName);
+
+                    if (metricDefinition == null) {
+                        listener.getLogger().printf("Ignoring unknown PMD metric: %s\n", keyValue[0]);
+                    }
+                    else {
+                        switch (metricName) {
+                            case "ATFD":
+                            case "CLASS_FAN_OUT":
+                            case "NCSS":
+                            case "LOC":
+                            case "NOAM":
+                            case "NPATH":
+                            case "CYCLO":
+                            case "NOPA":
+                                metricsMeasurement.addMetric(new IntegerMetric(metricDefinition, (int) metricValue));
+                                break;
+                            case "TCC":
+                            case "WMC":
+                            case "WOC":
+                                metricsMeasurement.addMetric(new DoubleMetric(metricDefinition, metricValue));
+                                break;
+                            default:
+                                listener.getLogger().printf("Ignoring unknown PMD metric: %s\n", keyValue[0]);
+                        }
+                    }
                 }
 
                 metricsReport.add(metricsMeasurement);

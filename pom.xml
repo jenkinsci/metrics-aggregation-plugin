@@ -138,6 +138,16 @@
       <artifactId>font-awesome-api</artifactId>
       <version>5.10.1-1-beta1</version>
     </dependency>
+    <dependency>
+      <groupId>io.jenkins.plugins</groupId>
+      <artifactId>data-tables-api</artifactId>
+      <version>1.10.20-1-beta3</version>
+    </dependency>
+    <dependency>
+      <groupId>io.jenkins.plugins</groupId>
+      <artifactId>echarts-api</artifactId>
+      <version>4.4.0-3-beta2-SNAPSHOT</version>
+    </dependency>
 
     <!-- other plugins to get metrics from -->
     <dependency>

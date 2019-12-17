@@ -12,7 +12,7 @@
             var chart = echarts.init($(this)[0], 'light');
             var options = {
                 title: {
-                    text: 'Histogram of ' + metricName,
+                    text: 'Histogram of "' + metricName + '"',
                     left: 'center'
                 },
                 tooltip: {

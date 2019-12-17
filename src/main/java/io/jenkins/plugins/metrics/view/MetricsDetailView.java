@@ -14,7 +14,7 @@ import hudson.model.ModelObject;
 import hudson.model.Run;
 
 import io.jenkins.plugins.metrics.extension.MetricsProviderFactory;
-import io.jenkins.plugins.metrics.model.Metric;
+import io.jenkins.plugins.metrics.model.MetricDefinition;
 import io.jenkins.plugins.metrics.model.MetricsMeasurement;
 import io.jenkins.plugins.metrics.model.MetricsProvider;
 import io.jenkins.plugins.metrics.model.MetricsTreeNode;
@@ -27,14 +27,14 @@ import io.jenkins.plugins.metrics.util.JacksonFacade;
  */
 @SuppressWarnings({"PMD.ExcessiveImports", "ClassDataAbstractionCoupling", "ClassFanOutComplexity"})
 @ExportedBean
-public class MetricsDetail implements ModelObject {
+public class MetricsDetailView implements ModelObject {
     private final Run<?, ?> owner;
     private final List<MetricsMeasurement> metricsMeasurements;
-    private final List<Metric> supportedMetrics;
+    private final List<MetricDefinition> supportedMetrics;
     private final List<String> projectOverview;
     private final Map<String, Double> metricsMaxima;
 
-    public MetricsDetail(final Run<?, ?> owner) {
+    public MetricsDetailView(final Run<?, ?> owner) {
         this.owner = owner;
         metricsMeasurements = MetricsProviderFactory.getAllFor(owner.getAllActions()).stream()
                 .map(MetricsProvider::getMetricsMeasurements)
@@ -49,9 +49,9 @@ public class MetricsDetail implements ModelObject {
         supportedMetrics = MetricsProviderFactory.getAllSupportedMetricsFor(owner.getAllActions());
 
         metricsMaxima = supportedMetrics.stream()
-                .collect(Collectors.toMap(Metric::getId, metric -> metricsMeasurements.stream()
+                .collect(Collectors.toMap(MetricDefinition::getId, metric -> metricsMeasurements.stream()
                         .map(metricsMeasurement -> metricsMeasurement.getMetric(metric.getId()))
-                        .map(d -> d.orElse(0.0))
+                        .map(d -> d.orElse(0.0).doubleValue())
                         .filter(Double::isFinite)
                         .max(Double::compare)
                         .orElse(0.0))
@@ -83,7 +83,7 @@ public class MetricsDetail implements ModelObject {
 
     @JavaScriptMethod
     @SuppressWarnings("unused") // used by jelly view
-    public List<Metric> getSupportedMetrics() {
+    public List<MetricDefinition> getSupportedMetrics() {
         return supportedMetrics;
     }
 
@@ -117,7 +117,7 @@ public class MetricsDetail implements ModelObject {
     public MetricsTreeNode getMetricsTree(final String valueKey) {
         MetricsTreeNode root = metricsMeasurements.stream()
                 .map(measurement -> {
-                    double value = measurement.getMetric(valueKey).orElse(0.0);
+                    double value = measurement.getMetric(valueKey).orElse(0.0).doubleValue();
                     if (!Double.isFinite(value)) {
                         value = 0.0;
                     }
@@ -136,6 +136,7 @@ public class MetricsDetail implements ModelObject {
     private List<Double> getAllMetrics(final String metricId) {
         return metricsMeasurements.stream()
                 .map(m -> m.getMetric(metricId).orElse(Double.NaN))
+                .map(Number::doubleValue)
                 .filter(Double::isFinite)
                 .collect(Collectors.toList());
     }
