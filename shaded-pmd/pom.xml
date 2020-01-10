@@ -2,22 +2,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.jenkins-ci</groupId>
-    <artifactId>jenkins</artifactId>
-    <version>1.31</version>
-    <relativePath/>
-  </parent>
-
-  <groupId>io.jenkins.plugins.metrics-analysis</groupId>
-  <artifactId>pmd</artifactId>
+  <groupId>io.jenkins.plugins.metrics-aggregation</groupId>
+  <artifactId>shaded-pmd</artifactId>
   <packaging>jar</packaging>
-  <version>1.0-SNAPSHOT</version>
-  <name>Shaded PMD for Metrics Analysis plugin</name>
+  <version>6.20.0-1</version>
+  <name>Shaded PMD for Metrics Aggregation plugin</name>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
     <pmd.version>6.20.0</pmd.version>
   </properties>
 
@@ -76,27 +68,5 @@
       </plugins>
     </pluginManagement>
   </build>
-
-  <!-- Assuming you want to host on @jenkinsci:
-  <scm>
-      <connection>scm:git:git://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
-      <developerConnection>scm:git:git@github.com:jenkinsci/${project.artifactId}-plugin.git</developerConnection>
-      <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
-  </scm>
-  -->
-
-  <repositories>
-    <repository>
-      <id>repo.jenkins-ci.org</id>
-      <url>http://repo.jenkins-ci.org/public/</url>
-    </repository>
-  </repositories>
-
-  <pluginRepositories>
-    <pluginRepository>
-      <id>repo.jenkins-ci.org</id>
-      <url>http://repo.jenkins-ci.org/public/</url>
-    </pluginRepository>
-  </pluginRepositories>
 
 </project>

@@ -5,8 +5,8 @@ JENKINS_HOME=../docker/volumes/jenkins-home
 mvn clean install -DskipTests || { echo "Build failed"; exit 1; }
 
 echo "Installing plugin in $JENKINS_HOME"
-rm -rf $JENKINS_HOME/plugins/metrics-analysis*
-cp -fv target/metrics-analysis.hpi $JENKINS_HOME/plugins/metrics-analysis.jpi
+rm -rf $JENKINS_HOME/plugins/metrics-aggregation*
+cp -fv plugin/target/metrics-aggregation.hpi $JENKINS_HOME/plugins/metrics-aggregation.jpi
 
 CURRENT_UID="$(id -u):$(id -g)"
 export CURRENT_UID
