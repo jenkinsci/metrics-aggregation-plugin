@@ -80,8 +80,8 @@
   <dependencies>
     <!-- shaded PMD -->
     <dependency>
-      <groupId>io.jenkins.plugins.metrics-aggregation</groupId>
-      <artifactId>shaded-pmd</artifactId>
+      <groupId>io.jenkins.plugins</groupId>
+      <artifactId>metrics-aggregation-shaded-pmd</artifactId>
       <version>6.20.0-1</version>
     </dependency>
 
