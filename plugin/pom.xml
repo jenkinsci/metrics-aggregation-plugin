@@ -10,10 +10,10 @@
     <relativePath/>
   </parent>
 
-  <groupId>io.jenkins.plugins.metrics-aggregation</groupId>
-  <artifactId>plugin</artifactId>
+  <groupId>io.jenkins.plugins</groupId>
+  <artifactId>metrics-aggregation</artifactId>
   <packaging>hpi</packaging>
-  <name>Metrics Aggregation Plugin</name>
+  <name>Metrics Aggregation</name>
   <version>${revision}${changelist}</version>
   <url>https://github.com/andipabst/metrics-aggregation-plugin</url>
   <description>The Metrics Aggregation plugin collects and visualizes metrics from different sources</description>
