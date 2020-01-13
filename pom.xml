@@ -10,7 +10,7 @@
   </parent>
 
   <groupId>io.jenkins.plugins</groupId>
-  <artifactId>metrics-aggregation-parent</artifactId>
+  <artifactId>metrics-aggregation</artifactId>
   <packaging>pom</packaging>
   <version>0.1.0-beta0-SNAPSHOT</version>
   <name>Metrics Aggregation Parent</name>
@@ -24,38 +24,6 @@
     <module>shaded-pmd</module>
     <module>plugin</module>
   </modules>
-
-  <developers>
-    <developer>
-      <id>andipabst</id>
-      <name>Andreas Pabst</name>
-    </developer>
-  </developers>
-
-  <scm>
-    <connection>scm:git:git://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
-    <developerConnection>scm:git:git@github.com:jenkinsci/${project.artifactId}-plugin.git</developerConnection>
-    <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
-    <tag>${scmTag}</tag>
-  </scm>
-
-  <repositories>
-    <repository>
-      <id>repo.jenkins-ci.org</id>
-      <url>https://repo.jenkins-ci.org/public/</url>
-    </repository>
-    <repository>
-      <id>incrementals.repo.jenkins-ci.org</id>
-      <url>https://repo.jenkins-ci.org/incrementals/</url>
-    </repository>
-  </repositories>
-
-  <pluginRepositories>
-    <pluginRepository>
-      <id>repo.jenkins-ci.org</id>
-      <url>https://repo.jenkins-ci.org/public/</url>
-    </pluginRepository>
-  </pluginRepositories>
 
   <build>
     <pluginManagement>
