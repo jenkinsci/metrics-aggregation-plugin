@@ -18,6 +18,8 @@
 
   <properties>
     <java.level>8</java.level>
+    <jenkins.version>2.138.4</jenkins.version>    
+    <jenkins-test-harness.version>2.49</jenkins-test-harness.version>
   </properties>
 
   <modules>
