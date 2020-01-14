@@ -47,16 +47,6 @@ public class ClassMetricsMeasurementTest {
     }
 
     @Test
-    public void shouldSerializeMultipleToJson() {
-        List<ClassMetricsMeasurement> measurements = Lists.newArrayList(new ClassMetricsMeasurement(),
-                new ClassMetricsMeasurement(), new ClassMetricsMeasurement());
-
-        final String json = jacksonFacade.toJson(measurements);
-
-        assertThat(json).contains("lalala");
-    }
-
-    @Test
     public void shouldGetMetric() {
         final String metricId = "TESTMETRIC";
         final int metricValue = 17;

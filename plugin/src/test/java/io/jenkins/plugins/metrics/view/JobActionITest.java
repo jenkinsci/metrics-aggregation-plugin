@@ -9,6 +9,7 @@ import org.jvnet.hudson.test.JenkinsRule.WebClient;
 import org.xml.sax.SAXException;
 
 import com.gargoylesoftware.htmlunit.ElementNotFoundException;
+import com.gargoylesoftware.htmlunit.WebAssert;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 import hudson.model.Action;
@@ -23,20 +24,19 @@ public class JobActionITest {
     @Rule
     public JenkinsRule jenkins = new JenkinsRule();
 
-    @Test(expected = ElementNotFoundException.class)
+    @Test
     public void shouldDisplayMetricsActionAfterFirstBuild() throws IOException, SAXException {
         WebClient webClient = IntegrationTestUtil.getWebClient(jenkins, false);
 
         FreeStyleProject project = jenkins.createFreeStyleProject();
         HtmlPage projectPage = webClient.getPage(project);
-        final String metricsUrl = projectPage.getBaseURL().getPath() + "metrics";
+        final String metricsLinkXPath = "//a[@href=\"" + projectPage.getBaseURL().getPath() + "metrics\"]";
 
-        // should throw an ElementNotFoundException
-        projectPage.getAnchorByHref(metricsUrl);
+        WebAssert.assertElementNotPresentByXPath(projectPage, metricsLinkXPath);
 
         project.scheduleBuild2(0, new Action[0]);
 
         projectPage = webClient.getPage(project);
-        assertThat(projectPage.getAnchorByHref(metricsUrl)).isNotNull();
+        WebAssert.assertElementPresentByXPath(projectPage, metricsLinkXPath);
     }
 }

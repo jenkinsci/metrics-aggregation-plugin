@@ -27,7 +27,6 @@ import io.jenkins.plugins.metrics.util.JacksonFacade;
  *
  * @author Andreas Pabst
  */
-//@SuppressWarnings({"PMD.ExcessiveImports", "ClassDataAbstractionCoupling", "ClassFanOutComplexity"})
 @ExportedBean
 public class MetricsDetailView implements ModelObject {
     private final Run<?, ?> owner;
