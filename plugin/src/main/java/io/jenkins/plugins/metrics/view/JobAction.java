@@ -83,7 +83,10 @@ public class JobAction implements Action {
         @Nonnull
         @Override
         public Collection<? extends Action> createFor(@Nonnull final Job target) {
-            return Collections.singleton(new JobAction(target));
+            if (target.getFirstBuild() != null) {
+                return Collections.singleton(new JobAction(target));
+            }
+            return Collections.emptySet();
         }
     }
 

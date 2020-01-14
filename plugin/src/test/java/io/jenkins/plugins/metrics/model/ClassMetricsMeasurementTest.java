@@ -53,7 +53,7 @@ public class ClassMetricsMeasurementTest {
 
         final String json = jacksonFacade.toJson(measurements);
 
-        assertThat(json).contains("lalal");
+        assertThat(json).contains("lalala");
     }
 
     @Test

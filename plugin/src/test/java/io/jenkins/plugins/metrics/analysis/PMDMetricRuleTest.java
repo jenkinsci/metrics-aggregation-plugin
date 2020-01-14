@@ -49,7 +49,8 @@ public class PMDMetricRuleTest {
         metrics.put(JavaClassMetricKey.NCSS, 2.0);
         metrics.put(JavaClassMetricKey.CLASS_FAN_OUT, 3.0);
 
-        String message = rule.getMetricsAsMessageString(metrics);
-        assertThat(message).isEqualTo("LOC=1.0,NCSS=2.0,CLASS_FAN_OUT=3.0,");
+        String[] message = rule.getMetricsAsMessageString(metrics).split(",");
+        assertThat(message).hasSize(3);
+        assertThat(message).containsExactlyInAnyOrder("LOC=1.0", "NCSS=2.0", "CLASS_FAN_OUT=3.0");
     }
 }

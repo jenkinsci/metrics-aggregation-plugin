@@ -17,5 +17,5 @@ This plugin was created as part of a masters thesis at University of Applied Sci
 
 All source code is licensed under the MIT license.
 
-[![GitHub pull requests](https://img.shields.io/github/issues-pr/andipabst/metrics-analysis-plugin.svg)](https://github.com/andipabst/metrics-analysis-plugin/pulls)
+[![GitHub pull requests](https://img.shields.io/github/issues-pr/andipabst/metrics-aggregation-plugin.svg)](https://github.com/andipabst/metrics-analysis-plugin/pulls)
 

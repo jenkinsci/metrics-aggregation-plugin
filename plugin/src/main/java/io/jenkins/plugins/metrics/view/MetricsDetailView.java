@@ -23,11 +23,11 @@ import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
 import io.jenkins.plugins.metrics.util.JacksonFacade;
 
 /**
- * Build view for metrics.
+ * Build view for displaying metrics.
  *
  * @author Andreas Pabst
  */
-@SuppressWarnings({"PMD.ExcessiveImports", "ClassDataAbstractionCoupling", "ClassFanOutComplexity"})
+//@SuppressWarnings({"PMD.ExcessiveImports", "ClassDataAbstractionCoupling", "ClassFanOutComplexity"})
 @ExportedBean
 public class MetricsDetailView implements ModelObject {
     private final Run<?, ?> owner;

@@ -16,6 +16,7 @@ import org.jenkinsci.plugins.workflow.steps.Step;
 import org.jenkinsci.plugins.workflow.steps.StepContext;
 import org.jenkinsci.plugins.workflow.steps.StepDescriptor;
 import org.jenkinsci.plugins.workflow.steps.StepExecution;
+import org.jenkinsci.plugins.workflow.steps.SynchronousNonBlockingStepExecution;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.model.Run;
@@ -24,10 +25,8 @@ import hudson.model.TaskListener;
 /**
  * Pipeline step that reports metrics from the build.
  */
-@SuppressWarnings({"PMD.ExcessivePublicCount", "PMD.ExcessiveImports", "PMD.TooManyFields", "PMD.DataClass"})
 public class MetricsPipelineStep extends Step implements Serializable {
     private static final long serialVersionUID = 1L;
-
     private String filePattern;
 
     /**
@@ -41,7 +40,7 @@ public class MetricsPipelineStep extends Step implements Serializable {
 
     @Override
     public StepExecution start(final StepContext context) {
-        return new Execution(context, this);
+        return new Execution(context);
     }
 
     @DataBoundSetter
@@ -56,23 +55,33 @@ public class MetricsPipelineStep extends Step implements Serializable {
     /**
      * Actually performs the execution of the associated step.
      */
-    static class Execution extends AnalysisExecution<Void> {
+    static class Execution extends SynchronousNonBlockingStepExecution<Void> {
         private static final long serialVersionUID = -2840020502160375407L;
 
-        private final MetricsPipelineStep step;
-
-        Execution(@NonNull final StepContext context, final MetricsPipelineStep step) {
+        Execution(@NonNull final StepContext context) {
             super(context);
-            this.step = step;
         }
 
         @Override
         protected Void run() throws IOException, InterruptedException {
-            FilePath workspace = getWorkspace();
+            FilePath workspace = getContext().get(FilePath.class);
+            if (workspace == null) {
+                throw new IOException("No workspace available for " + toString());
+            }
             workspace.mkdirs();
 
+            Run<?, ?> run = getContext().get(Run.class);
+            if (run == null) {
+                throw new IOException("Can't resolve Run for " + toString());
+            }
+
+            TaskListener taskListener = getContext().get(TaskListener.class);
+            if (taskListener == null) {
+                taskListener = TaskListener.NULL;
+            }
+
             MetricsRecorder recorder = new MetricsRecorder();
-            recorder.perform(getRun(), workspace, getTaskListener());
+            recorder.perform(run, workspace, taskListener);
             return null;
         }
 

@@ -19,7 +19,7 @@ public class ViewAction implements RunAction2, StaplerProxy {
 
     public static final String ID = "metrics";
     public static final String NAME = Messages.Metrics();
-    public static final String ICON = "/plugin/metrics-analysis/icons/metrics-24x24.png";
+    public static final String ICON = "/plugin/metrics-aggregation/icons/metrics-24x24.png";
 
     public ViewAction(final Run<?, ?> owner) {
         this.owner = owner;

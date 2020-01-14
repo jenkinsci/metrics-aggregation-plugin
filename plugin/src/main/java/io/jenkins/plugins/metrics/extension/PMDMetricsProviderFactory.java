@@ -21,67 +21,67 @@ public class PMDMetricsProviderFactory extends MetricsProviderFactory<MetricsAct
     private static final MetricDefinition ATFD = new MetricDefinition("ATFD",
             "Access to Foreign Data",
             "Number of usages of foreign attributes, both directly and through accessors.",
-            "metrics-analysis-plugin (pmd)",
+            "metrics-aggregation-plugin (pmd)",
             20,
             ArrayUtils.toArray(Scope.METHOD, Scope.CLASS));
     private static final MetricDefinition CLASS_FAN_OUT = new MetricDefinition("CLASS_FAN_OUT",
             "Class Fan Out Complexity",
             "Counts the number of other classes a given class or operation relies on.",
-            "metrics-analysis-plugin (pmd)",
+            "metrics-aggregation-plugin (pmd)",
             20,
             ArrayUtils.toArray(Scope.METHOD, Scope.CLASS));
     private static final MetricDefinition CYCLO = new MetricDefinition("CYCLO",
             "Cyclomatic Complexity",
             "Number of independent paths through a block of code. Formally, given that the control flow graph of the block has n vertices, e edges and p connected components, the cyclomatic complexity of the block is given by CYCLO = e - n + 2p. In practice it can be calculated by counting control flow statements following the standard rules given below.",
-            "metrics-analysis-plugin (pmd)",
+            "metrics-aggregation-plugin (pmd)",
             20,
             ArrayUtils.toArray(Scope.METHOD));
     private static final MetricDefinition LOC = new MetricDefinition("LOC",
             "Lines of Code",
             "Simply counts the number of lines of code the operation or class takes up in the source.",
-            "metrics-analysis-plugin (pmd)",
+            "metrics-aggregation-plugin (pmd)",
             5,
             ArrayUtils.toArray(Scope.METHOD, Scope.CLASS));
     private static final MetricDefinition NCSS = new MetricDefinition("NCSS",
             "Non-commenting source statements",
             "Number of statements in a class or operation. That’s roughly equivalent to counting the number of semicolons and opening braces in the program. Comments and blank lines are ignored, and statements spread on multiple lines count as only one (e.g. int\\n a; counts a single statement).",
-            "metrics-analysis-plugin (pmd)",
+            "metrics-aggregation-plugin (pmd)",
             5,
             ArrayUtils.toArray(Scope.METHOD, Scope.CLASS));
     private static final MetricDefinition NOAM = new MetricDefinition("NOAM",
             "Number of Accessor Methods",
             "",
-            "metrics-analysis-plugin (pmd)",
+            "metrics-aggregation-plugin (pmd)",
             20,
             ArrayUtils.toArray(Scope.CLASS));
     private static final MetricDefinition NOPA = new MetricDefinition("NOPA",
             "Number of Public Attributes",
             "",
-            "metrics-analysis-plugin (pmd)",
+            "metrics-aggregation-plugin (pmd)",
             20,
             ArrayUtils.toArray(Scope.CLASS));
     private static final MetricDefinition NPATH = new MetricDefinition("NPATH",
             "NPath complexity",
             "Number of acyclic execution paths through a piece of code. This is related to cyclomatic complexity, but the two metrics don’t count the same thing: NPath counts the number of distinct full paths from the beginning to the end of the method, while Cyclo only counts the number of decision points. NPath is not computed as simply as Cyclo. With NPath, two decision points appearing sequentially have their complexity multiplied.",
-            "metrics-analysis-plugin (pmd)",
+            "metrics-aggregation-plugin (pmd)",
             20,
             ArrayUtils.toArray(Scope.METHOD));
     private static final MetricDefinition TCC = new MetricDefinition("TCC",
             "Tight Class Cohesion",
             "The relative number of method pairs of a class that access in common at least one attribute of the measured class.",
-            "metrics-analysis-plugin (pmd)",
+            "metrics-aggregation-plugin (pmd)",
             20,
             ArrayUtils.toArray(Scope.CLASS));
     private static final MetricDefinition WMC = new MetricDefinition("WMC",
             "Weighted Method Count",
             "Sum of the statistical complexity of the operations in the class. We use CYCLO to quantify the complexity of an operation.",
-            "metrics-analysis-plugin (pmd)",
+            "metrics-aggregation-plugin (pmd)",
             20,
             ArrayUtils.toArray(Scope.CLASS));
     private static final MetricDefinition WOC = new MetricDefinition("WOC",
             "Weight of Class",
             "Number of “functional” public methods divided by the total number of public methods. Our definition of “functional method” excludes constructors, getters, and setters.",
-            "metrics-analysis-plugin (pmd)",
+            "metrics-aggregation-plugin (pmd)",
             20,
             ArrayUtils.toArray(Scope.CLASS));
 
@@ -93,7 +93,7 @@ public class PMDMetricsProviderFactory extends MetricsProviderFactory<MetricsAct
     @Override
     public MetricsProvider getFor(final List<MetricsAction> actions) {
         MetricsProvider provider = new MetricsProvider();
-        provider.setOrigin("metrics-analysis-plugin (pmd)");
+        provider.setOrigin("metrics-aggregation-plugin (pmd)");
 
         provider.setMetricsMeasurements(actions.stream()
                 .map(MetricsAction::getMetricsMeasurements)
@@ -105,7 +105,10 @@ public class PMDMetricsProviderFactory extends MetricsProviderFactory<MetricsAct
                 .flatMap(m -> m.getMetricsMeasurements().stream())
                 .filter(metricsMeasurement -> metricsMeasurement instanceof ClassMetricsMeasurement)
                 .count();
-        provider.addProjectSummaryEntry(String.format("%d classes", numberOfClasses));
+
+        if (numberOfClasses > 0) {
+            provider.addProjectSummaryEntry(String.format("%d classes", numberOfClasses));
+        }
 
         long totalLOC = actions.stream()
                 .flatMap(m -> m.getMetricsMeasurements().stream())
@@ -113,7 +116,9 @@ public class PMDMetricsProviderFactory extends MetricsProviderFactory<MetricsAct
                 .map(m -> m.getMetric("LOC").orElse(0.0).doubleValue())
                 .reduce(0.0, Double::sum)
                 .longValue();
-        provider.addProjectSummaryEntry(String.format("%d lines of code", totalLOC));
+        if (totalLOC > 0) {
+            provider.addProjectSummaryEntry(String.format("%d lines of code", totalLOC));
+        }
 
         return provider;
     }
@@ -128,7 +133,7 @@ public class PMDMetricsProviderFactory extends MetricsProviderFactory<MetricsAct
     }
 
     /**
-     * Return all metrics supported by the metrics-analysis-plugin, i.e. by PMD.
+     * Return all metrics supported by the metrics-aggregation plugin, i.e. by PMD.
      *
      * @return a list of supported {@link MetricDefinition}s
      */
