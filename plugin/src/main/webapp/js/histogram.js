@@ -21,12 +21,14 @@
                 },
                 xAxis: {
                     name: metricName,
+                    nameLocation: 'center',
+                    nameGap: 30,
                     type: 'category',
                     data: histogramData.labels
                 },
                 yAxis: {
                     name: 'Number of Classes',
-                    type: 'value'
+                    type: 'log' 
                 },
                 series: [{
                     data: histogramData.data,

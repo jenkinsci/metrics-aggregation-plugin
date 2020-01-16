@@ -37,6 +37,8 @@
                             show: true,
                             formatter: '{b}'
                         },
+                        // disable zooming by scrolling, but still be able to move the treemap around
+                        roam: 'move',
                         upperLabel: {
                             show: true,
                             height: 22

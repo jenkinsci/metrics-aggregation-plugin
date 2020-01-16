@@ -17,12 +17,12 @@ import io.jenkins.plugins.coverage.exception.CoverageException;
 import io.jenkins.plugins.coverage.targets.CoverageElement;
 import io.jenkins.plugins.coverage.targets.CoverageResult;
 import io.jenkins.plugins.coverage.targets.Ratio;
+import io.jenkins.plugins.metrics.model.MetricsProvider;
 import io.jenkins.plugins.metrics.model.measurement.ClassMetricsMeasurement;
+import io.jenkins.plugins.metrics.model.measurement.MetricsMeasurement;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition.Scope;
-import io.jenkins.plugins.metrics.model.measurement.MetricsMeasurement;
-import io.jenkins.plugins.metrics.model.MetricsProvider;
-import io.jenkins.plugins.metrics.model.PercentageMetric;
+import io.jenkins.plugins.metrics.model.metric.PercentageMetric;
 
 @Extension
 @SuppressWarnings("unused") // used via the extension
@@ -87,9 +87,11 @@ public class CoverageMetricsProviderFactory extends MetricsProviderFactory<Cover
 
         overallCoverage.ifPresent(coverageResult -> {
             Ratio classCoverage = coverageResult.getCoverage(CoverageElement.get("Class"));
-            provider.addProjectSummaryEntry(
-                    String.format("Total class coverage: %s Classes (%d%%)", classCoverage.toString(),
-                            classCoverage.getPercentage()));
+            if (classCoverage != null) {
+                provider.addProjectSummaryEntry(
+                        String.format("Total class coverage: %s Classes (%d%%)", classCoverage.toString(),
+                                classCoverage.getPercentage()));
+            }
         });
 
         return provider;

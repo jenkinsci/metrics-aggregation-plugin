@@ -2,7 +2,6 @@ package io.jenkins.plugins.metrics.view;
 
 import java.util.Collection;
 import java.util.Collections;
-
 import javax.annotation.Nonnull;
 
 import edu.umd.cs.findbugs.annotations.Nullable;
@@ -14,14 +13,14 @@ import hudson.model.Run;
 import jenkins.model.RunAction2;
 import jenkins.model.TransientActionFactory;
 
-public class ViewAction implements RunAction2, StaplerProxy {
+public class MetricsViewAction implements RunAction2, StaplerProxy {
     private transient Run<?, ?> owner;
 
     public static final String ID = "metrics";
-    public static final String NAME = Messages.Metrics();
+    public static final String NAME = Messages.metrics();
     public static final String ICON = "/plugin/metrics-aggregation/icons/metrics-24x24.png";
 
-    public ViewAction(final Run<?, ?> owner) {
+    public MetricsViewAction(final Run<?, ?> owner) {
         this.owner = owner;
     }
 
@@ -60,7 +59,7 @@ public class ViewAction implements RunAction2, StaplerProxy {
      */
     @Override
     public Object getTarget() {
-        return new MetricsDetailView(owner);
+        return new MetricsView(owner);
     }
 
     @Extension
@@ -74,7 +73,7 @@ public class ViewAction implements RunAction2, StaplerProxy {
         @Nonnull
         @Override
         public Collection<? extends Action> createFor(@Nonnull final Run target) {
-            return Collections.singleton(new ViewAction(target));
+            return Collections.singleton(new MetricsViewAction(target));
         }
     }
 }

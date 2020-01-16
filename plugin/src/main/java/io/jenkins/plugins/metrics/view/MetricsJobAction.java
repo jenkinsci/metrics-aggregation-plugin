@@ -3,7 +3,6 @@ package io.jenkins.plugins.metrics.view;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
-
 import javax.annotation.Nonnull;
 
 import org.kohsuke.stapler.StaplerRequest;
@@ -19,22 +18,22 @@ import jenkins.model.TransientActionFactory;
  *
  * @author Andreas Pabst
  */
-public class JobAction implements Action {
+public class MetricsJobAction implements Action {
     private final Job<?, ?> owner;
 
     /**
-     * Creates a new instance of {@link JobAction}.
+     * Creates a new instance of {@link MetricsJobAction}.
      *
      * @param owner
      *         the job that owns this action
      */
-    public JobAction(final Job<?, ?> owner) {
+    public MetricsJobAction(final Job<?, ?> owner) {
         this.owner = owner;
     }
 
     @Override
     public String getDisplayName() {
-        return ViewAction.NAME;
+        return MetricsViewAction.NAME;
     }
 
     /**
@@ -44,12 +43,12 @@ public class JobAction implements Action {
      */
     @Override
     public String getIconFileName() {
-        return ViewAction.ICON;
+        return MetricsViewAction.ICON;
     }
 
     @Override
     public String getUrlName() {
-        return ViewAction.ID;
+        return MetricsViewAction.ID;
     }
 
     /**
@@ -68,7 +67,7 @@ public class JobAction implements Action {
         final Run<?, ?> lastCompletedBuild = owner.getLastCompletedBuild();
 
         if (lastCompletedBuild != null) {
-            response.sendRedirect2(String.format("../%d/%s", lastCompletedBuild.getNumber(), ViewAction.ID));
+            response.sendRedirect2(String.format("../%d/%s", lastCompletedBuild.getNumber(), MetricsViewAction.ID));
         }
     }
 
@@ -84,7 +83,7 @@ public class JobAction implements Action {
         @Override
         public Collection<? extends Action> createFor(@Nonnull final Job target) {
             if (target.getFirstBuild() != null) {
-                return Collections.singleton(new JobAction(target));
+                return Collections.singleton(new MetricsJobAction(target));
             }
             return Collections.emptySet();
         }

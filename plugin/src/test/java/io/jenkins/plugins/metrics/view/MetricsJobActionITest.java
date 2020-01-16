@@ -19,7 +19,7 @@ import io.jenkins.plugins.metrics.testutil.IntegrationTestUtil;
 
 import static org.assertj.core.api.Assertions.*;
 
-public class JobActionITest {
+public class MetricsJobActionITest {
 
     @Rule
     public JenkinsRule jenkins = new JenkinsRule();

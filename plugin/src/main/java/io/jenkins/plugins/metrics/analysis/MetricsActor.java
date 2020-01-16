@@ -32,11 +32,11 @@ import jenkins.MasterToSlaveFileCallable;
 
 import io.jenkins.plugins.metrics.extension.PMDMetricsProviderFactory;
 import io.jenkins.plugins.metrics.model.measurement.ClassMetricsMeasurement;
+import io.jenkins.plugins.metrics.model.measurement.MethodMetricsMeasurement;
+import io.jenkins.plugins.metrics.model.measurement.MetricsMeasurement;
 import io.jenkins.plugins.metrics.model.metric.DoubleMetric;
 import io.jenkins.plugins.metrics.model.metric.IntegerMetric;
-import io.jenkins.plugins.metrics.model.measurement.MethodMetricsMeasurement;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
-import io.jenkins.plugins.metrics.model.measurement.MetricsMeasurement;
 import io.jenkins.plugins.metrics.util.FileFinder;
 
 public class MetricsActor extends MasterToSlaveFileCallable<List<MetricsMeasurement>> {
@@ -65,7 +65,7 @@ public class MetricsActor extends MasterToSlaveFileCallable<List<MetricsMeasurem
         FileFinder fileFinder = new FileFinder(filePattern);
         String[] srcFiles = fileFinder.find(workspace);
         listener.getLogger()
-                .printf("[Metrics] Analyzing %d files matching the pattern '%s' in %s\n",
+                .printf("[Metrics] Analyzing %d files matching the pattern '%s' in %s%n",
                         srcFiles.length, filePattern, workspace);
 
         Path workspaceRoot = workspace.toPath();
@@ -81,7 +81,7 @@ public class MetricsActor extends MasterToSlaveFileCallable<List<MetricsMeasurem
                 new ResourceLoader(getClass().getClassLoader()));
 
         PMD.processFiles(configuration, ruleSetFactory, files, ruleContext,
-                Collections.singletonList(new MetricsLogRenderer(metricsReport, listener)));
+                Collections.singletonList(new MetricsLogRenderer(metricsReport, listener, srcFiles.length)));
 
         return metricsReport;
     }
@@ -110,11 +110,17 @@ public class MetricsActor extends MasterToSlaveFileCallable<List<MetricsMeasurem
         private final List<MetricsMeasurement> metricsReport;
         private final TaskListener listener;
         private final Map<String, MetricDefinition> supportedMetrics;
+        private final int totalNumberOfFiles;
+        private int nextReport;
+        private int analyzedFiles = 0;
 
-        MetricsLogRenderer(final List<MetricsMeasurement> metricsReport, final TaskListener listener) {
+        MetricsLogRenderer(final List<MetricsMeasurement> metricsReport, final TaskListener listener,
+                final int numberOfFiles) {
             super("log-metrics", "Metrics logging renderer");
             this.metricsReport = metricsReport;
             this.listener = listener;
+            this.totalNumberOfFiles = numberOfFiles;
+            this.nextReport = totalNumberOfFiles / 10;
             supportedMetrics = PMDMetricsProviderFactory.getSupportedMetrics()
                     .stream().collect(Collectors.toMap(MetricDefinition::getId, Function.identity()));
         }
@@ -155,7 +161,7 @@ public class MetricsActor extends MasterToSlaveFileCallable<List<MetricsMeasurem
                     MetricDefinition metricDefinition = supportedMetrics.get(metricName);
 
                     if (metricDefinition == null) {
-                        listener.getLogger().printf("Ignoring unknown PMD metric: %s\n", keyValue[0]);
+                        listener.getLogger().printf("Ignoring unknown PMD metric: %s%n", keyValue[0]);
                     }
                     else {
                         switch (metricName) {
@@ -175,7 +181,7 @@ public class MetricsActor extends MasterToSlaveFileCallable<List<MetricsMeasurem
                                 metricsMeasurement.addMetric(new DoubleMetric(metricDefinition, metricValue));
                                 break;
                             default:
-                                listener.getLogger().printf("Ignoring unknown PMD metric: %s\n", keyValue[0]);
+                                listener.getLogger().printf("Ignoring unknown PMD metric: %s%n", keyValue[0]);
                         }
                     }
                 }
@@ -204,6 +210,14 @@ public class MetricsActor extends MasterToSlaveFileCallable<List<MetricsMeasurem
 
         @Override
         public void startFileAnalysis(final DataSource dataSource) {
+            analyzedFiles++;
+            if (analyzedFiles >= nextReport) {
+                listener.getLogger()
+                        .printf("[Metrics] Analyzed %d files (%d%%)%n", analyzedFiles,
+                                (int) ((analyzedFiles / (double) totalNumberOfFiles) * 100));
+
+                nextReport = analyzedFiles + (totalNumberOfFiles / 10);
+            }
         }
 
         @Override

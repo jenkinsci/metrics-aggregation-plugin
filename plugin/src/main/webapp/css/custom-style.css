@@ -1,3 +1,17 @@
+/* Bootstrap dropdown */
+.dropdown-item.active, .dropdown-item:active {
+    color: inherit;
+    text-decoration: none;
+    background-color: inherit;
+}
+
+.dropdown-item.active:before {
+    content: '\2713';
+    position: relative;
+    margin-left: -17px;
+    padding-right: 4px;
+}
+
 /* DataTables */
 table.dataTable {
     border-collapse: collapse !important;

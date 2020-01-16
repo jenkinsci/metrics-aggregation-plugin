@@ -31,7 +31,7 @@ public class MetricDefinition implements Serializable {
         this.description = description;
         this.reportedBy = reportedBy;
         this.priority = priority;
-        this.scopes = scopes;
+        this.scopes = scopes.clone();
     }
 
     public String getDisplayName() {
@@ -75,11 +75,11 @@ public class MetricDefinition implements Serializable {
     }
 
     public Scope[] getScopes() {
-        return scopes;
+        return scopes.clone();
     }
 
     public void setScopes(final Scope[] scopes) {
-        this.scopes = scopes;
+        this.scopes = scopes.clone();
     }
 
     public boolean validForScope(final Scope scope) {

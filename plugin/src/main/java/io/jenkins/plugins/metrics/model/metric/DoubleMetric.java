@@ -31,4 +31,9 @@ public class DoubleMetric extends Metric<Double> {
         DoubleMetric other = (DoubleMetric) o;
         return Objects.equals(other.value, value) && Objects.equals(other.metricDefinition, metricDefinition);
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(metricDefinition, value);
+    }
 }

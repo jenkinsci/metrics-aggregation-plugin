@@ -19,6 +19,10 @@ public abstract class Metric<T extends Number> implements Serializable {
         return metricDefinition.getId();
     }
 
+    public MetricDefinition getMetricDefinition() {
+        return metricDefinition;
+    }
+
     @Override
     public String toString() {
         return String.format("Metric %s: %s (%s)", getId(), renderValue(), rawValue());

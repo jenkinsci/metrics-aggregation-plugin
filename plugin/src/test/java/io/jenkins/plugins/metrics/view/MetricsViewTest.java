@@ -15,7 +15,7 @@ import io.jenkins.plugins.metrics.model.MetricsReport;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class MetricsDetailViewTest {
+class MetricsViewTest {
 
     @Test
     public void shouldGetHistogram() {

@@ -31,4 +31,9 @@ public class IntegerMetric extends Metric<Integer> {
         IntegerMetric other = (IntegerMetric) o;
         return Objects.equals(other.value, value) && Objects.equals(other.metricDefinition, metricDefinition);
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(metricDefinition, value);
+    }
 }

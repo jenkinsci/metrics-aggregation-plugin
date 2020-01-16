@@ -1,7 +1,4 @@
-package io.jenkins.plugins.metrics.model;
-
-import io.jenkins.plugins.metrics.model.metric.Metric;
-import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
+package io.jenkins.plugins.metrics.model.metric;
 
 public class PercentageMetric extends Metric<Float> {
     private static final long serialVersionUID = -239297826452518258L;

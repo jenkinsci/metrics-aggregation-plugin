@@ -1,25 +1,36 @@
 package io.jenkins.plugins.metrics.view;
 
 import java.text.DecimalFormat;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.bind.JavaScriptMethod;
 import org.kohsuke.stapler.export.ExportedBean;
 import hudson.model.ModelObject;
 import hudson.model.Run;
 
+import io.jenkins.plugins.datatables.DefaultAsyncTableContentProvider;
+import io.jenkins.plugins.datatables.TableModel;
 import io.jenkins.plugins.metrics.extension.MetricsProviderFactory;
 import io.jenkins.plugins.metrics.model.MetricsProvider;
 import io.jenkins.plugins.metrics.model.MetricsTreeNode;
 import io.jenkins.plugins.metrics.model.measurement.ClassMetricsMeasurement;
 import io.jenkins.plugins.metrics.model.measurement.MethodMetricsMeasurement;
 import io.jenkins.plugins.metrics.model.measurement.MetricsMeasurement;
+import io.jenkins.plugins.metrics.model.metric.IntegerMetric;
+import io.jenkins.plugins.metrics.model.metric.Metric;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
+import io.jenkins.plugins.metrics.model.metric.MetricDefinition.Scope;
 import io.jenkins.plugins.metrics.util.JacksonFacade;
 
 /**
@@ -28,14 +39,14 @@ import io.jenkins.plugins.metrics.util.JacksonFacade;
  * @author Andreas Pabst
  */
 @ExportedBean
-public class MetricsDetailView implements ModelObject {
+public class MetricsView extends DefaultAsyncTableContentProvider implements ModelObject {
     private final Run<?, ?> owner;
-    private final List<MetricsMeasurement> metricsMeasurements;
+    private final List<ClassMetricsMeasurement> metricsMeasurements;
     private final List<MetricDefinition> supportedMetrics;
     private final List<String> projectOverview;
     private final Map<String, Double> metricsMaxima;
 
-    public MetricsDetailView(final Run<?, ?> owner) {
+    public MetricsView(final Run<?, ?> owner) {
         this.owner = owner;
         metricsMeasurements = MetricsProviderFactory.getAllFor(owner.getAllActions()).stream()
                 .map(MetricsProvider::getMetricsMeasurements)
@@ -63,10 +74,14 @@ public class MetricsDetailView implements ModelObject {
                         return null;
                     }
                 })
-                .filter(Objects::nonNull)
+                .filter(m -> m instanceof ClassMetricsMeasurement)
+                .map(m -> (ClassMetricsMeasurement) m)
                 .collect(Collectors.toList());
 
-        supportedMetrics = MetricsProviderFactory.getAllSupportedMetricsFor(owner.getAllActions());
+        supportedMetrics = MetricsProviderFactory.getAllSupportedMetricsFor(owner.getAllActions())
+                .stream()
+                .filter(metricDefinition -> metricDefinition.validForScope(Scope.CLASS))
+                .collect(Collectors.toList());
 
         metricsMaxima = supportedMetrics.stream()
                 .collect(Collectors.toMap(MetricDefinition::getId, metric -> metricsMeasurements.stream()
@@ -88,7 +103,7 @@ public class MetricsDetailView implements ModelObject {
 
     @Override
     public String getDisplayName() {
-        return Messages.Metrics();
+        return Messages.metrics();
     }
 
     /**
@@ -157,16 +172,37 @@ public class MetricsDetailView implements ModelObject {
                 .collect(Collectors.toList());
     }
 
+    private boolean isIntegerMetric(final String metricId) {
+        Optional<Metric> metric = metricsMeasurements.stream()
+                .map(m -> m.getMetrics().get(metricId))
+                .filter(Objects::nonNull)
+                .findFirst();
+
+        return metric.isPresent() && metric.get() instanceof IntegerMetric;
+    }
+
     @JavaScriptMethod
     @SuppressWarnings("unused") // used by jelly view
     public String getHistogram(final String metricId) {
         List<Double> values = getAllMetrics(metricId);
 
-        final int numBins = 10;
+        if (values.isEmpty()) {
+            return "{\"data\": [], \"labels\":[]}";
+        }
+
+        DescriptiveStatistics statistics = new DescriptiveStatistics();
+        values.forEach(statistics::addValue);
+        
+        final int numBins = (int) (10 * Math.log10(values.size()));
         final int[] histogramData = new int[numBins];
         final double min = values.stream().min(Double::compareTo).orElse(0.0);
         final double max = values.stream().max(Double::compareTo).orElse(0.0);
-        final double binWidth = (max - min) / numBins;
+        double binWidth = (max - min) / numBins;
+
+        // floor the binWidth, if an integer metric is requested
+        if (isIntegerMetric(metricId)) {
+            binWidth = Math.floor(binWidth);
+        }
 
         for (double v : values) {
             int binId = (int) ((v - min) / binWidth);
@@ -194,8 +230,65 @@ public class MetricsDetailView implements ModelObject {
         return toJson(result);
     }
 
+    @JavaScriptMethod
+    @SuppressWarnings("unused") // used by jelly view
+    public String getScatterPlot(final String metricId, final String secondMetricId) {
+        List<ScatterPlotDataItem> data = metricsMeasurements.stream()
+                .map(m -> new ScatterPlotDataItem(m.getClassName(),
+                        m.getMetric(metricId).orElse(Double.NaN),
+                        m.getMetric(secondMetricId).orElse(Double.NaN)))
+                .collect(Collectors.toList());
+
+        return toJson(data);
+    }
+    
     private String toJson(final Object object) {
         JacksonFacade facade = new JacksonFacade();
         return facade.toJson(object);
+    }
+
+    /**
+     * Returns a new sub page for the selected link.
+     *
+     * @param link
+     *         the link to identify the sub page to show
+     * @param request
+     *         Stapler request
+     * @param response
+     *         Stapler response
+     *
+     * @return the new sub page
+     */
+    @SuppressWarnings("unused") // Called by jelly view
+    public Object getDynamic(final String link, final StaplerRequest request, final StaplerResponse response) {
+        return new ClassDetailsView(owner, link);
+    }
+
+    @Override
+    public TableModel getTableModel(final String id) {
+        return new MetricsTableModel(id, supportedMetrics, metricsMeasurements);
+    }
+
+    private static final class ScatterPlotDataItem {
+        private final String name;
+        private final List<Number> value;
+
+        private ScatterPlotDataItem(final String name, final List<Number> value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        private ScatterPlotDataItem(final String name, final Number... values) {
+            this.name = name;
+            this.value = Arrays.asList(values);
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public List<Number> getValue() {
+            return value;
+        }
     }
 }

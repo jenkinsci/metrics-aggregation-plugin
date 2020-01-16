@@ -11,7 +11,6 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
-import org.jenkinsci.Symbol;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -27,8 +26,8 @@ import hudson.tasks.Recorder;
 import jenkins.tasks.SimpleBuildStep;
 
 import io.jenkins.plugins.metrics.analysis.MetricsAction;
-import io.jenkins.plugins.metrics.model.measurement.MetricsMeasurement;
 import io.jenkins.plugins.metrics.analysis.MetricsActor;
+import io.jenkins.plugins.metrics.model.measurement.MetricsMeasurement;
 
 /**
  * Report metrics (freestyle?).
