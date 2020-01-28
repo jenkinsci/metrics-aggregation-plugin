@@ -1,4 +1,3 @@
-
 package io.jenkins.plugins.metrics.analysis.steps;
 
 import java.io.IOException;
@@ -30,11 +29,10 @@ import io.jenkins.plugins.metrics.analysis.MetricsActor;
 import io.jenkins.plugins.metrics.model.measurement.MetricsMeasurement;
 
 /**
- * Report metrics (freestyle?).
+ * Report metrics in a freestyle job.
  *
  * @author Andreas Pabst
  */
-@SuppressWarnings({"PMD.ExcessivePublicCount", "PMD.ExcessiveClassLength", "PMD.ExcessiveImports", "PMD.TooManyFields", "PMD.DataClass", "ClassDataAbstractionCoupling", "ClassFanOutComplexity"})
 public class MetricsRecorder extends Recorder implements SimpleBuildStep {
 
     private String filePattern;

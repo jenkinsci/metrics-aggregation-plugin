@@ -100,6 +100,12 @@
                 <div id="treechart" style="width: 100%; min-height: 500px"/>
               </div>
               <div class="tab-pane fade" id="histogram-content" role="tabpanel" aria-labelledby="histogram-tab">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="" id="histogram-checkbox-log"/>
+                  <label class="form-check-label" for="histogram-checkbox-log">
+                    ${%metricsDistribution.useLogAxis}
+                  </label>
+                </div>
                 <div id="histogram" style="width: 100%; min-height: 500px"/>
               </div>
               <div class="tab-pane fade" id="scatterplot-content" role="tabpanel" aria-labelledby="scatterplot-tab">
@@ -113,6 +119,18 @@
                       <option value="${metric.id}">${metric.displayName}</option>
                     </j:forEach>
                   </select>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="" id="scatterplot-checkbox-log-x"/>
+                  <label class="form-check-label" for="scatterplot-checkbox-log-x">
+                    ${%metricsDistribution.useLogAxisX}
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="" id="scatterplot-checkbox-log-y"/>
+                  <label class="form-check-label" for="scatterplot-checkbox-log-y">
+                    ${%metricsDistribution.useLogAxisY}
+                  </label>
                 </div>
                 <div id="scatterplot" style="width: 100%; min-height: 500px"/>
               </div>

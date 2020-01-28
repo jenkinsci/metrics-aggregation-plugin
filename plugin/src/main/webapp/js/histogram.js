@@ -6,9 +6,14 @@
          *
          * @param {String} model - the chart model
          * @param {String} metricName - the name of the metric, used e.g. as title for the graph
+         * @param {String} logarithmicCheckboxId - the id of the checkbox to use for toggling logarithmic scaling
          */
-        renderHistogram: function (model, metricName) {
+        renderHistogram: function (model, metricName, logarithmicCheckboxId) {
             var histogramData = JSON.parse(model);
+            // replace all `0`s with `null` to enable logarithmic axis scaling
+            if (histogramData && histogramData.data) {
+                histogramData.data = histogramData.data.map(x => x > 0 ? x : null);
+            }
             var chart = echarts.init($(this)[0], 'light');
             var options = {
                 title: {
@@ -28,7 +33,7 @@
                 },
                 yAxis: {
                     name: 'Number of Classes',
-                    type: 'log' 
+                    type: 'value'
                 },
                 series: [{
                     data: histogramData.data,
@@ -41,6 +46,30 @@
                 chart.resize();
             });
             $(this).data('chart', chart);
+            $(logarithmicCheckboxId).change(function () {
+                const checkBox = $(this);
+                if (checkBox.is(':checked')) {
+                    chart.setOption({
+                        yAxis: {
+                            name: 'Number of Classes',
+                            type: 'log',
+                            minorTick: {
+                                show: true
+                            },
+                            minorSplitLine: {
+                                show: true
+                            }
+                        }
+                    })
+                } else {
+                    chart.setOption({
+                        yAxis: {
+                            name: 'Number of Classes',
+                            type: 'value'
+                        }
+                    })
+                }
+            });
         }
     });
 })(jQuery);

@@ -8,7 +8,6 @@ import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.JenkinsRule.WebClient;
 import org.xml.sax.SAXException;
 
-import com.gargoylesoftware.htmlunit.ElementNotFoundException;
 import com.gargoylesoftware.htmlunit.WebAssert;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
@@ -16,8 +15,6 @@ import hudson.model.Action;
 import hudson.model.FreeStyleProject;
 
 import io.jenkins.plugins.metrics.testutil.IntegrationTestUtil;
-
-import static org.assertj.core.api.Assertions.*;
 
 public class MetricsJobActionITest {
 

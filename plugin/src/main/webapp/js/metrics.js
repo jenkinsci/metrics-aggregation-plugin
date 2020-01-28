@@ -24,13 +24,14 @@
             });
 
             view.getHistogram(metric, function (res) {
-                $('#histogram').renderHistogram(res.responseJSON, metricId);
+                $('#histogram').renderHistogram(res.responseJSON, metricId, '#histogram-checkbox-log');
             });
 
             var secondMetric = $('#scatterplot-picker').val();
             var secondMetricId = $('#scatterplot-picker :selected').text();
             view.getScatterPlot(metric, secondMetric, function (res) {
-                $('#scatterplot').renderScatterPlot(res.responseJSON, metricId, secondMetricId);
+                $('#scatterplot').renderScatterPlot(res.responseJSON, metricId, secondMetricId,
+                    '#scatterplot-checkbox-log-x', '#scatterplot-checkbox-log-y');
             });
         }
 

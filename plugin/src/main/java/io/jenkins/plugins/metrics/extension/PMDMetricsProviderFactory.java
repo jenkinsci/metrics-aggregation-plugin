@@ -10,10 +10,10 @@ import org.apache.commons.lang3.ArrayUtils;
 import hudson.Extension;
 
 import io.jenkins.plugins.metrics.analysis.MetricsAction;
+import io.jenkins.plugins.metrics.model.MetricsProvider;
 import io.jenkins.plugins.metrics.model.measurement.ClassMetricsMeasurement;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition.Scope;
-import io.jenkins.plugins.metrics.model.MetricsProvider;
 
 @Extension
 public class PMDMetricsProviderFactory extends MetricsProviderFactory<MetricsAction> {
@@ -110,17 +110,26 @@ public class PMDMetricsProviderFactory extends MetricsProviderFactory<MetricsAct
             provider.addProjectSummaryEntry(String.format("%d classes", numberOfClasses));
         }
 
-        long totalLOC = actions.stream()
-                .flatMap(m -> m.getMetricsMeasurements().stream())
-                .filter(metricsMeasurement -> metricsMeasurement instanceof ClassMetricsMeasurement)
-                .map(m -> m.getMetric("LOC").orElse(0.0).doubleValue())
-                .reduce(0.0, Double::sum)
-                .longValue();
+        double totalLOC = getMetricSum(actions, LOC.getId());
         if (totalLOC > 0) {
-            provider.addProjectSummaryEntry(String.format("%d lines of code", totalLOC));
+            provider.addProjectSummaryEntry(String.format("%d lines of code", (long) totalLOC));
+        }
+        double totalNCSS = getMetricSum(actions, NCSS.getId());
+        if (totalNCSS > 0) {
+            provider.addProjectSummaryEntry(
+                    String.format("%d non-commenting source statements (%.1f%%)", (long) totalNCSS,
+                            totalNCSS / totalLOC * 100));
         }
 
         return provider;
+    }
+
+    private double getMetricSum(final List<MetricsAction> actions, final String metricId) {
+        return actions.stream()
+                .flatMap(m -> m.getMetricsMeasurements().stream())
+                .filter(metricsMeasurement -> metricsMeasurement instanceof ClassMetricsMeasurement)
+                .map(m -> m.getMetric(metricId).orElse(0.0).doubleValue())
+                .reduce(0.0, Double::sum);
     }
 
     @Override

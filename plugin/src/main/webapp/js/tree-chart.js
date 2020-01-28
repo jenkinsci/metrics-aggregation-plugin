@@ -22,6 +22,7 @@
 
                         var fileName = info.treePathInfo
                             .map(i => i.name)
+                            .filter(i => i !== '')
                             .join('.');
 
                         return '<b>' + echarts.format.encodeHTML(fileName) + '</b><br/>'
@@ -37,12 +38,33 @@
                             show: true,
                             formatter: '{b}'
                         },
+                        leafDepth: 1,
                         // disable zooming by scrolling, but still be able to move the treemap around
                         roam: 'move',
                         upperLabel: {
                             show: true,
-                            height: 22
+                            height: 22,
+                            formatter: function (info) {
+                                // shift to remove the first level (name of the metric) from the path
+                                info.treePathInfo.shift();
+
+                                const fileName = info.treePathInfo
+                                    .map(i => i.name)
+                                    .filter(i => i !== '')
+                                    .join('.');
+
+                                return echarts.format.encodeHTML(fileName);
+                            }
                         },
+                        /*
+                        visualMap: {
+                            type: 'continuous',
+                            /*min: 0,
+                            max: 10,
+                            inRange: {
+                                color: ['#2D5F73', '#538EA6', '#F2D1B3', '#F2B8A2', '#F28C8C']
+                            }
+                        },*/
                         itemStyle: {
                             color: "#eee",
                             borderColorSaturation: 0.4,

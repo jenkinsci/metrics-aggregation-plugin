@@ -27,7 +27,7 @@ import hudson.model.TaskListener;
  */
 public class MetricsPipelineStep extends Step implements Serializable {
     private static final long serialVersionUID = 1L;
-    private String filePattern;
+    private String filePattern = "**/*.java";
 
     /**
      * Creates a new instance of {@link MetricsPipelineStep}.
@@ -40,7 +40,7 @@ public class MetricsPipelineStep extends Step implements Serializable {
 
     @Override
     public StepExecution start(final StepContext context) {
-        return new Execution(context);
+        return new Execution(context, this);
     }
 
     @DataBoundSetter
@@ -58,8 +58,11 @@ public class MetricsPipelineStep extends Step implements Serializable {
     static class Execution extends SynchronousNonBlockingStepExecution<Void> {
         private static final long serialVersionUID = -2840020502160375407L;
 
-        Execution(@NonNull final StepContext context) {
+        private final MetricsPipelineStep step;
+
+        Execution(@NonNull final StepContext context, final MetricsPipelineStep step) {
             super(context);
+            this.step = step;
         }
 
         @Override
@@ -81,6 +84,7 @@ public class MetricsPipelineStep extends Step implements Serializable {
             }
 
             MetricsRecorder recorder = new MetricsRecorder();
+            recorder.setFilePattern(step.getFilePattern());
             recorder.perform(run, workspace, taskListener);
             return null;
         }

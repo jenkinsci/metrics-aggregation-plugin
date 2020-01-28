@@ -34,7 +34,6 @@ public class MetricsTableModel extends TableModel {
     @Override
     public List<TableColumn> getColumns() {
         List<TableColumn> columns = new ArrayList<>();
-        columns.add(new TableColumn("Details", ""));
         columns.add(new TableColumn("Class", "name"));
 
         columns.addAll(supportedMetrics

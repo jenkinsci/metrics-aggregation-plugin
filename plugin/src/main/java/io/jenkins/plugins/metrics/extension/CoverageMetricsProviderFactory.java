@@ -89,7 +89,7 @@ public class CoverageMetricsProviderFactory extends MetricsProviderFactory<Cover
             Ratio classCoverage = coverageResult.getCoverage(CoverageElement.get("Class"));
             if (classCoverage != null) {
                 provider.addProjectSummaryEntry(
-                        String.format("Total class coverage: %s Classes (%d%%)", classCoverage.toString(),
+                        String.format("class coverage: %s classes (%d%%)", classCoverage.toString(),
                                 classCoverage.getPercentage()));
             }
         });
