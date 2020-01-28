@@ -27,14 +27,16 @@
     <java.level>8</java.level>
     <jenkins-test-harness.version>2.59</jenkins-test-harness.version>
 
+    <shaded-pmd.version>6.21.0-1</shaded-pmd.version>
     <forensics-api-plugin.version>0.6.0</forensics-api-plugin.version>
     <git-forensics-plugin.version>0.6.0</git-forensics-plugin.version>
     <warnings-ng-plugin.version>7.1.0</warnings-ng-plugin.version>
-    <plugin-util-api.version>0.1.0-beta5</plugin-util-api.version>
-    <font-awesome-api.version>5.12.0-1-beta1</font-awesome-api.version>
-    <bootstrap4-api.version>4.4.1-4-beta1</bootstrap4-api.version>
+    <plugin-util-api.version>0.1.0-beta6-rc74.807b71f3775a</plugin-util-api.version>
+    <font-awesome-api.version>5.12.0-2-beta1-rc92.ac59e90c3bb9</font-awesome-api.version>
+    <bootstrap4-api.version>4.4.1-5-beta1-rc118.241724a95779</bootstrap4-api.version>
     <echarts-api.version>4.4.0-7-beta1</echarts-api.version>
     <data-tables-api.version>1.10.20-7-beta1-rc164.325bcf4685fb</data-tables-api.version>
+    <jquery3-api.version>3.4.1-4-beta1-rc84.f9d39e6a0845</jquery3-api.version>
     <code-coverage-api-plugin.version>1.1.0</code-coverage-api-plugin.version>
     <j2html.version>1.4.0</j2html.version>
 
@@ -81,7 +83,7 @@
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>metrics-aggregation-shaded-pmd</artifactId>
-      <version>6.20.0-1</version>
+      <version>${shaded-pmd.version}</version>
     </dependency>
 
     <!-- Jenkins Plugin dependencies-->
@@ -150,6 +152,11 @@
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>data-tables-api</artifactId>
       <version>${data-tables-api.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.jenkins.plugins</groupId>
+      <artifactId>jquery3-api</artifactId>
+      <version>${jquery3-api.version}</version>
     </dependency>
 
     <!-- other plugins to get metrics from -->
