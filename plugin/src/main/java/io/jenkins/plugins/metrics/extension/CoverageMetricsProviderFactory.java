@@ -128,7 +128,7 @@ public class CoverageMetricsProviderFactory extends MetricsProviderFactory<Cover
     }
 
     private float getCoverage(final CoverageResult result, final String id) {
-        Ratio ratio = result.getCoverage(CoverageElement.get("Instruction"));
+        Ratio ratio = result.getCoverage(CoverageElement.get(id));
         if (ratio != null) {
             return ratio.getPercentageFloat();
         }
