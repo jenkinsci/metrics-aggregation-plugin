@@ -192,18 +192,39 @@ public class MetricsView extends DefaultAsyncTableContentProvider implements Mod
 
         DescriptiveStatistics statistics = new DescriptiveStatistics();
         values.forEach(statistics::addValue);
-        
-        final int numBins = (int) (10 * Math.log10(values.size()));
-        final int[] histogramData = new int[numBins];
-        final double min = values.stream().min(Double::compareTo).orElse(0.0);
-        final double max = values.stream().max(Double::compareTo).orElse(0.0);
-        double binWidth = (max - min) / numBins;
 
-        // floor the binWidth, if an integer metric is requested
-        if (isIntegerMetric(metricId)) {
-            binWidth = Math.floor(binWidth);
+        final double min = statistics.getMin();
+        final double max = statistics.getMax();
+        // Freedman-Diaconis rule for calculating the binWidth
+        final double IQR = statistics.getPercentile(75) - statistics.getPercentile(25);
+
+        final int numBins;
+        double binWidth;
+        if (IQR > 0) {
+            binWidth = (2 * IQR) / Math.cbrt(values.size());
+            numBins = (int) Math.round((max - min) / binWidth);
+        }
+        else if (max - min > 0) {
+            // fall back to Sturges rule, if the binWidth would become 0
+            numBins = (int) (1 + Math.log(values.size()) / Math.log(2));
+            binWidth = (max - min) / numBins;
+        }
+        else {
+            // IQR == 0 and min == max -> all datapoints are the same -> use just a single
+            numBins = 1;
+            binWidth = 1;
         }
 
+        // round the binWidth, if an integer metric is requested
+        if (isIntegerMetric(metricId)) {
+            binWidth = Math.round(binWidth);
+            // the binWidth should not be smaller than 1
+            if (binWidth < 1) {
+                binWidth = 1;
+            }
+        }
+
+        final int[] histogramData = new int[numBins];
         for (double v : values) {
             int binId = (int) ((v - min) / binWidth);
             if (binId < 0) {
