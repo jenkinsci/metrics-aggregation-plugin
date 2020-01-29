@@ -1,16 +1,9 @@
 package io.jenkins.plugins.metrics.analysis;
 
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
@@ -68,28 +61,6 @@ class MetricsActorTest {
         staticInnerClass.addMetric(createIntegerMetric("ATFD", 0));
         assertThat(measurements).contains(staticInnerClass);
 
-    }
-
-    @Test
-    void shouldLogProgress() throws URISyntaxException, IOException {
-        File workspace = Paths.get(MetricsActorTest.class.getResource("Test.java").toURI()).getParent().toFile();
-
-        PipedInputStream pipeInput = new PipedInputStream();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(pipeInput));
-        BufferedOutputStream out = new BufferedOutputStream(new PipedOutputStream(pipeInput));
-        StreamTaskListener taskListener = new StreamTaskListener(out);
-
-        List<MetricsMeasurement> measurements = new MetricsActor("Test*.java", taskListener)
-                .invoke(workspace, null);
-
-        out.flush();
-        out.close();
-        List<String> log = reader.lines().collect(Collectors.toList());
-        assertThat(log).containsExactly(
-                "[Metrics] Analyzing 3 files matching the pattern 'Test*.java' in " + workspace.getPath(),
-                "[Metrics] Analyzed 1 files (33%)",
-                "[Metrics] Analyzed 2 files (66%)",
-                "[Metrics] Analyzed 3 files (100%)");
     }
 
     private ClassMetricsMeasurement createClassMetricsMeasurement(final String className, final String packageName,

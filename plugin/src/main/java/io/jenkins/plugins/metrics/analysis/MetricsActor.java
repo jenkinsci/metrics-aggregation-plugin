@@ -81,7 +81,7 @@ public class MetricsActor extends MasterToSlaveFileCallable<List<MetricsMeasurem
                 new ResourceLoader(getClass().getClassLoader()));
 
         PMD.processFiles(configuration, ruleSetFactory, files, ruleContext,
-                Collections.singletonList(new MetricsLogRenderer(metricsReport, listener, srcFiles.length)));
+                Collections.singletonList(new MetricsLogRenderer(metricsReport, listener)));
 
         return metricsReport;
     }
@@ -110,17 +110,11 @@ public class MetricsActor extends MasterToSlaveFileCallable<List<MetricsMeasurem
         private final List<MetricsMeasurement> metricsReport;
         private final TaskListener listener;
         private final Map<String, MetricDefinition> supportedMetrics;
-        private final int totalNumberOfFiles;
-        private int nextReport;
-        private int analyzedFiles = 0;
 
-        MetricsLogRenderer(final List<MetricsMeasurement> metricsReport, final TaskListener listener,
-                final int numberOfFiles) {
+        MetricsLogRenderer(final List<MetricsMeasurement> metricsReport, final TaskListener listener) {
             super("log-metrics", "Metrics logging renderer");
             this.metricsReport = metricsReport;
             this.listener = listener;
-            this.totalNumberOfFiles = numberOfFiles;
-            this.nextReport = totalNumberOfFiles / 10;
             supportedMetrics = PMDMetricsProviderFactory.getSupportedMetrics()
                     .stream().collect(Collectors.toMap(MetricDefinition::getId, Function.identity()));
         }
@@ -210,14 +204,6 @@ public class MetricsActor extends MasterToSlaveFileCallable<List<MetricsMeasurem
 
         @Override
         public void startFileAnalysis(final DataSource dataSource) {
-            analyzedFiles++;
-            if (analyzedFiles >= nextReport) {
-                listener.getLogger()
-                        .printf("[Metrics] Analyzed %d files (%d%%)%n", analyzedFiles,
-                                (int) ((analyzedFiles / (double) totalNumberOfFiles) * 100));
-
-                nextReport = analyzedFiles + (totalNumberOfFiles / 10);
-            }
         }
 
         @Override
