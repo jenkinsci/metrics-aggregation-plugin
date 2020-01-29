@@ -2,7 +2,6 @@ package io.jenkins.plugins.metrics.extension;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,12 +17,12 @@ import io.jenkins.plugins.analysis.core.model.AnalysisResult;
 import io.jenkins.plugins.analysis.core.model.ResultAction;
 import io.jenkins.plugins.forensics.miner.FileStatistics;
 import io.jenkins.plugins.forensics.miner.RepositoryStatistics;
+import io.jenkins.plugins.metrics.model.MetricsProvider;
 import io.jenkins.plugins.metrics.model.measurement.ClassMetricsMeasurement;
+import io.jenkins.plugins.metrics.model.measurement.MetricsMeasurement;
 import io.jenkins.plugins.metrics.model.metric.IntegerMetric;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition.Scope;
-import io.jenkins.plugins.metrics.model.measurement.MetricsMeasurement;
-import io.jenkins.plugins.metrics.model.MetricsProvider;
 
 @Extension
 @SuppressWarnings("unused") // used via the extension
@@ -84,23 +83,22 @@ public class WarningsMetricsProviderFactory extends MetricsProviderFactory<Resul
                     return acc;
                 });
 
-        List<MetricsMeasurement> metricsMeasurements = actions.stream()
+        Report allIssues = actions.stream()
                 .map(ResultAction::getResult)
                 .map(AnalysisResult::getIssues)
-                .peek(report -> {
-                    provider.addProjectSummaryEntry(String.format("%d errors", report.getSizeOf(Severity.ERROR)));
-                    provider.addProjectSummaryEntry(String.format("%d warnings (%d high, %d normal, %d low)",
-                            (report.getSizeOf(Severity.WARNING_HIGH) + report.getSizeOf(Severity.WARNING_NORMAL)
-                                    + report.getSizeOf(Severity.WARNING_LOW)),
-                            report.getSizeOf(Severity.WARNING_HIGH),
-                            report.getSizeOf(Severity.WARNING_NORMAL),
-                            report.getSizeOf(Severity.WARNING_LOW)));
-                })
-                .map(report -> report.groupByProperty("fileName"))
-                .reduce(new HashMap<>(), (acc, map) -> {
-                    map.forEach((key, report) -> acc.merge(key, report, Report::addAll));
-                    return acc;
-                })
+                .reduce(new Report(), Report::addAll);
+
+        provider.addProjectSummaryEntry(String.format("%d errors", allIssues.getSizeOf(Severity.ERROR)));
+        provider.addProjectSummaryEntry(String.format("%d warnings (%d high, %d normal, %d low)",
+                allIssues.getSizeOf(Severity.WARNING_HIGH)
+                        + allIssues.getSizeOf(Severity.WARNING_NORMAL)
+                        + allIssues.getSizeOf(Severity.WARNING_LOW),
+                allIssues.getSizeOf(Severity.WARNING_HIGH),
+                allIssues.getSizeOf(Severity.WARNING_NORMAL),
+                allIssues.getSizeOf(Severity.WARNING_LOW)));
+
+        List<MetricsMeasurement> metricsMeasurements = allIssues
+                .groupByProperty("fileName")
                 .entrySet().stream()
                 .map(entry -> {
                     ClassMetricsMeasurement measurement = new ClassMetricsMeasurement();
