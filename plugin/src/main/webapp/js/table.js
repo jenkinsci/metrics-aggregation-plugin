@@ -1,4 +1,4 @@
-/* global jQuery, math, metricsMaxima, view */
+/* global jQuery, math, view */
 (function ($) {
 
     $.fn.extend({
@@ -8,77 +8,57 @@
          * @param {Array} supportedMetrics - the metrics supported for this table
          */
         renderMetricsTable: function (supportedMetrics) {
-
-            var table = $(this).DataTable({
+            const table = $(this).DataTable({
                 ajax: function (_data, callback, _settings) {
                     view.getMetricsJSON(res => {
-                        callback({data: JSON.parse(res.responseJSON)});
+                        callback({data: JSON.parse(res.responseJSON).rows});
                     });
                 },
                 columns: [
                     {
+                        name: '',
+                        orderable: false,
+                        data: null,
+                        width: '10px',
+                        title: '',
+                        defaultContent: "<span class='details-control'/>"
+                    },
+                    {
                         data: 'className',
-                        name: 'className',
                         title: 'Class',
-                        defaultContent: ''
+                        defaultContent: '',
+                        className: 'hideable'
                     },
                     ...supportedMetrics
                         .filter(({scopes}) => scopes.includes('CLASS'))
                         .map(({id, displayName}) => ({
                                 data: 'metricsDisplay.' + id,
-                                name: 'metricsRaw.' + id,
                                 title: displayName,
-                                defaultContent: ''
+                            defaultContent: '',
+                            className: 'hideable'
                             })
                         )
                 ],
                 order: [[1, 'asc']],
-                responsive: {},
+                responsive: {
+                    details: {
+                        type: 'column'
+                    }
+                },
                 colReorder: {
                     fixedColumnsLeft: 1
                 },
                 buttons: {
                     buttons: [{
-                        extend: 'columnsToggle',
+                        extend: 'colvis',
                         columns: '.hideable'
-                    }],
-                    dom: {
-                        container: {
-                            className: 'dropdown-menu'
-                        },
-                        button: {
-                            className: 'dropdown-item',
-                            tag: 'button',
-                            active: 'selected'
-                        },
-                        buttonLiner: {
-                            tag: null
-                        }
-                    }
+                    }]
+                },
+                initComplete: function (settings, _json) {
+                    const api = new $.fn.dataTable.Api(settings);
+                    api.buttons().container().appendTo($('#column-dropdown'));
                 }
             });
-
-
-            /*
-            // Event listener for coloring the table columns
-            $('#metrics-table tbody')
-                .on('mouseenter', 'td', function () {
-                    var column = table.column($(this));
-                    var metricId = (column.name() || '').replace('metrics.', '');
-                    var maxValue = metricsMaxima[metricId];
-                    table.cells(':visible', column.index()).every(function () {
-                        var lightness = (1 - this.data() / maxValue) * 60 + 35;
-                        //$(this.node()).addClass('warning');
-                        $(this.node()).css('background', 'hsl(200, 100%, ' + lightness + '%)');
-                    });
-                })
-                .on('mouseleave', 'td', function () {
-                    var column = table.column($(this));
-                    table.cells(':visible', column.index()).every(function () {
-                        $(this.node()).css('background', '');
-                    });
-                });
-                */
         }
     });
 })(jQuery);

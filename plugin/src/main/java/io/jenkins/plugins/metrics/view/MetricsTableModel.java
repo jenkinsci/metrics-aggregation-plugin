@@ -34,7 +34,7 @@ public class MetricsTableModel extends TableModel {
     @Override
     public List<TableColumn> getColumns() {
         List<TableColumn> columns = new ArrayList<>();
-        columns.add(new TableColumn("Class", "name"));
+        columns.add(new TableColumn("Class", "className"));
 
         columns.addAll(supportedMetrics
                 .stream()
@@ -75,7 +75,7 @@ public class MetricsTableModel extends TableModel {
          *
          * @return a link to the details with the name of the class as text
          */
-        public String getName() {
+        public String getClassName() {
             return span()
                     .withTitle(metricsMeasurement.getPackageName())
                     .with(a()

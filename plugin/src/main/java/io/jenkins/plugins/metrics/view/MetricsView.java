@@ -140,7 +140,8 @@ public class MetricsView extends DefaultAsyncTableContentProvider implements Mod
     @JavaScriptMethod
     @SuppressWarnings("unused") // used by jelly view
     public String getMetricsJSON() {
-        return toJson(metricsMeasurements);
+        //return toJson(metricsMeasurements);
+        return toJson(new MetricsTableModel("metrics-table", supportedMetrics, metricsMeasurements));
     }
 
     @JavaScriptMethod

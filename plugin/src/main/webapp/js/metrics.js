@@ -7,7 +7,7 @@
          ------------------------------------------------------------------------------ */
 
         view.getSupportedMetrics(function (res) {
-            //$('#metrics-table').renderMetricsTable(res.responseJSON);
+            $('#metrics-table').renderMetricsTable(res.responseJSON);
             $('#table-filter').filterTable(res.responseJSON || [], $('#metrics-table'));
         });
 

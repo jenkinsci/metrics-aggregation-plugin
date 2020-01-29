@@ -1,6 +1,6 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:l="/lib/layout" xmlns:bs="/bootstrap"
-         xmlns:dt="/data-tables">
+>
 
   <st:header name="Content-Type" value="text/html;charset=UTF-8"/>
 
@@ -13,7 +13,10 @@
       <st:adjunct includes="io.jenkins.plugins.jquery3"/>
       <st:adjunct includes="io.jenkins.plugins.popper"/>
       <st:adjunct includes="io.jenkins.plugins.bootstrap4"/>
-      <!--st:adjunct includes="io.jenkins.plugins.data-tables"/-->
+      <st:adjunct includes="io.jenkins.plugins.data-tables"/>
+      <st:adjunct includes="io.jenkins.plugins.data-tables-responsive"/>
+      <st:adjunct includes="io.jenkins.plugins.data-tables-colreorder"/>
+      <st:adjunct includes="io.jenkins.plugins.data-tables-buttons"/>
       <st:adjunct includes="io.jenkins.plugins.echarts"/>
 
       <!-- custom -->
@@ -27,15 +30,11 @@
       <!-- math.js -->
       <script src="${resURL}/plugin/metrics-aggregation/js/libs/math.min.js"/>
 
-      <script>
-        var supportedMetrics = ${it.supportedMetricsJSON};
-        var metricsMaxima = ${it.metricsMaximaJSON};
-      </script>
-
       <script src="${resURL}/plugin/metrics-aggregation/js/tree-chart.js"/>
       <script src="${resURL}/plugin/metrics-aggregation/js/histogram.js"/>
       <script src="${resURL}/plugin/metrics-aggregation/js/scatterplot.js"/>
       <script src="${resURL}/plugin/metrics-aggregation/js/table-filter.js"/>
+      <script src="${resURL}/plugin/metrics-aggregation/js/table.js"/>
       <script src="${resURL}/plugin/metrics-aggregation/js/metrics.js"/>
 
       <div class="fluid-container">
@@ -145,7 +144,8 @@
         <!-- metrics details (table) -->
         <bs:card title="${%metricsDetails.title}" fontAwesomeIcon="table" class="metrics-details">
           <j:if test="${size(it.supportedMetrics) > 0}">
-            <div class="form-group">
+            <div class="row">
+              <div class="form-group col-md-6">
               <label for="table-filter">${%metricsDetails.filter}
                 (<a href="available" target="blank" class="card-subtitle mb-2">${%available.metrics}</a>)
               </label>
@@ -159,7 +159,13 @@
                   </j:forEach>
                 </p>
               </div>
-            <dt:table model="${it.getTableModel('metrics-table')}" class=""/>
+              <div class="form-group col-md-6">
+                <label for="column-dropdown">${%metricsDetails.columns}</label>
+                <div id="column-dropdown"></div>
+              </div>
+            </div>
+
+            <table class="table table-hover table-striped responsive display" id="metrics-table" width="100%"/>
           </j:if>
           <j:if test="${size(it.supportedMetrics) == 0}">
             ${%noDataAvailable}

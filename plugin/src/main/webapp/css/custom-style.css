@@ -55,72 +55,24 @@ button.buttons-columnVisibility.dropdown-item.selected:before {
 /* DataTables Details */
 
 /* Mouse cursor pointer for details icon */
-div.details-control {
+tr .details-control {
     position: relative;
     cursor: pointer;
 }
 
-/* Add font awesome plus icon when its closed */
-.fa:before {
-    font-family: "Font Awesome 5 Free";
-    font-weight: 900;
-}
-
-/* Add font awesome plus icon when its closed */
-div.details-control:before {
-    content: "\f055";
-    font-family: "Font Awesome 5 Free";
-    padding: 12px;
+/* Add plus icon when its closed */
+tr .details-control:before {
+    content: "+";    
     font-size: 1.5em;
     font-weight: 900;
     color: #b4b4b4;
+    border: 1px solid;
+    border-radius: 100%;
+    padding: 0 5px;
+    margin-left: 8px;
 }
 
-/* Add font awesome minus icon when it's opened */
-tr.shown div.details-control:before {
-    content: "\f056";
-    font-family: "Font Awesome 5 Free";
-    padding: 12px;
-    font-size: 1.5em;
-    font-weight: 900;
-    color: #b4b4b4;
-}
-
-/* ------------------------------------------------------------------------------------------------------------------- */
-
-
-/* Font awesome icons float right */
-.icon-right {
-    font-family: "Font Awesome 5 Free";
-    float: right;
-    color: #b4b4b4;
-    font-weight: 900;
-    position: absolute;
-    right: 25px;
-    top: 10px;
-}
-
-/* Font awesome icons banner */
-.banner {
-    padding: 30px;
-    color: #009688;
-    font-size: 100px;
-}
-
-/* ------------------------------------------------------------------------------------------------------------------- */
-
-/* Responsive classes */
-/* Change graph size to displays with min-width 576px */
-@media only screen and (min-width: 576px) {
-    .graph-size {
-        position: relative;
-        width: 20vw;
-        margin: auto;
-    }
-}
-
-@media only screen and (max-width: 575px) {
-    .card-marg-bot {
-        margin-bottom: 2rem;
-    }
+/* Add minus icon when it's opened */
+tr.parent .details-control:before {
+    content: "\2012"; /* slightly longer hyphen */
 }

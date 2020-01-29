@@ -20,11 +20,6 @@
       <link rel="stylesheet" href="${resURL}/plugin/metrics-aggregation/css/custom-style.css"/>
       <script type="text/javascript" src="${resURL}/plugin/metrics-aggregation/js/no-prototype.js"/>
 
-      <!-- datatables buttons -->
-      <link rel="stylesheet" href="${resURL}/plugin/metrics-aggregation/css/buttons.datatables.min.css"/>
-      <script src="${resURL}/plugin/metrics-aggregation/js/libs/datatables.buttons.min.js"/>
-      <script src="${resURL}/plugin/metrics-aggregation/js/libs/buttons.colvis.min.js"/>
-
       <!-- bootstrap select -->
       <link rel="stylesheet" href="${resURL}/plugin/metrics-aggregation/css/bootstrap-select.min.css"/>
       <script src="${resURL}/plugin/metrics-aggregation/js/libs/bootstrap-select.min.js"/>
