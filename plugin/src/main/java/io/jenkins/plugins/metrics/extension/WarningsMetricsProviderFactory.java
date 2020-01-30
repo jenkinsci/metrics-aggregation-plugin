@@ -88,8 +88,8 @@ public class WarningsMetricsProviderFactory extends MetricsProviderFactory<Resul
                 .map(AnalysisResult::getIssues)
                 .reduce(new Report(), Report::addAll);
 
-        provider.addProjectSummaryEntry(String.format("%d errors", allIssues.getSizeOf(Severity.ERROR)));
-        provider.addProjectSummaryEntry(String.format("%d warnings (%d high, %d normal, %d low)",
+        provider.addProjectSummaryEntry(String.format("%d Errors", allIssues.getSizeOf(Severity.ERROR)));
+        provider.addProjectSummaryEntry(String.format("%d Warnings (%d high, %d normal, %d low)",
                 allIssues.getSizeOf(Severity.WARNING_HIGH)
                         + allIssues.getSizeOf(Severity.WARNING_NORMAL)
                         + allIssues.getSizeOf(Severity.WARNING_LOW),

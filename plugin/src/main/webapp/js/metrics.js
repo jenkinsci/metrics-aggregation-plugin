@@ -6,10 +6,12 @@
                                             table
          ------------------------------------------------------------------------------ */
 
-        view.getSupportedMetrics(function (res) {
-            $('#metrics-table').renderMetricsTable(res.responseJSON);
-            $('#table-filter').filterTable(res.responseJSON || [], $('#metrics-table'));
-        });
+        if (view.getSupportedMetrics && $('#metrics-table').length) {
+            view.getSupportedMetrics(function (res) {
+                $('#metrics-table').renderMetricsTable(res.responseJSON);
+                $('#table-filter').filterTable(res.responseJSON || [], $('#metrics-table'));
+            });
+        }
 
         /* ------------------------------------------------------------------------------
                                             charts
@@ -19,20 +21,26 @@
             var metric = $('#treechart-picker').val();            
             var metricId = $('#treechart-picker :selected').text();
 
-            view.getMetricsTree(metric, function (res) {
-                $('#treechart').renderTreeChart(res.responseJSON, metricId);
-            });
+            if (view.getMetricsTree && $('#treechart').length) {
+                view.getMetricsTree(metric, function (res) {
+                    $('#treechart').renderTreeChart(res.responseJSON, metricId);
+                });
+            }
 
-            view.getHistogram(metric, function (res) {
-                $('#histogram').renderHistogram(res.responseJSON, metricId, '#histogram-checkbox-log');
-            });
+            if (view.getHistogram && $('#histogram').length) {
+                view.getHistogram(metric, function (res) {
+                    $('#histogram').renderHistogram(res.responseJSON, metricId, '#histogram-checkbox-log');
+                });
+            }
 
             var secondMetric = $('#scatterplot-picker').val();
             var secondMetricId = $('#scatterplot-picker :selected').text();
-            view.getScatterPlot(metric, secondMetric, function (res) {
-                $('#scatterplot').renderScatterPlot(res.responseJSON, metricId, secondMetricId,
-                    '#scatterplot-checkbox-log-x', '#scatterplot-checkbox-log-y');
-            });
+            if (view.getScatterPlot && $('#scatterplot').length) {
+                view.getScatterPlot(metric, secondMetric, function (res) {
+                    $('#scatterplot').renderScatterPlot(res.responseJSON, metricId, secondMetricId,
+                        '#scatterplot-checkbox-log-x', '#scatterplot-checkbox-log-y');
+                });
+            }
         }
 
         drawCharts();

@@ -95,12 +95,12 @@ public class MetricsPipelineStep extends Step implements Serializable {
      * Descriptor for this step: defines the context and the UI labels.
      */
     @Extension
-    @Symbol("reportMetrics")
+    @Symbol("metrics")
     @SuppressWarnings("unused") // most methods are used by the corresponding jelly view
     public static class Descriptor extends StepDescriptor {
         @Override
         public String getFunctionName() {
-            return "reportMetrics";
+            return "metrics";
         }
 
         @NonNull

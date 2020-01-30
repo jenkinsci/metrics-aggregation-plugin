@@ -53,8 +53,6 @@ public class MetricsActor extends MasterToSlaveFileCallable<List<MetricsMeasurem
 
     @Override
     public List<MetricsMeasurement> invoke(final File workspace, final VirtualChannel channel) {
-        List<MetricsMeasurement> metricsReport = new ArrayList<>();
-
         PMDConfiguration configuration = new PMDConfiguration();
         configuration.setDebug(true);
         configuration.setIgnoreIncrementalAnalysis(true);
@@ -80,6 +78,7 @@ public class MetricsActor extends MasterToSlaveFileCallable<List<MetricsMeasurem
         RuleSetFactory ruleSetFactory = RulesetsFactoryUtils.getRulesetFactory(configuration,
                 new ResourceLoader(getClass().getClassLoader()));
 
+        List<MetricsMeasurement> metricsReport = new ArrayList<>();
         PMD.processFiles(configuration, ruleSetFactory, files, ruleContext,
                 Collections.singletonList(new MetricsLogRenderer(metricsReport, listener)));
 
@@ -122,31 +121,28 @@ public class MetricsActor extends MasterToSlaveFileCallable<List<MetricsMeasurem
         @Override
         public void renderFileReport(final Report report) {
             for (final RuleViolation ruleViolation : report) {
-                MetricsMeasurement metricsMeasurement;
-                ClassMetricsMeasurement classMetricsMeasurement = new ClassMetricsMeasurement();
-                classMetricsMeasurement.setFileName(ruleViolation.getFilename());
-                classMetricsMeasurement.setPackageName(ruleViolation.getPackageName());
-                classMetricsMeasurement.setClassName(ruleViolation.getClassName());
+                final MetricsMeasurement metricsMeasurement;
 
-                String violationDescription = ruleViolation.getDescription();
-                if (violationDescription.startsWith("ClassOrInterfaceDeclaration::")) {
-                    metricsMeasurement = classMetricsMeasurement;
+                String description = ruleViolation.getDescription();
+                if (description.startsWith("ClassOrInterfaceDeclaration::")) {
+                    metricsMeasurement = new ClassMetricsMeasurement();
                 }
                 else {
-                    MethodMetricsMeasurement methodMetricsMeasurement = new MethodMetricsMeasurement();
-                    methodMetricsMeasurement.setParent(classMetricsMeasurement);
-                    methodMetricsMeasurement.setBeginLine(ruleViolation.getBeginLine());
-                    methodMetricsMeasurement.setBeginColumn(ruleViolation.getBeginColumn());
-                    methodMetricsMeasurement.setEndLine(ruleViolation.getEndLine());
-                    methodMetricsMeasurement.setEndColumn(ruleViolation.getEndLine());
-                    methodMetricsMeasurement.setMethodName(ruleViolation.getMethodName());
-                    //methodMetricsMeasurement.setVariableName(ruleViolation.getVariableName());
-                    metricsMeasurement = methodMetricsMeasurement;
+                    metricsMeasurement = new MethodMetricsMeasurement();
+                    ((MethodMetricsMeasurement) metricsMeasurement).setMethodName(ruleViolation.getMethodName());
+                    ((MethodMetricsMeasurement) metricsMeasurement).setBeginLine(ruleViolation.getBeginLine());
+                    ((MethodMetricsMeasurement) metricsMeasurement).setBeginColumn(ruleViolation.getBeginColumn());
+                    ((MethodMetricsMeasurement) metricsMeasurement).setEndLine(ruleViolation.getEndLine());
+                    ((MethodMetricsMeasurement) metricsMeasurement).setEndColumn(ruleViolation.getEndLine());
                 }
 
-                violationDescription = violationDescription.replaceFirst(".*::", "");
+                (metricsMeasurement).setFileName(ruleViolation.getFilename());
+                (metricsMeasurement).setPackageName(ruleViolation.getPackageName());
+                (metricsMeasurement).setClassName(ruleViolation.getClassName());
 
-                String[] metrics = violationDescription.split(",");
+                description = description.replaceFirst(".*::", "");
+
+                String[] metrics = description.split(",");
                 for (String metric : metrics) {
                     String[] keyValue = metric.split("=");
                     String metricName = keyValue[0];
@@ -184,7 +180,8 @@ public class MetricsActor extends MasterToSlaveFileCallable<List<MetricsMeasurem
             }
 
             for (Iterator<ProcessingError> i = report.errors(); i.hasNext(); ) {
-                listener.error("Error: %s", i.next().getDetail());
+                ProcessingError error = i.next();
+                listener.error("ProcessingError in File '%s':%n%s", error.getFile(), error.getDetail());
             }
 
             for (Iterator<ConfigurationError> i = report.configErrors(); i.hasNext(); ) {

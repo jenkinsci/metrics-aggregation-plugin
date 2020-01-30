@@ -14,13 +14,11 @@
          */
         renderScatterPlot: function (model, metricNameX, metricNameY, logarithmicCheckboxIdX, logarithmicCheckboxIdY) {
             var scatterPlotData = JSON.parse(model);
-            // replace all `0`s and `NaN`s with `null` to enable logarithmic axis scaling
-            if (scatterPlotData) {
-                scatterPlotData = scatterPlotData.map(x => ({
-                    name: x.name,
-                    value: x.value.map(v => v > 0 ? v : null)
-                }));
-            }
+            // replace all `0`s and `NaN`s with `null` for logarithmic axis scaling
+            var dataLogarithmic = scatterPlotData.map(x => ({
+                name: x.name,
+                value: x.value.map(v => v > 0 ? v : null)
+            }));
             var chart = echarts.init($(this).get(0), 'light');
             var options = {
                 title: {
@@ -71,7 +69,11 @@
                             minorSplitLine: {
                                 show: true
                             }
-                        }
+                        },
+                        series: [{
+                            data: dataLogarithmic,
+                            type: 'scatter'
+                        }]
                     })
                 } else {
                     chart.setOption({
@@ -80,7 +82,11 @@
                             nameLocation: 'center',
                             nameGap: 30,
                             type: 'value'
-                        }
+                        },
+                        series: [{
+                            data: scatterPlotData,
+                            type: 'scatter'
+                        }]
                     })
                 }
             });
@@ -97,14 +103,22 @@
                             minorSplitLine: {
                                 show: true
                             }
-                        }
+                        },
+                        series: [{
+                            data: dataLogarithmic,
+                            type: 'scatter'
+                        }]
                     })
                 } else {
                     chart.setOption({
                         yAxis: {
                             name: metricNameY,
                             type: 'value'
-                        }
+                        },
+                        series: [{
+                            data: scatterPlotData,
+                            type: 'scatter'
+                        }]
                     })
                 }
             });

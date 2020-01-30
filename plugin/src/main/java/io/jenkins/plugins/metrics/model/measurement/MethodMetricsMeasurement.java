@@ -5,20 +5,11 @@ import java.util.Objects;
 public class MethodMetricsMeasurement extends MetricsMeasurement {
     private static final long serialVersionUID = 6103621887323104682L;
 
-    private ClassMetricsMeasurement parent = new ClassMetricsMeasurement();
     private String methodName = "";
     private int beginLine = -1;
     private int beginColumn = -1;
     private int endLine = -1;
     private int endColumn = -1;
-
-    public ClassMetricsMeasurement getParent() {
-        return parent;
-    }
-
-    public void setParent(final ClassMetricsMeasurement parent) {
-        this.parent = parent;
-    }
 
     public String getMethodName() {
         return methodName;
@@ -65,27 +56,16 @@ public class MethodMetricsMeasurement extends MetricsMeasurement {
      *
      * @param metricsMeasurement
      *         the {@link MetricsMeasurement} to merge. If it is a {@link MethodMetricsMeasurement},their metrics are
-     *         merged together, if it is a {@link ClassMetricsMeasurement}, a merge with the parent will be attempted.
+     *         merged together, if it is a {@link ClassMetricsMeasurement}, nothing happens.
      *
      * @return itself
      */
     @Override
     public MetricsMeasurement merge(final MetricsMeasurement metricsMeasurement) {
-        if (metricsMeasurement instanceof ClassMetricsMeasurement && parent != null) {
-            parent.merge(metricsMeasurement);
-        }
-        else if (metricsMeasurement instanceof MethodMetricsMeasurement) {
+        if (metricsMeasurement instanceof MethodMetricsMeasurement) {
             metrics.putAll(metricsMeasurement.getMetrics());
         }
         return this;
-    }
-
-    @Override
-    public String getQualifiedClassName() {
-        if (parent == null) {
-            return "";
-        }
-        return parent.getQualifiedClassName();
     }
 
     @Override
@@ -95,8 +75,8 @@ public class MethodMetricsMeasurement extends MetricsMeasurement {
         }
 
         return String.format("MethodMetricsMeasurement[%s.%s#%s:%d:%d]",
-                parent.getPackageName(),
-                parent.getClassName(),
+                packageName,
+                className,
                 methodName,
                 beginLine,
                 endLine);
@@ -120,11 +100,14 @@ public class MethodMetricsMeasurement extends MetricsMeasurement {
                 && this.endColumn == other.endColumn
                 && Objects.equals(methodName, other.methodName)
                 && Objects.equals(metrics, other.metrics)
-                && Objects.equals(parent, other.parent);
+                && Objects.equals(className, other.className)
+                && Objects.equals(fileName, other.fileName)
+                && Objects.equals(packageName, other.packageName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(beginColumn, beginLine, endLine, endColumn, methodName, parent, metrics);
+        return Objects.hash(beginColumn, beginLine, endLine, endColumn, methodName, className, fileName, packageName,
+                metrics);
     }
 }

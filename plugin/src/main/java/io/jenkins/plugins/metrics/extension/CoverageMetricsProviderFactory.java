@@ -30,25 +30,25 @@ public class CoverageMetricsProviderFactory extends MetricsProviderFactory<Cover
 
     private static final MetricDefinition METHOD = new MetricDefinition("METHOD_COVERAGE",
             "Method coverage",
-            "TODO",
+            "TODO",//TODO
             "code-coverage-api",
             30,
-            ArrayUtils.toArray(Scope.METHOD, Scope.CLASS));
+            ArrayUtils.toArray(Scope.CLASS));
     private static final MetricDefinition INSTRUCTION = new MetricDefinition("INSTRUCTION_COVERAGE",
             "Instruction coverage",
-            "TODO",
+            "TODO",//TODO
             "code-coverage-api",
             30,
             ArrayUtils.toArray(Scope.METHOD, Scope.CLASS));
     private static final MetricDefinition CONDITIONAL = new MetricDefinition("CONDITIONAL_COVERAGE",
             "Conditional coverage",
-            "TODO",
+            "TODO",//TODO
             "code-coverage-api",
             30,
             ArrayUtils.toArray(Scope.METHOD, Scope.CLASS));
     private static final MetricDefinition LINE = new MetricDefinition("LINE_COVERAGE",
             "Line coverage",
-            "TODO",
+            "TODO", //TODO
             "code-coverage-api",
             30,
             ArrayUtils.toArray(Scope.METHOD, Scope.CLASS));
@@ -61,7 +61,7 @@ public class CoverageMetricsProviderFactory extends MetricsProviderFactory<Cover
     @Override
     public MetricsProvider getFor(final List<CoverageAction> actions) {
         MetricsProvider provider = new MetricsProvider();
-        provider.setOrigin("warnings-ng-plugin");
+        provider.setOrigin("code-coverage-api-plugin");
 
         provider.setMetricsMeasurements(actions.stream()
                 .map(CoverageAction::getResult)
@@ -89,7 +89,7 @@ public class CoverageMetricsProviderFactory extends MetricsProviderFactory<Cover
             Ratio classCoverage = coverageResult.getCoverage(CoverageElement.get("Class"));
             if (classCoverage != null) {
                 provider.addProjectSummaryEntry(
-                        String.format("class coverage: %s classes (%d%%)", classCoverage.toString(),
+                        String.format("Class Coverage: %s Classes (%d%%)", classCoverage.toString(),
                                 classCoverage.getPercentage()));
             }
         });
@@ -120,10 +120,12 @@ public class CoverageMetricsProviderFactory extends MetricsProviderFactory<Cover
         ClassMetricsMeasurement metricsMeasurement = new ClassMetricsMeasurement();
         metricsMeasurement.setPackageName(normalizePackageName(result.getParent().getName()));
         metricsMeasurement.setClassName(result.getName().replace(".java", ""));
+
         metricsMeasurement.addMetric(new PercentageMetric(METHOD, getCoverage(result, "Method")));
         metricsMeasurement.addMetric(new PercentageMetric(INSTRUCTION, getCoverage(result, "Instruction")));
         metricsMeasurement.addMetric(new PercentageMetric(CONDITIONAL, getCoverage(result, "Conditional")));
         metricsMeasurement.addMetric(new PercentageMetric(LINE, getCoverage(result, "Line")));
+
         return metricsMeasurement;
     }
 

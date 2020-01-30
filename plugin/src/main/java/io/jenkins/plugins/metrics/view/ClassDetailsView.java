@@ -15,6 +15,7 @@ import io.jenkins.plugins.datatables.TableModel;
 import io.jenkins.plugins.metrics.extension.MetricsProviderFactory;
 import io.jenkins.plugins.metrics.model.MetricsProvider;
 import io.jenkins.plugins.metrics.model.measurement.ClassMetricsMeasurement;
+import io.jenkins.plugins.metrics.model.measurement.MethodMetricsMeasurement;
 import io.jenkins.plugins.metrics.model.measurement.MetricsMeasurement;
 import io.jenkins.plugins.metrics.model.metric.Metric;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
@@ -29,20 +30,31 @@ import io.jenkins.plugins.metrics.util.JacksonFacade;
 @ExportedBean
 public class ClassDetailsView extends DefaultAsyncTableContentProvider implements ModelObject {
     private final Run<?, ?> owner;
-    private final ClassMetricsMeasurement metricsMeasurement;
+    private final List<MethodMetricsMeasurement> methodMetricsMeasurements;
+    private final ClassMetricsMeasurement classMetricsMeasurement;
     private final List<MetricDefinition> supportedMetrics;
     private final Map<String, String> classOverview;
-    private final Map<String, Double> metricsMaxima;
 
     public ClassDetailsView(final Run<?, ?> owner, final String className) {
         this.owner = owner;
 
-        metricsMeasurement = (ClassMetricsMeasurement) MetricsProviderFactory.getAllFor(owner.getAllActions()).stream()
+        List<MetricsMeasurement> allMeasurements = MetricsProviderFactory.getAllFor(owner.getAllActions())
+                .stream()
                 .map(MetricsProvider::getMetricsMeasurements)
                 .flatMap(List::stream)
                 .filter(m -> m.getQualifiedClassName().equals(className))
                 .filter(Objects::nonNull)
-                .reduce(MetricsMeasurement::merge)
+                .collect(Collectors.toList());
+
+        methodMetricsMeasurements = allMeasurements.stream()
+                .filter(m -> m instanceof MethodMetricsMeasurement)
+                .map(m -> (MethodMetricsMeasurement) m)
+                .collect(Collectors.toList());
+
+        classMetricsMeasurement = allMeasurements.stream()
+                .filter(m -> m instanceof ClassMetricsMeasurement)
+                .map(m -> (ClassMetricsMeasurement) m)
+                .reduce(ClassMetricsMeasurement::merge)
                 .orElse(new ClassMetricsMeasurement());
 
         supportedMetrics = MetricsProviderFactory.getAllSupportedMetricsFor(owner.getAllActions())
@@ -50,16 +62,7 @@ public class ClassDetailsView extends DefaultAsyncTableContentProvider implement
                 .filter(metricDefinition -> metricDefinition.validForScope(Scope.METHOD))
                 .collect(Collectors.toList());
 
-        metricsMaxima = supportedMetrics.stream()
-                .collect(Collectors.toMap(MetricDefinition::getId, metric -> metricsMeasurement.getChildren().stream()
-                        .map(metricsMeasurement -> metricsMeasurement.getMetric(metric.getId()))
-                        .map(d -> d.orElse(0.0).doubleValue())
-                        .filter(Double::isFinite)
-                        .max(Double::compare)
-                        .orElse(0.0))
-                );
-
-        classOverview = metricsMeasurement.getMetrics()
+        classOverview = classMetricsMeasurement.getMetrics()
                 .values().stream()
                 .collect(Collectors.toMap(metric -> metric.getMetricDefinition().getDisplayName(),
                         Metric::renderValue));
@@ -67,11 +70,11 @@ public class ClassDetailsView extends DefaultAsyncTableContentProvider implement
 
     @Override
     public String getDisplayName() {
-        return Messages.metrics_for(metricsMeasurement.getClassName());
+        return Messages.metrics_for(classMetricsMeasurement.getClassName());
     }
 
     public String getPackageName() {
-        return metricsMeasurement.getPackageName();
+        return classMetricsMeasurement.getPackageName();
     }
 
     /**
@@ -100,15 +103,10 @@ public class ClassDetailsView extends DefaultAsyncTableContentProvider implement
         return classOverview;
     }
 
-    @SuppressWarnings("unused") // used by jelly view
-    public String getMetricsMaximaJSON() {
-        return toJson(metricsMaxima);
-    }
-
     @JavaScriptMethod
     @SuppressWarnings("unused") // used by jelly view
     public String getMetricsJSON() {
-        return toJson(metricsMeasurement.getChildren());
+        return toJson(new ClassDetailsTableModel(supportedMetrics, methodMetricsMeasurements));
     }
 
     private String toJson(final Object object) {
@@ -118,6 +116,6 @@ public class ClassDetailsView extends DefaultAsyncTableContentProvider implement
 
     @Override
     public TableModel getTableModel(final String id) {
-        return new ClassDetailsTableModel(supportedMetrics, metricsMeasurement.getChildren());
+        return new ClassDetailsTableModel(supportedMetrics, methodMetricsMeasurements);
     }
 }

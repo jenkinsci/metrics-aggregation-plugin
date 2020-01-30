@@ -1,6 +1,6 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:l="/lib/layout" xmlns:bs="/bootstrap"
-         xmlns:dt="/data-tables">
+>
 
   <st:header name="Content-Type" value="text/html;charset=UTF-8"/>
 
@@ -14,6 +14,9 @@
       <st:adjunct includes="io.jenkins.plugins.popper"/>
       <st:adjunct includes="io.jenkins.plugins.bootstrap4"/>
       <st:adjunct includes="io.jenkins.plugins.data-tables"/>
+      <st:adjunct includes="io.jenkins.plugins.data-tables-responsive"/>
+      <st:adjunct includes="io.jenkins.plugins.data-tables-colreorder"/>
+      <st:adjunct includes="io.jenkins.plugins.data-tables-buttons"/>
       <st:adjunct includes="io.jenkins.plugins.echarts"/>
 
       <!-- custom -->
@@ -27,6 +30,7 @@
       <!-- math.js -->
       <script src="${resURL}/plugin/metrics-aggregation/js/libs/math.min.js"/>
 
+      <script src="${resURL}/plugin/metrics-aggregation/js/table.js"/>
       <script src="${resURL}/plugin/metrics-aggregation/js/table-filter.js"/>
       <script src="${resURL}/plugin/metrics-aggregation/js/metrics.js"/>
 
@@ -65,20 +69,26 @@
         <bs:card title="${%metricsDetails.title}" fontAwesomeIcon="table" class="metrics-details">
 
           <j:if test="${size(it.supportedMetrics) > 0}">
-            <div class="form-group ">
-              <label for="table-filter">${%metricsDetails.filter}</label>
-              <input type="text" class="form-control form-control-sm" id="table-filter"
-                     placeholder="${%metricsDetails.filter.placeholder}"/>
-              <div class="invalid-feedback"/>
-              <p class="form-text text-muted">
-                ${%metricsDetails.variables}:
-                <j:forEach var="metric" items="${it.supportedMetrics}">
-                  <span class="badge badge-light badge-pill mr-1" title="${metric.displayName}">${metric.id}</span>
-                </j:forEach>
-              </p>
+            <div class="row">
+              <div class="form-group col-md-6">
+                <label for="table-filter">${%metricsDetails.filter}</label>
+                <input type="text" class="form-control form-control-sm" id="table-filter"
+                       placeholder="${%metricsDetails.filter.placeholder}"/>
+                <div class="invalid-feedback"/>
+                <p class="form-text text-muted">
+                  ${%metricsDetails.variables}:
+                  <j:forEach var="metric" items="${it.supportedMetrics}">
+                    <span class="badge badge-light badge-pill mr-1" title="${metric.displayName}">${metric.id}</span>
+                  </j:forEach>
+                </p>
+              </div>
+              <div class="form-group col-md-6">
+                <label for="column-dropdown">${%metricsDetails.columns}</label>
+                <div id="column-dropdown"/>
+              </div>
             </div>
 
-            <dt:table model="${it.getTableModel('metrics-table')}" class="responsive w-100"/>
+            <table class="table table-hover table-striped responsive display" id="metrics-table" width="100%"/>
           </j:if>
           <j:if test="${size(it.supportedMetrics) == 0}">
             ${%noDataAvailable}

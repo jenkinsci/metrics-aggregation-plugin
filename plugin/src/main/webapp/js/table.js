@@ -24,7 +24,7 @@
                         defaultContent: "<span class='details-control'/>"
                     },
                     {
-                        data: 'className',
+                        data: 'name',
                         title: 'Class',
                         defaultContent: '',
                         className: 'hideable'

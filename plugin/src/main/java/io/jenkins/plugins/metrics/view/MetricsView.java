@@ -25,7 +25,6 @@ import io.jenkins.plugins.metrics.extension.MetricsProviderFactory;
 import io.jenkins.plugins.metrics.model.MetricsProvider;
 import io.jenkins.plugins.metrics.model.MetricsTreeNode;
 import io.jenkins.plugins.metrics.model.measurement.ClassMetricsMeasurement;
-import io.jenkins.plugins.metrics.model.measurement.MethodMetricsMeasurement;
 import io.jenkins.plugins.metrics.model.measurement.MetricsMeasurement;
 import io.jenkins.plugins.metrics.model.metric.IntegerMetric;
 import io.jenkins.plugins.metrics.model.metric.Metric;
@@ -44,53 +43,24 @@ public class MetricsView extends DefaultAsyncTableContentProvider implements Mod
     private final List<ClassMetricsMeasurement> metricsMeasurements;
     private final List<MetricDefinition> supportedMetrics;
     private final List<String> projectOverview;
-    private final Map<String, Double> metricsMaxima;
 
     public MetricsView(final Run<?, ?> owner) {
         this.owner = owner;
         metricsMeasurements = MetricsProviderFactory.getAllFor(owner.getAllActions()).stream()
                 .map(MetricsProvider::getMetricsMeasurements)
                 .flatMap(List::stream)
+                .filter(m -> m instanceof ClassMetricsMeasurement)
                 .collect(Collectors.groupingBy(MetricsMeasurement::getQualifiedClassName))
                 .values().stream()
-                .map(measurementsPerFile -> measurementsPerFile.stream().reduce(MetricsMeasurement::merge)
-                        .orElse(null))
-                .map(measurement -> {
-                    if (measurement instanceof ClassMetricsMeasurement) {
-                        return measurement;
-                    }
-                    else if (measurement instanceof MethodMetricsMeasurement) {
-                        MethodMetricsMeasurement methodMetricsMeasurement = (MethodMetricsMeasurement) measurement;
-                        ClassMetricsMeasurement classMetricsMeasurement = methodMetricsMeasurement.getParent();
-                        if (classMetricsMeasurement == null) {
-                            //TODO no parent but method???
-                            return methodMetricsMeasurement;
-                        }
-                        methodMetricsMeasurement.setParent(null);
-                        classMetricsMeasurement.addChild(measurement);
-                        return classMetricsMeasurement;
-                    }
-                    else {
-                        return null;
-                    }
-                })
-                .filter(m -> m instanceof ClassMetricsMeasurement)
-                .map(m -> (ClassMetricsMeasurement) m)
+                .map(measurementsPerFile -> (ClassMetricsMeasurement) measurementsPerFile.stream()
+                        .reduce(MetricsMeasurement::merge).orElse(null))
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
         supportedMetrics = MetricsProviderFactory.getAllSupportedMetricsFor(owner.getAllActions())
                 .stream()
                 .filter(metricDefinition -> metricDefinition.validForScope(Scope.CLASS))
                 .collect(Collectors.toList());
-
-        metricsMaxima = supportedMetrics.stream()
-                .collect(Collectors.toMap(MetricDefinition::getId, metric -> metricsMeasurements.stream()
-                        .map(metricsMeasurement -> metricsMeasurement.getMetric(metric.getId()))
-                        .map(d -> d.orElse(0.0).doubleValue())
-                        .filter(Double::isFinite)
-                        .max(Double::compare)
-                        .orElse(0.0))
-                );
 
         projectOverview = MetricsProviderFactory.getAllFor(owner.getAllActions()).stream()
                 .map(MetricsProvider::getProjectSummaryEntries)
@@ -130,11 +100,6 @@ public class MetricsView extends DefaultAsyncTableContentProvider implements Mod
     @SuppressWarnings("unused") // used by jelly view
     public List<String> getProjectOverview() {
         return projectOverview;
-    }
-
-    @SuppressWarnings("unused") // used by jelly view
-    public String getMetricsMaximaJSON() {
-        return toJson(metricsMaxima);
     }
 
     @JavaScriptMethod
@@ -294,11 +259,6 @@ public class MetricsView extends DefaultAsyncTableContentProvider implements Mod
     private static final class ScatterPlotDataItem {
         private final String name;
         private final List<Number> value;
-
-        private ScatterPlotDataItem(final String name, final List<Number> value) {
-            this.name = name;
-            this.value = value;
-        }
 
         private ScatterPlotDataItem(final String name, final Number... values) {
             this.name = name;

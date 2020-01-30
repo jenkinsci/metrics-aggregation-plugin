@@ -75,7 +75,7 @@ public class MetricsTableModel extends TableModel {
          *
          * @return a link to the details with the name of the class as text
          */
-        public String getClassName() {
+        public String getName() {
             return span()
                     .withTitle(metricsMeasurement.getPackageName())
                     .with(a()

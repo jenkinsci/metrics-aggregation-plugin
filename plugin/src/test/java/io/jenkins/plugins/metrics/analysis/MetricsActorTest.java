@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
@@ -11,6 +12,7 @@ import hudson.util.StreamTaskListener;
 
 import io.jenkins.plugins.metrics.extension.PMDMetricsProviderFactory;
 import io.jenkins.plugins.metrics.model.measurement.ClassMetricsMeasurement;
+import io.jenkins.plugins.metrics.model.measurement.MethodMetricsMeasurement;
 import io.jenkins.plugins.metrics.model.measurement.MetricsMeasurement;
 import io.jenkins.plugins.metrics.model.metric.DoubleMetric;
 import io.jenkins.plugins.metrics.model.metric.IntegerMetric;
@@ -61,6 +63,28 @@ class MetricsActorTest {
         staticInnerClass.addMetric(createIntegerMetric("ATFD", 0));
         assertThat(measurements).contains(staticInnerClass);
 
+    }
+
+    @Test
+    public void shouldAnalyzeClassAndMethods() throws URISyntaxException {
+        File workspace = Paths.get(MetricsActorTest.class.getResource("AbstractBuildAction.java").toURI())
+                .getParent()
+                .toFile();
+
+        List<MetricsMeasurement> measurements = new MetricsActor("AbstractBuildAction.java",
+                StreamTaskListener.fromStdout()).invoke(workspace, null);
+
+        List<MetricsMeasurement> classMetricsMeasurements = measurements.stream()
+                .filter(m -> m instanceof ClassMetricsMeasurement)
+                .collect(Collectors.toList());
+
+        assertThat(classMetricsMeasurements).hasSize(1);
+
+        List<MetricsMeasurement> methodMetricsMeasurements = measurements.stream()
+                .filter(m -> m instanceof MethodMetricsMeasurement)
+                .collect(Collectors.toList());
+
+        assertThat(methodMetricsMeasurements).hasSize(7);
     }
 
     private ClassMetricsMeasurement createClassMetricsMeasurement(final String className, final String packageName,

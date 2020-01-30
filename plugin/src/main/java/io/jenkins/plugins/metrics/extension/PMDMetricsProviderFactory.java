@@ -107,17 +107,17 @@ public class PMDMetricsProviderFactory extends MetricsProviderFactory<MetricsAct
                 .count();
 
         if (numberOfClasses > 0) {
-            provider.addProjectSummaryEntry(String.format("%d classes", numberOfClasses));
+            provider.addProjectSummaryEntry(String.format("%d Classes", numberOfClasses));
         }
 
         double totalLOC = getMetricSum(actions, LOC.getId());
         if (totalLOC > 0) {
-            provider.addProjectSummaryEntry(String.format("%d lines of code", (long) totalLOC));
+            provider.addProjectSummaryEntry(String.format("%d Lines of Code", (long) totalLOC));
         }
         double totalNCSS = getMetricSum(actions, NCSS.getId());
         if (totalNCSS > 0) {
             provider.addProjectSummaryEntry(
-                    String.format("%d non-commenting source statements (%.1f%%)", (long) totalNCSS,
+                    String.format("%d Non-Commenting Source Statements (%.1f%%)", (long) totalNCSS,
                             totalNCSS / totalLOC * 100));
         }
 

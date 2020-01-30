@@ -4,12 +4,12 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.assertj.core.util.Maps;
 import org.junit.jupiter.api.Test;
 
+import io.jenkins.plugins.metrics.model.measurement.ClassMetricsMeasurement;
+import io.jenkins.plugins.metrics.model.measurement.MethodMetricsMeasurement;
 import io.jenkins.plugins.metrics.model.metric.IntegerMetric;
 import io.jenkins.plugins.metrics.model.metric.Metric;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition.Scope;
-import io.jenkins.plugins.metrics.model.measurement.ClassMetricsMeasurement;
-import io.jenkins.plugins.metrics.model.measurement.MethodMetricsMeasurement;
 import io.jenkins.plugins.metrics.util.JacksonFacade;
 
 import static org.assertj.core.api.Assertions.*;
@@ -36,9 +36,9 @@ public class MethodMetricsMeasurementTest {
         measurement.setBeginColumn(beginColumn);
         measurement.setEndColumn(endColumn);
         measurement.setMethodName(methodName);
-
-        final ClassMetricsMeasurement parent = getParent(fileName, className, packageName);
-        measurement.setParent(parent);
+        measurement.setFileName(fileName);
+        measurement.setClassName(className);
+        measurement.setPackageName(packageName);
 
         measurement.addMetric(metric);
 
@@ -50,7 +50,9 @@ public class MethodMetricsMeasurementTest {
         assertThat(json).contains(formatJsonValue("endColumn", endColumn));
         assertThat(json).contains(formatJsonValue("methodName", methodName));
         assertThat(json).contains(formatJsonValue("qualifiedClassName", packageName + "." + className));
-        assertThat(json).contains(formatJsonValue("parent", parent));
+        assertThat(json).contains(formatJsonValue("fileName", fileName));
+        assertThat(json).contains(formatJsonValue("className", className));
+        assertThat(json).contains(formatJsonValue("packageName", packageName));
         assertThat(json).contains(formatJsonValue("metricsRaw", Maps.newHashMap(metric.getId(), metric.rawValue())));
         assertThat(json).contains(
                 formatJsonValue("metricsDisplay", Maps.newHashMap(metric.getId(), metric.renderValue())));
