@@ -19,6 +19,7 @@ import io.jenkins.plugins.coverage.targets.CoverageResult;
 import io.jenkins.plugins.coverage.targets.Ratio;
 import io.jenkins.plugins.metrics.model.MetricsProvider;
 import io.jenkins.plugins.metrics.model.measurement.ClassMetricsMeasurement;
+import io.jenkins.plugins.metrics.model.measurement.MethodMetricsMeasurement;
 import io.jenkins.plugins.metrics.model.measurement.MetricsMeasurement;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition.Scope;
@@ -67,7 +68,10 @@ public class CoverageMetricsProviderFactory extends MetricsProviderFactory<Cover
                 .map(CoverageAction::getResult)
                 .map(this::getChildrenRecursive)
                 .flatMap(List::stream)
-                .filter(r -> r.getElement().is("File"))
+                .filter(result -> {
+                    CoverageElement element = result.getElement();
+                    return element.is("Class") || element.is("Method");
+                })
                 .map(this::coverageToMetricsMeasurement)
                 .collect(Collectors.toList())
         );
@@ -117,11 +121,32 @@ public class CoverageMetricsProviderFactory extends MetricsProviderFactory<Cover
     }
 
     private MetricsMeasurement coverageToMetricsMeasurement(final CoverageResult result) {
-        ClassMetricsMeasurement metricsMeasurement = new ClassMetricsMeasurement();
-        metricsMeasurement.setPackageName(normalizePackageName(result.getParent().getName()));
-        metricsMeasurement.setClassName(result.getName().replace(".java", ""));
+        CoverageElement element = result.getElement();
+        MetricsMeasurement metricsMeasurement;
+        if (element.is("Class")) {
+            metricsMeasurement = new ClassMetricsMeasurement();
+            final String name = normalizeClassName(result.getName());
+            final int lastDot = name.lastIndexOf(".");
+            metricsMeasurement.setPackageName(name.substring(0, lastDot));
+            metricsMeasurement.setClassName(name.substring(lastDot + 1));
 
-        metricsMeasurement.addMetric(new PercentageMetric(METHOD, getCoverage(result, "Method")));
+            metricsMeasurement.addMetric(new PercentageMetric(METHOD, getCoverage(result, "Method")));
+        }
+        else if (element.is("Method")) {
+            metricsMeasurement = new MethodMetricsMeasurement();
+            final String parentName = normalizeClassName(result.getParent().getName());
+            final int lastDot = parentName.lastIndexOf(".");
+            final String className = parentName.substring(lastDot + 1);
+            metricsMeasurement.setPackageName(parentName.substring(0, lastDot));
+            metricsMeasurement.setClassName(className);
+
+            final String name = result.getName().replace("<init>", className);
+            ((MethodMetricsMeasurement) metricsMeasurement).setMethodName(name);
+        }
+        else {
+            return null;
+        }
+        
         metricsMeasurement.addMetric(new PercentageMetric(INSTRUCTION, getCoverage(result, "Instruction")));
         metricsMeasurement.addMetric(new PercentageMetric(CONDITIONAL, getCoverage(result, "Conditional")));
         metricsMeasurement.addMetric(new PercentageMetric(LINE, getCoverage(result, "Line")));
@@ -139,7 +164,7 @@ public class CoverageMetricsProviderFactory extends MetricsProviderFactory<Cover
         }
     }
 
-    private String normalizePackageName(final String packageName) {
+    private String normalizeClassName(final String packageName) {
         return packageName != null ? packageName.replaceAll("/", ".") : "";
     }
 }

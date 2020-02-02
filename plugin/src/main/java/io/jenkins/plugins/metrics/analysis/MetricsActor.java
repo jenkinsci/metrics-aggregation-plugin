@@ -1,7 +1,10 @@
 package io.jenkins.plugins.metrics.analysis;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -10,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 import shaded.net.sourceforge.pmd.PMD;
@@ -44,11 +48,13 @@ public class MetricsActor extends MasterToSlaveFileCallable<List<MetricsMeasurem
 
     private final String filePattern;
     private final TaskListener listener;
+    private final String classPathFile;
 
-    public MetricsActor(final String filePattern, final TaskListener listener) {
+    public MetricsActor(final String filePattern, final String classPathFile, final TaskListener listener) {
         super();
         this.filePattern = filePattern;
         this.listener = listener;
+        this.classPathFile = classPathFile;
     }
 
     @Override
@@ -57,6 +63,16 @@ public class MetricsActor extends MasterToSlaveFileCallable<List<MetricsMeasurem
         configuration.setDebug(true);
         configuration.setIgnoreIncrementalAnalysis(true);
         configuration.setRuleSets("io/jenkins/plugins/metrics/metricsRuleset.xml");
+        if (!classPathFile.isEmpty()) {
+            try {
+                final String classPath = new String(Files.readAllBytes(
+                        Paths.get(workspace.getAbsolutePath(), classPathFile)));
+                configuration.prependClasspath(classPath);
+            }
+            catch (IOException e) {
+                listener.error("[Metrics] Error while configuring the classpath:%n%s", e.getMessage());
+            }
+        }
 
         RuleContext ruleContext = new RuleContext();
 
@@ -126,10 +142,21 @@ public class MetricsActor extends MasterToSlaveFileCallable<List<MetricsMeasurem
                 String description = ruleViolation.getDescription();
                 if (description.startsWith("ClassOrInterfaceDeclaration::")) {
                     metricsMeasurement = new ClassMetricsMeasurement();
+                    description = description.replaceFirst(".*::", "");
                 }
                 else {
                     metricsMeasurement = new MethodMetricsMeasurement();
-                    ((MethodMetricsMeasurement) metricsMeasurement).setMethodName(ruleViolation.getMethodName());
+                    description = description.replaceFirst(".*?::", "");
+                    if (description.contains("::")) {
+                        String signature = description.substring(0, description.indexOf("::"));
+                        signature = signature.replaceFirst("\\(",
+                                Matcher.quoteReplacement(ruleViolation.getMethodName() + "("));
+                        ((MethodMetricsMeasurement) metricsMeasurement).setMethodName(signature);
+                        description = description.replaceFirst(".*::", "");
+                    }
+                    else {
+                        ((MethodMetricsMeasurement) metricsMeasurement).setMethodName(ruleViolation.getMethodName());
+                    }
                     ((MethodMetricsMeasurement) metricsMeasurement).setBeginLine(ruleViolation.getBeginLine());
                     ((MethodMetricsMeasurement) metricsMeasurement).setBeginColumn(ruleViolation.getBeginColumn());
                     ((MethodMetricsMeasurement) metricsMeasurement).setEndLine(ruleViolation.getEndLine());
@@ -139,8 +166,6 @@ public class MetricsActor extends MasterToSlaveFileCallable<List<MetricsMeasurem
                 (metricsMeasurement).setFileName(ruleViolation.getFilename());
                 (metricsMeasurement).setPackageName(ruleViolation.getPackageName());
                 (metricsMeasurement).setClassName(ruleViolation.getClassName());
-
-                description = description.replaceFirst(".*::", "");
 
                 String[] metrics = description.split(",");
                 for (String metric : metrics) {

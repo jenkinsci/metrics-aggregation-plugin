@@ -31,7 +31,7 @@ class MetricsActorTest {
     void shouldParseInnerClasses() throws URISyntaxException {
         File workspace = Paths.get(MetricsActorTest.class.getResource("Test.java").toURI()).getParent().toFile();
 
-        List<MetricsMeasurement> measurements = new MetricsActor("Test.java", StreamTaskListener.fromStdout())
+        List<MetricsMeasurement> measurements = new MetricsActor("Test.java", "", StreamTaskListener.fromStdout())
                 .invoke(workspace, null);
 
         assertThat(measurements).hasSize(5);
@@ -71,7 +71,7 @@ class MetricsActorTest {
                 .getParent()
                 .toFile();
 
-        List<MetricsMeasurement> measurements = new MetricsActor("AbstractBuildAction.java",
+        List<MetricsMeasurement> measurements = new MetricsActor("AbstractBuildAction.java", "",
                 StreamTaskListener.fromStdout()).invoke(workspace, null);
 
         List<MetricsMeasurement> classMetricsMeasurements = measurements.stream()
@@ -80,11 +80,17 @@ class MetricsActorTest {
 
         assertThat(classMetricsMeasurements).hasSize(1);
 
-        List<MetricsMeasurement> methodMetricsMeasurements = measurements.stream()
+        List<MethodMetricsMeasurement> methodMetricsMeasurements = measurements.stream()
                 .filter(m -> m instanceof MethodMetricsMeasurement)
+                .map(m -> (MethodMetricsMeasurement) m)
                 .collect(Collectors.toList());
 
         assertThat(methodMetricsMeasurements).hasSize(7);
+        assertThat(methodMetricsMeasurements.stream()
+                .map(MethodMetricsMeasurement::getMethodName)
+                .collect(Collectors.toList()))
+                .contains("void setBuild(hudson.model.AbstractBuild)",
+                        "hudson.model.AbstractBuild getBuild()");
     }
 
     private ClassMetricsMeasurement createClassMetricsMeasurement(final String className, final String packageName,

@@ -61,7 +61,7 @@ public class MethodMetricsMeasurement extends MetricsMeasurement {
      * @return itself
      */
     @Override
-    public MetricsMeasurement merge(final MetricsMeasurement metricsMeasurement) {
+    public MethodMetricsMeasurement merge(final MetricsMeasurement metricsMeasurement) {
         if (metricsMeasurement instanceof MethodMetricsMeasurement) {
             metrics.putAll(metricsMeasurement.getMetrics());
         }

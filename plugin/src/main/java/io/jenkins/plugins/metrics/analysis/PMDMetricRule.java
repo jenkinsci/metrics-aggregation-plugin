@@ -3,6 +3,7 @@ package io.jenkins.plugins.metrics.analysis;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -11,6 +12,11 @@ import shaded.net.sourceforge.pmd.RuleContext;
 import shaded.net.sourceforge.pmd.lang.LanguageRegistry;
 import shaded.net.sourceforge.pmd.lang.ast.Node;
 import shaded.net.sourceforge.pmd.lang.java.JavaLanguageModule;
+import shaded.net.sourceforge.pmd.lang.java.ast.ASTConstructorDeclaration;
+import shaded.net.sourceforge.pmd.lang.java.ast.ASTFormalParameter;
+import shaded.net.sourceforge.pmd.lang.java.ast.ASTMethodDeclaration;
+import shaded.net.sourceforge.pmd.lang.java.ast.ASTResultType;
+import shaded.net.sourceforge.pmd.lang.java.ast.ASTType;
 import shaded.net.sourceforge.pmd.lang.metrics.LanguageMetricsProvider;
 import shaded.net.sourceforge.pmd.lang.metrics.MetricKey;
 import shaded.net.sourceforge.pmd.lang.rule.AbstractRule;
@@ -38,7 +44,46 @@ public class PMDMetricRule extends AbstractRule {
                     String violation = getMetricsAsMessageString(languageMetricsProvider.computeAllMetricsFor(node));
 
                     if (!violation.isEmpty()) {
-                        violation = node.getXPathNodeName() + "::" + violation;
+                        if (node instanceof ASTMethodDeclaration) {
+                            final String parameters = ((ASTMethodDeclaration) node)
+                                    .getFormalParameters()
+                                    .findChildrenOfType(ASTFormalParameter.class)
+                                    .stream()
+                                    .map(this::classOfFormalParameter)
+                                    .collect(Collectors.joining(","));
+
+                            ASTResultType result = ((ASTMethodDeclaration) node).getResultType();
+                            String returnType = "";
+                            if (result == null || result.isVoid()) {
+                                returnType = "void";
+                            }
+                            else {
+                                ASTType type = result.getFirstChildOfType(ASTType.class);
+                                returnType = classOfType(type);
+                            }
+
+                            violation = String.format("%s::%s (%s)::%s",
+                                    node.getXPathNodeName(),
+                                    returnType,
+                                    parameters,
+                                    violation);
+                        }
+                        else if (node instanceof ASTConstructorDeclaration) {
+                            final String parameters = ((ASTConstructorDeclaration) node)
+                                    .getFormalParameters()
+                                    .findChildrenOfType(ASTFormalParameter.class)
+                                    .stream()
+                                    .map(this::classOfFormalParameter)
+                                    .collect(Collectors.joining(","));
+
+                            violation = String.format("%s::void (%s)::%s",
+                                    node.getXPathNodeName(),
+                                    parameters,
+                                    violation);
+                        }
+                        else {
+                            violation = node.getXPathNodeName() + "::" + violation;
+                        }
                         addViolationWithMessage(ruleContext, node, violation);
                     }
                 });
@@ -60,6 +105,27 @@ public class PMDMetricRule extends AbstractRule {
                 .stream()
                 .map(entry -> entry.getKey().name() + "=" + entry.getValue())
                 .reduce("", (acc, entry) -> acc + entry + ",");
+    }
+
+    private String classOfType(final ASTType type) {
+        if (type != null && type.getType() != null) {
+            return type.getType().getName();
+        }
+        else if (type != null) {
+            return type.getTypeImage();
+        }
+        else {
+            return "";
+        }
+    }
+
+    private String classOfFormalParameter(final ASTFormalParameter type) {
+        if (type != null && type.getType() != null) {
+            return type.getType().getName();
+        }
+        else {
+            return "";
+        }
     }
 
     /**

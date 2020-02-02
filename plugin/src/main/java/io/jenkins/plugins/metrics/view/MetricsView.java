@@ -160,23 +160,30 @@ public class MetricsView extends DefaultAsyncTableContentProvider implements Mod
         values.forEach(statistics::addValue);
 
         final double min = statistics.getMin();
-        final double max = statistics.getMax();
-        // Freedman-Diaconis rule for calculating the binWidth
+        final double max = statistics.getPercentile(99);//statistics.getMax();
         final double IQR = statistics.getPercentile(75) - statistics.getPercentile(25);
-
+        final double stdDev = statistics.getStandardDeviation();
+        
         final int numBins;
         double binWidth;
         if (IQR > 0) {
+            // Freedman-Diaconis rule for calculating the binWidth
             binWidth = (2 * IQR) / Math.cbrt(values.size());
             numBins = (int) Math.round((max - min) / binWidth);
         }
+        /* if (stdDev > 0) {
+            // Scott rule for calculating the binWidth
+            binWidth = (3.49 * stdDev) / Math.cbrt(values.size());
+            numBins = (int) Math.round((max - min) / binWidth);
+        }*/
         else if (max - min > 0) {
             // fall back to Sturges rule, if the binWidth would become 0
+            // Sturges Rule
             numBins = (int) (1 + Math.log(values.size()) / Math.log(2));
             binWidth = (max - min) / numBins;
         }
         else {
-            // IQR == 0 and min == max -> all datapoints are the same -> use just a single
+            // IQR == 0 and min == max -> all datapoints are the same -> use just a single bin
             numBins = 1;
             binWidth = 1;
         }

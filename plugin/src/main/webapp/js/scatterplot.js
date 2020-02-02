@@ -33,6 +33,16 @@
                             metricNameY + ': ' + data.value[1];
                     }
                 },
+                dataZoom: [
+                    {
+                        type: 'inside',
+                        // disable zooming via scrolling
+                        zoomLock: true
+                    },
+                    {
+                        type: 'slider'
+                    }
+                ],
                 xAxis: {
                     name: metricNameX,
                     nameLocation: 'center',

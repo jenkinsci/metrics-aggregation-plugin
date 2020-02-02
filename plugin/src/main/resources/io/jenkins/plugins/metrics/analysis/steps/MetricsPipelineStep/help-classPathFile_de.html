@@ -1,0 +1,25 @@
+<div>
+    Um während der Analyse die Type Resolution nutzen zu können, muss PMD den Classpath des Projekts verwenden können.
+    <p>
+        Bei einem <b>maven</b> build kann eine Datei, die den Classpath beinhaltet, folgendermaßen generiert werden:
+        <code>mvn dependency:build-classpath -Dmdep.outputFile=cp.txt</code>
+        Alternativ ist es auch möglich, dies in das pom.xml zu integrieren, damit es als Teil des builds erzeugt wird.
+        Unter <a href="https://maven.apache.org/plugins/maven-dependency-plugin/usage.html">
+        https://maven.apache.org/plugins/maven-dependency-plugin/usage.html</a> sind mehr Informationen dazu verfügbar.
+    </p>
+    <p>
+        Wird <b>gradle</b> verwendet, kann eine Datei, die den Classpath beinhaltet, erzeugt werden, indem
+        <code>
+            task removecp(type: Delete) {
+            delete "cp.txt"
+            }
+
+            subprojects {
+            task printcp {
+            new File(rootDir, "cp.txt").append(":" + sourceSets.main.runtimeClasspath.join(':'))
+            }
+            }
+        </code>
+        an Ende der Datei build.gradle hinzugefügt wird, und <code>gradlew removecp printcp</code> ausgeführt wird.
+    </p>
+</div>

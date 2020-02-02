@@ -24,6 +24,16 @@
                     trigger: 'axis',
                     formatter: '<b>' + metricName + ': {b}</b><br/>{c} Classes'
                 },
+                dataZoom: [
+                    {
+                        type: 'inside',
+                        // disable zooming via scrolling
+                        zoomLock: true
+                    },
+                    {
+                        type: 'slider'
+                    }
+                ],
                 xAxis: {
                     name: metricName,
                     nameLocation: 'center',

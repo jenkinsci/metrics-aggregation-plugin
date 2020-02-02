@@ -49,6 +49,11 @@ public class ClassDetailsView extends DefaultAsyncTableContentProvider implement
         methodMetricsMeasurements = allMeasurements.stream()
                 .filter(m -> m instanceof MethodMetricsMeasurement)
                 .map(m -> (MethodMetricsMeasurement) m)
+                .collect(Collectors.groupingBy(MethodMetricsMeasurement::getMethodName))
+                .values().stream()
+                .map(measurementsPerMethod -> measurementsPerMethod.stream()
+                        .reduce(MethodMetricsMeasurement::merge)
+                        .orElse(new MethodMetricsMeasurement()))
                 .collect(Collectors.toList());
 
         classMetricsMeasurement = allMeasurements.stream()

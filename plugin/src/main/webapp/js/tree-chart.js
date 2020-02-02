@@ -38,7 +38,8 @@
                             show: true,
                             formatter: '{b}'
                         },
-                        leafDepth: 1,
+                        // only show two levels, not the whole tree
+                        leafDepth: 2,
                         // disable zooming by scrolling, but still be able to move the treemap around
                         roam: 'move',
                         upperLabel: {

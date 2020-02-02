@@ -34,6 +34,7 @@ import io.jenkins.plugins.metrics.model.measurement.MetricsMeasurement;
 public class MetricsRecorder extends Recorder implements SimpleBuildStep {
 
     private String filePattern;
+    private String classPathFile;
 
     /**
      * Creates a new instance of {@link MetricsRecorder}.
@@ -41,7 +42,6 @@ public class MetricsRecorder extends Recorder implements SimpleBuildStep {
     @DataBoundConstructor
     public MetricsRecorder() {
         super();
-
         // empty constructor required for Stapler
     }
 
@@ -64,6 +64,15 @@ public class MetricsRecorder extends Recorder implements SimpleBuildStep {
         return filePattern;
     }
 
+    public String getClassPathFile() {
+        return classPathFile;
+    }
+
+    @DataBoundSetter
+    public void setClassPathFile(final String classPathFile) {
+        this.classPathFile = classPathFile;
+    }
+
     @Override
     public boolean perform(final AbstractBuild<?, ?> build, final Launcher launcher, final BuildListener listener)
             throws InterruptedException, IOException {
@@ -84,7 +93,7 @@ public class MetricsRecorder extends Recorder implements SimpleBuildStep {
 
         log.println("[Metrics] Start collecting metrics");
 
-        List<MetricsMeasurement> metricsReport = workspace.act(new MetricsActor(filePattern, listener));
+        List<MetricsMeasurement> metricsReport = workspace.act(new MetricsActor(filePattern, classPathFile, listener));
         run.addAction(new MetricsAction(metricsReport));
 
         log.println("[Metrics] Finished collecting metrics");

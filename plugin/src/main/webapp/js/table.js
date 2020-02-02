@@ -25,7 +25,7 @@
                     },
                     {
                         data: 'name',
-                        title: 'Class',
+                        title: 'Name',
                         defaultContent: '',
                         className: 'hideable'
                     },

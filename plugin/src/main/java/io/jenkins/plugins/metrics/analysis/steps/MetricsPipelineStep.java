@@ -24,10 +24,13 @@ import hudson.model.TaskListener;
 
 /**
  * Pipeline step that reports metrics from the build.
+ * 
+ * @author Andreas Pabst
  */
 public class MetricsPipelineStep extends Step implements Serializable {
     private static final long serialVersionUID = 1L;
     private String filePattern = "**/*.java";
+    private String classPathFile;
 
     /**
      * Creates a new instance of {@link MetricsPipelineStep}.
@@ -50,6 +53,15 @@ public class MetricsPipelineStep extends Step implements Serializable {
 
     public String getFilePattern() {
         return filePattern;
+    }
+
+    public String getClassPathFile() {
+        return classPathFile;
+    }
+
+    @DataBoundSetter
+    public void setClassPathFile(final String classPathFile) {
+        this.classPathFile = classPathFile;
     }
 
     /**
@@ -85,6 +97,7 @@ public class MetricsPipelineStep extends Step implements Serializable {
 
             MetricsRecorder recorder = new MetricsRecorder();
             recorder.setFilePattern(step.getFilePattern());
+            recorder.setClassPathFile(step.getClassPathFile());
             recorder.perform(run, workspace, taskListener);
             return null;
         }
