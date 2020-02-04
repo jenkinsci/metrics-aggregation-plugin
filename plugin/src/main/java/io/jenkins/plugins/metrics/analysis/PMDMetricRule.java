@@ -49,7 +49,7 @@ public class PMDMetricRule extends AbstractRule {
                                     .getFormalParameters()
                                     .findChildrenOfType(ASTFormalParameter.class)
                                     .stream()
-                                    .map(this::classOfFormalParameter)
+                                    .map(this::getClassOfFormalParameter)
                                     .collect(Collectors.joining(","));
 
                             ASTResultType result = ((ASTMethodDeclaration) node).getResultType();
@@ -73,7 +73,7 @@ public class PMDMetricRule extends AbstractRule {
                                     .getFormalParameters()
                                     .findChildrenOfType(ASTFormalParameter.class)
                                     .stream()
-                                    .map(this::classOfFormalParameter)
+                                    .map(this::getClassOfFormalParameter)
                                     .collect(Collectors.joining(","));
 
                             violation = String.format("%s::void (%s)::%s",
@@ -119,9 +119,15 @@ public class PMDMetricRule extends AbstractRule {
         }
     }
 
-    private String classOfFormalParameter(final ASTFormalParameter type) {
-        if (type != null && type.getType() != null) {
-            return type.getType().getName();
+    @VisibleForTesting
+    String getClassOfFormalParameter(final ASTFormalParameter parameter) {
+        if (parameter != null && parameter.getType() != null) {
+            String type = parameter.getType().getName();
+            if (parameter.getTypeDefinition().isArrayType()) {
+                type = type.replaceFirst("\\[L", "");
+                type = type.replaceFirst(";", "[]");
+            }
+            return type;
         }
         else {
             return "";
