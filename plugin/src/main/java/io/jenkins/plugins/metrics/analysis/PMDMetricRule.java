@@ -1,6 +1,5 @@
 package io.jenkins.plugins.metrics.analysis;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -9,28 +8,18 @@ import java.util.stream.Stream;
 import com.google.common.annotations.VisibleForTesting;
 
 import shaded.net.sourceforge.pmd.RuleContext;
-import shaded.net.sourceforge.pmd.lang.LanguageRegistry;
 import shaded.net.sourceforge.pmd.lang.ast.Node;
-import shaded.net.sourceforge.pmd.lang.java.JavaLanguageModule;
 import shaded.net.sourceforge.pmd.lang.java.ast.ASTConstructorDeclaration;
 import shaded.net.sourceforge.pmd.lang.java.ast.ASTFormalParameter;
+import shaded.net.sourceforge.pmd.lang.java.ast.ASTFormalParameters;
 import shaded.net.sourceforge.pmd.lang.java.ast.ASTMethodDeclaration;
 import shaded.net.sourceforge.pmd.lang.java.ast.ASTResultType;
 import shaded.net.sourceforge.pmd.lang.java.ast.ASTType;
+import shaded.net.sourceforge.pmd.lang.java.rule.AbstractJavaMetricsRule;
 import shaded.net.sourceforge.pmd.lang.metrics.LanguageMetricsProvider;
 import shaded.net.sourceforge.pmd.lang.metrics.MetricKey;
-import shaded.net.sourceforge.pmd.lang.rule.AbstractRule;
 
-public class PMDMetricRule extends AbstractRule {
-
-    /**
-     * Create a new PMD rule for reporting all available Java metrics.
-     */
-    public PMDMetricRule() {
-        super.setLanguage(LanguageRegistry.getLanguage(JavaLanguageModule.NAME));
-        // Enable type resolution on Java rules by default
-        super.setTypeResolution(true);
-    }
+public class PMDMetricRule extends AbstractJavaMetricsRule {
 
     @Override
     public void apply(final List<? extends Node> nodes, final RuleContext ruleContext) {
@@ -43,49 +32,33 @@ public class PMDMetricRule extends AbstractRule {
                 .forEach(node -> {
                     String violation = getMetricsAsMessageString(languageMetricsProvider.computeAllMetricsFor(node));
 
-                    if (!violation.isEmpty()) {
-                        if (node instanceof ASTMethodDeclaration) {
-                            final String parameters = ((ASTMethodDeclaration) node)
-                                    .getFormalParameters()
-                                    .findChildrenOfType(ASTFormalParameter.class)
-                                    .stream()
-                                    .map(this::getClassOfFormalParameter)
-                                    .collect(Collectors.joining(","));
-
-                            ASTResultType result = ((ASTMethodDeclaration) node).getResultType();
-                            String returnType = "";
-                            if (result == null || result.isVoid()) {
-                                returnType = "void";
-                            }
-                            else {
-                                ASTType type = result.getFirstChildOfType(ASTType.class);
-                                returnType = classOfType(type);
-                            }
-
-                            violation = String.format("%s::%s (%s)::%s",
-                                    node.getXPathNodeName(),
-                                    returnType,
-                                    parameters,
-                                    violation);
-                        }
-                        else if (node instanceof ASTConstructorDeclaration) {
-                            final String parameters = ((ASTConstructorDeclaration) node)
-                                    .getFormalParameters()
-                                    .findChildrenOfType(ASTFormalParameter.class)
-                                    .stream()
-                                    .map(this::getClassOfFormalParameter)
-                                    .collect(Collectors.joining(","));
-
-                            violation = String.format("%s::void (%s)::%s",
-                                    node.getXPathNodeName(),
-                                    parameters,
-                                    violation);
-                        }
-                        else {
-                            violation = node.getXPathNodeName() + "::" + violation;
-                        }
-                        addViolationWithMessage(ruleContext, node, violation);
+                    if (violation.trim().isEmpty()) {
+                        return;
                     }
+
+                    if (node instanceof ASTMethodDeclaration) {
+                        final String parameters = formalParameterClasses(
+                                ((ASTMethodDeclaration) node).getFormalParameters());
+
+                        String methodReturnType = "void";
+                        ASTResultType result = ((ASTMethodDeclaration) node).getResultType();
+                        if (result != null && !result.isVoid()) {
+                            ASTType type = result.getFirstChildOfType(ASTType.class);
+                            methodReturnType = classOfType(type);
+                        }
+
+                        violation = String.format("%s (%s)::", methodReturnType, parameters) + violation;
+                    }
+                    else if (node instanceof ASTConstructorDeclaration) {
+                        final String parameters = formalParameterClasses(
+                                ((ASTConstructorDeclaration) node).getFormalParameters());
+
+                        violation = String.format("void (%s)::", parameters) + violation;
+                    }
+
+                    // prepend the type of the node
+                    violation = node.getXPathNodeName() + "::" + violation;
+                    addViolationWithMessage(ruleContext, node, violation);
                 });
     }
 
@@ -134,6 +107,13 @@ public class PMDMetricRule extends AbstractRule {
         }
     }
 
+    private String formalParameterClasses(final ASTFormalParameters parameters) {
+        return parameters.findChildrenOfType(ASTFormalParameter.class)
+                .stream()
+                .map(this::getClassOfFormalParameter)
+                .collect(Collectors.joining(","));
+    }
+
     /**
      * Returns all the descendants of a specified {@link Node}.
      *
@@ -144,8 +124,6 @@ public class PMDMetricRule extends AbstractRule {
      */
     @VisibleForTesting
     Stream<Node> descendantNodes(final Node node) {
-        final List<Node> descendants = new ArrayList<>();
-        node.findDescendantsOfType(Node.class, descendants, true);
-        return descendants.stream();
+        return node.findDescendantsOfType(Node.class, true).stream();
     }
 }

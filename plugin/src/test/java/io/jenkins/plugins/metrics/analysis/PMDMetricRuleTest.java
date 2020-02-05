@@ -31,8 +31,8 @@ public class PMDMetricRuleTest {
         Node node = mock(Node.class);
         rule.descendantNodes(node);
 
-        verify(node, times(1)).findDescendantsOfType(eq(Node.class), any(), eq(true));
-        verify(node, never()).findDescendantsOfType(any(), any(), eq(false));
+        verify(node, times(1)).findDescendantsOfType(eq(Node.class), eq(true));
+        verify(node, never()).findDescendantsOfType(any(), eq(false));
     }
 
     @Test

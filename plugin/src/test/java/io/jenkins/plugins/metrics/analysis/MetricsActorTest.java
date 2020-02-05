@@ -89,8 +89,13 @@ class MetricsActorTest {
         assertThat(methodMetricsMeasurements.stream()
                 .map(MethodMetricsMeasurement::getMethodName)
                 .collect(Collectors.toList()))
-                .contains("void setBuild(hudson.model.AbstractBuild)",
-                        "hudson.model.AbstractBuild getBuild()");
+                .contains("void AbstractBuildAction()",
+                        "hudson.model.AbstractBuild getBuild()",
+                        "void setBuild(hudson.model.AbstractBuild)",
+                        "boolean isFloatingBoxActive()",
+                        "boolean isGraphActive()",
+                        "java.lang.String getGraphName()",
+                        "java.lang.String getSummary()");
     }
 
     private ClassMetricsMeasurement createClassMetricsMeasurement(final String className, final String packageName,

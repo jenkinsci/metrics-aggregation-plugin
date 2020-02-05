@@ -75,7 +75,7 @@ public class MetricsTreeNode {
         insertNode(node, packageLevels);
     }
 
-    public void insertNode(final MetricsTreeNode node, final Deque<String> levels) {
+    private void insertNode(final MetricsTreeNode node, final Deque<String> levels) {
         String nextLevelName = levels.pop();
 
         addValue(node.getValue());
