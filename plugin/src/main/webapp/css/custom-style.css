@@ -66,6 +66,7 @@ tr .details-control:before {
     font-size: 1.5em;
     font-weight: 900;
     color: #b4b4b4;
+    font-family: monospace;
     border: 1px solid;
     border-radius: 100%;
     padding: 0 5px;
@@ -74,5 +75,5 @@ tr .details-control:before {
 
 /* Add minus icon when it's opened */
 tr.parent .details-control:before {
-    content: "\2012"; /* slightly longer hyphen */
+    content: "-";
 }

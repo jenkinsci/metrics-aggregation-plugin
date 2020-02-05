@@ -31,25 +31,25 @@ public class CoverageMetricsProviderFactory extends MetricsProviderFactory<Cover
 
     private static final MetricDefinition METHOD = new MetricDefinition("METHOD_COVERAGE",
             "Method coverage",
-            "TODO",//TODO
+            "The percentage of methods in a class, that are covered by tests.",
             "code-coverage-api",
             30,
             ArrayUtils.toArray(Scope.CLASS));
     private static final MetricDefinition INSTRUCTION = new MetricDefinition("INSTRUCTION_COVERAGE",
             "Instruction coverage",
-            "TODO",//TODO
+            "The percentage of instructions, that are covered by tests.",
             "code-coverage-api",
             30,
             ArrayUtils.toArray(Scope.METHOD, Scope.CLASS));
     private static final MetricDefinition CONDITIONAL = new MetricDefinition("CONDITIONAL_COVERAGE",
             "Conditional coverage",
-            "TODO",//TODO
+            "The percentage of conditions, that are covered by tests.",
             "code-coverage-api",
             30,
             ArrayUtils.toArray(Scope.METHOD, Scope.CLASS));
     private static final MetricDefinition LINE = new MetricDefinition("LINE_COVERAGE",
             "Line coverage",
-            "TODO", //TODO
+            "The percentage of lines, that are covered by tests.",
             "code-coverage-api",
             30,
             ArrayUtils.toArray(Scope.METHOD, Scope.CLASS));
