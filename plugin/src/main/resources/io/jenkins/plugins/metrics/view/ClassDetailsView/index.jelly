@@ -23,11 +23,11 @@
       <script type="text/javascript" src="${resURL}/plugin/metrics-aggregation/js/no-prototype.js"/>
 
       <!-- bootstrap select -->
-      <link rel="stylesheet" href="${resURL}/plugin/metrics-aggregation/css/bootstrap-select.min.css"/>
-      <script src="${resURL}/plugin/metrics-aggregation/js/libs/bootstrap-select.min.js"/>
+      <link rel="stylesheet" href="${resURL}/plugin/metrics-aggregation/webjars/css/bootstrap-select.min.css"/>
+      <script src="${resURL}/plugin/metrics-aggregation/webjars/js/bootstrap-select.min.js"/>
 
       <!-- math.js -->
-      <script src="${resURL}/plugin/metrics-aggregation/js/libs/math.min.js"/>
+      <script src="${resURL}/plugin/metrics-aggregation/webjars/math.min.js"/>
 
       <script src="${resURL}/plugin/metrics-aggregation/js/table.js"/>
       <script src="${resURL}/plugin/metrics-aggregation/js/table-filter.js"/>

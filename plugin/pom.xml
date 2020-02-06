@@ -39,6 +39,10 @@
     <jquery3-api.version>3.4.1-4-beta1-rc84.f9d39e6a0845</jquery3-api.version>
     <code-coverage-api-plugin.version>1.1.0</code-coverage-api-plugin.version>
     <j2html.version>1.4.0</j2html.version>
+    <maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
+    <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
+    <mathjs.version>6.0.2</mathjs.version>
+    <bootstrap-select.version>1.13.11</bootstrap-select.version>
 
     <module.name>${project.groupId}.metrics.aggregation</module.name>
 
@@ -182,6 +186,19 @@
       <version>${j2html.version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>mathjs</artifactId>
+      <version>${mathjs.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>bootstrap-select</artifactId>
+      <version>${bootstrap-select.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
     <!-- Test dependencies -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
@@ -250,6 +267,54 @@
           <generateBddAssertions>false</generateBddAssertions>
           <generateJUnitSoftAssertions>false</generateJUnitSoftAssertions>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>${maven-dependency-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>unpack-dependencies</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/webjars</outputDirectory>
+              <includeArtifactIds>mathjs,bootstrap-select</includeArtifactIds>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>${maven-resources-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>copy-resources</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/${project.artifactId}/webjars</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>
+                    ${project.build.directory}/webjars/META-INF/resources/webjars/mathjs/${mathjs.version}
+                  </directory>
+                  <filtering>false</filtering>
+                </resource>
+                <resource>
+                  <directory>
+                    ${project.build.directory}/webjars/META-INF/resources/webjars/bootstrap-select/${bootstrap-select.version}
+                  </directory>
+                  <filtering>false</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
