@@ -20,4 +20,18 @@
       <url>https://opensource.org/licenses/MIT</url>
     </license>
   </licenses>
+
+  <developers>
+    <developer>
+      <id>andipabst</id>
+      <name>Andreas Pabst</name>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:git://github.com/jenkinsci/metrics-aggregation-plugin.git</connection>
+    <developerConnection>scm:git:git@github.com:jenkinsci/metrics-aggregation-plugin.git</developerConnection>
+    <url>https://github.com/jenkinsci/metrics-aggregation-plugin</url>
+  </scm>
+  
 </project>
