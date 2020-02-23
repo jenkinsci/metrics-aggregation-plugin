@@ -41,7 +41,7 @@ class MetricsActorTest {
                 "com.example.anotherpackage", fileName);
         testClass.addMetric(createDoubleMetric("TCC", 0.0));
         testClass.addMetric(createDoubleMetric("WOC", 1.0));
-        testClass.addMetric(createDoubleMetric("WMC", 2.0));
+        testClass.addMetric(createIntegerMetric("WMC", 2));
         testClass.addMetric(createIntegerMetric("LOC", 20));
         testClass.addMetric(createIntegerMetric("NCSS", 10));
         testClass.addMetric(createIntegerMetric("CLASS_FAN_OUT", 6));
@@ -54,7 +54,7 @@ class MetricsActorTest {
                 "com.example.anotherpackage", fileName);
         staticInnerClass.addMetric(createDoubleMetric("TCC", Double.NaN));
         staticInnerClass.addMetric(createDoubleMetric("WOC", 1.0));
-        staticInnerClass.addMetric(createDoubleMetric("WMC", 1.0));
+        staticInnerClass.addMetric(createIntegerMetric("WMC", 1));
         staticInnerClass.addMetric(createIntegerMetric("LOC", 5));
         staticInnerClass.addMetric(createIntegerMetric("NCSS", 3));
         staticInnerClass.addMetric(createIntegerMetric("CLASS_FAN_OUT", 2));
