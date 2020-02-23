@@ -1,11 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>io.jenkins.plugins</groupId>
   <artifactId>metrics-aggregation-parent</artifactId>
   <packaging>pom</packaging>
-  <version>0.1.0-beta0-SNAPSHOT</version>
+  <version>0.1.0-beta1</version>
   <name>Parent for Metrics Aggregation</name>
   <description>Parent pom to build the metrics aggregation Jenkins plugin (plugin and shaded pmd library)</description>
 
@@ -32,6 +31,7 @@
     <connection>scm:git:git://github.com/jenkinsci/metrics-aggregation-plugin.git</connection>
     <developerConnection>scm:git:git@github.com:jenkinsci/metrics-aggregation-plugin.git</developerConnection>
     <url>https://github.com/jenkinsci/metrics-aggregation-plugin</url>
+    <tag>metrics-aggregation-parent-0.1.0-beta1</tag>
   </scm>
   
 </project>
