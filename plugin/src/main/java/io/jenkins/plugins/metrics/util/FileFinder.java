@@ -17,6 +17,7 @@ import jenkins.MasterToSlaveFileCallable;
  * Scans the workspace and finds all files matching a given ant pattern.
  *
  * @author Ullrich Hafner
+ * https://github.com/jenkinsci/warnings-ng-plugin/blob/master/src/main/java/io/jenkins/plugins/analysis/core/util/FileFinder.java
  */
 public class FileFinder extends MasterToSlaveFileCallable<String[]> {
     private static final long serialVersionUID = 2970029366847565970L;

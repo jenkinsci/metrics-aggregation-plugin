@@ -15,9 +15,9 @@
         renderScatterPlot: function (model, metricNameX, metricNameY, logarithmicCheckboxIdX, logarithmicCheckboxIdY) {
             var scatterPlotData = JSON.parse(model);
             // replace all `0`s and `NaN`s with `null` for logarithmic axis scaling
-            var dataLogarithmic = scatterPlotData.map(x => ({
-                name: x.name,
-                value: x.value.map(v => v > 0 ? v : null)
+            var dataLogarithmic = scatterPlotData.map(dataPoint => ({
+                name: dataPoint.name,
+                value: dataPoint.value.map(v => v > 0 ? v : null)
             }));
             var chart = echarts.init($(this).get(0), 'light');
             var options = {
@@ -40,7 +40,16 @@
                         zoomLock: true
                     },
                     {
-                        type: 'slider'
+                        // zoom for the x axis
+                        type: 'slider',
+                        xAxisIndex: 0,
+                        filterMode: 'empty'
+                    },
+                    {
+                        // zoom for the y axis
+                        type: 'slider',
+                        yAxisIndex: 0,
+                        filterMode: 'empty'
                     }
                 ],
                 xAxis: {
@@ -64,7 +73,8 @@
                 chart.resize();
             });
             $(this).data('chart', chart);
-            $(logarithmicCheckboxIdX).change(function () {
+
+            function showLogXAxis() {
                 const checkBox = $(this);
                 if (checkBox.is(':checked')) {
                     chart.setOption({
@@ -99,8 +109,9 @@
                         }]
                     })
                 }
-            });
-            $(logarithmicCheckboxIdY).change(function () {
+            }
+
+            function showLogYAxis() {
                 const checkBox = $(this);
                 if (checkBox.is(':checked')) {
                     chart.setOption({
@@ -131,7 +142,17 @@
                         }]
                     })
                 }
-            });
+            }
+
+            if ($(logarithmicCheckboxIdX).is(':checked')) {
+                showLogXAxis();
+            }
+            $(logarithmicCheckboxIdX).change(showLogXAxis);
+
+            if ($(logarithmicCheckboxIdY).is(':checked')) {
+                showLogYAxis();
+            }
+            $(logarithmicCheckboxIdY).change(showLogYAxis);
         }
     });
 })(jQuery);

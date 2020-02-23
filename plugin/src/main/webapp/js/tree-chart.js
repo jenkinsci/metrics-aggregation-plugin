@@ -93,7 +93,7 @@
                                 }
                             }
                         ],
-                        data: [treeModel]
+                        data: [JSON.parse(treeModel)]
                     }
                 ]
             };

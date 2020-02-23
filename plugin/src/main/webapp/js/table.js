@@ -30,7 +30,6 @@
                         className: 'hideable'
                     },
                     ...supportedMetrics
-                        .filter(({scopes}) => scopes.includes('CLASS'))
                         .map(({id, displayName}) => ({
                                 data: 'metricsDisplay.' + id,
                                 title: displayName,

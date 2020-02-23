@@ -111,8 +111,8 @@ public class MetricsView extends DefaultAsyncTableContentProvider implements Mod
 
     @JavaScriptMethod
     @SuppressWarnings("unused") // used by jelly view
-    public MetricsTreeNode getMetricsTree(final String valueKey) {
-        MetricsTreeNode root = metricsMeasurements.stream()
+    public String getMetricsTree(final String valueKey) {
+        List<MetricsTreeNode> nodes = metricsMeasurements.stream()
                 .map(measurement -> {
                     double value = measurement.getMetric(valueKey).orElse(0.0).doubleValue();
                     if (!Double.isFinite(value)) {
@@ -120,14 +120,13 @@ public class MetricsView extends DefaultAsyncTableContentProvider implements Mod
                     }
                     return new MetricsTreeNode(measurement.getQualifiedClassName(), value);
                 })
-                .reduce(new MetricsTreeNode(""), (acc, node) -> {
-                    acc.insertNode(node);
-                    return acc;
-                });
+                .collect(Collectors.toList());
 
+        MetricsTreeNode root = new MetricsTreeNode("");
+        nodes.forEach(root::insertNode);
         root.collapsePackage();
 
-        return root;
+        return toJson(root);
     }
 
     private List<Double> getAllMetrics(final String metricId) {
@@ -160,7 +159,7 @@ public class MetricsView extends DefaultAsyncTableContentProvider implements Mod
         values.forEach(statistics::addValue);
 
         final double min = statistics.getMin();
-        final double max = statistics.getPercentile(99);//statistics.getMax();
+        final double max = statistics.getMax();
         final double IQR = statistics.getPercentile(75) - statistics.getPercentile(25);
         final double stdDev = statistics.getStandardDeviation();
         
@@ -171,11 +170,6 @@ public class MetricsView extends DefaultAsyncTableContentProvider implements Mod
             binWidth = (2 * IQR) / Math.cbrt(values.size());
             numBins = (int) Math.round((max - min) / binWidth);
         }
-        /* if (stdDev > 0) {
-            // Scott rule for calculating the binWidth
-            binWidth = (3.49 * stdDev) / Math.cbrt(values.size());
-            numBins = (int) Math.round((max - min) / binWidth);
-        }*/
         else if (max - min > 0) {
             // fall back to Sturges rule, if the binWidth would become 0
             // Sturges Rule
@@ -242,31 +236,51 @@ public class MetricsView extends DefaultAsyncTableContentProvider implements Mod
     }
 
     /**
-     * Returns a new sub page for the selected link.
+     * Returns the {@link ClassDetailsView} for the selected class.
      *
      * @param link
-     *         the link to identify the sub page to show
+     *         the name of the class to show details for
      * @param request
      *         Stapler request
      * @param response
      *         Stapler response
      *
-     * @return the new sub page
+     * @return the new class details view
      */
     @SuppressWarnings("unused") // Called by jelly view
     public Object getDynamic(final String link, final StaplerRequest request, final StaplerResponse response) {
         return new ClassDetailsView(owner, link);
     }
 
+    /**
+     * Get the table model for the metrics details table.
+     *
+     * @param id
+     *         the id of the table to retrieve
+     *
+     * @return the {@link MetricsTableModel} containing all metrics
+     */
     @Override
     public TableModel getTableModel(final String id) {
         return new MetricsTableModel(id, supportedMetrics, metricsMeasurements);
     }
 
+    /**
+     * Data class for points in a scatter plot.
+     */
     private static final class ScatterPlotDataItem {
         private final String name;
         private final List<Number> value;
 
+        /**
+         * Create a new data point with a name and a list of values. The first two values will be the coordinates of the
+         * item.
+         *
+         * @param name
+         *         the name for the data point
+         * @param values
+         *         the values for the data point
+         */
         private ScatterPlotDataItem(final String name, final Number... values) {
             this.name = name;
             this.value = Arrays.asList(values);

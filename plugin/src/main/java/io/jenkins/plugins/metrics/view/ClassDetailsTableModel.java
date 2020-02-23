@@ -9,6 +9,7 @@ import io.jenkins.plugins.datatables.TableColumn;
 import io.jenkins.plugins.datatables.TableConfiguration;
 import io.jenkins.plugins.datatables.TableModel;
 import io.jenkins.plugins.metrics.model.measurement.MethodMetricsMeasurement;
+import io.jenkins.plugins.metrics.model.metric.Metric;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
 
 public class ClassDetailsTableModel extends TableModel {
@@ -82,7 +83,9 @@ public class ClassDetailsTableModel extends TableModel {
          * @return the map of metrics
          */
         public Map<String, String> getMetricsDisplay() {
-            return metricsMeasurement.getMetricsDisplay();
+            return metricsMeasurement.getMetrics()
+                    .values().stream()
+                    .collect(Collectors.toMap(Metric::getId, Metric::renderValue));
         }
 
         /**
@@ -91,7 +94,9 @@ public class ClassDetailsTableModel extends TableModel {
          * @return the map of metrics
          */
         public Map<String, Number> getMetricsRaw() {
-            return metricsMeasurement.getMetricsRaw();
+            return metricsMeasurement.getMetrics()
+                    .values().stream()
+                    .collect(Collectors.toMap(Metric::getId, Metric::rawValue));
         }
     }
 }

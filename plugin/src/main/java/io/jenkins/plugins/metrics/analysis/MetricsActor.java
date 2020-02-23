@@ -188,10 +188,10 @@ public class MetricsActor extends MasterToSlaveFileCallable<List<MetricsMeasurem
                             case "NPATH":
                             case "CYCLO":
                             case "NOPA":
+                            case "WMC":
                                 metricsMeasurement.addMetric(new IntegerMetric(metricDefinition, (int) metricValue));
                                 break;
                             case "TCC":
-                            case "WMC":
                             case "WOC":
                                 metricsMeasurement.addMetric(new DoubleMetric(metricDefinition, metricValue));
                                 break;

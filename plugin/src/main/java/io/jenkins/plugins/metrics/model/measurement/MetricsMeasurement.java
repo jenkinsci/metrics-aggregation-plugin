@@ -4,9 +4,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
-import com.fasterxml.jackson.annotation.JsonGetter;
 
 import io.jenkins.plugins.metrics.model.metric.Metric;
 
@@ -52,16 +49,6 @@ public abstract class MetricsMeasurement implements Serializable {
 
     public Map<String, Metric> getMetrics() {
         return metrics;
-    }
-
-    @JsonGetter("metricsRaw")
-    public Map<String, Number> getMetricsRaw() {
-        return metrics.values().stream().collect(Collectors.toMap(Metric::getId, Metric::rawValue));
-    }
-
-    @JsonGetter("metricsDisplay")
-    public Map<String, String> getMetricsDisplay() {
-        return metrics.values().stream().collect(Collectors.toMap(Metric::getId, Metric::renderValue));
     }
 
     public Optional<Number> getMetric(final String id) {
