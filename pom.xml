@@ -4,7 +4,7 @@
   <groupId>io.jenkins.plugins</groupId>
   <artifactId>metrics-aggregation-parent</artifactId>
   <packaging>pom</packaging>
-  <version>0.1.0-beta2-SNAPSHOT</version>
+  <version>0.1.0-beta2</version>
   <name>Parent for Metrics Aggregation</name>
   <description>Parent pom to build the metrics aggregation Jenkins plugin (plugin and shaded pmd library)</description>
 
@@ -56,7 +56,7 @@
     <connection>scm:git:git://github.com/jenkinsci/metrics-aggregation-plugin.git</connection>
     <developerConnection>scm:git:git@github.com:jenkinsci/metrics-aggregation-plugin.git</developerConnection>
     <url>https://github.com/jenkinsci/metrics-aggregation-plugin</url>
-    <tag>HEAD</tag>
+    <tag>metrics-aggregation-parent-0.1.0-beta2</tag>
   </scm>
   
 </project>

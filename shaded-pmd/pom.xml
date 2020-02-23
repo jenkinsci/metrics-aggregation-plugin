@@ -4,7 +4,7 @@
   <groupId>io.jenkins.plugins</groupId>
   <artifactId>metrics-aggregation-shaded-pmd</artifactId>
   <packaging>jar</packaging>
-  <version>6.21.0-2-SNAPSHOT</version>
+  <version>6.21.0-2</version>
   <name>Shaded PMD for Metrics Aggregation plugin</name>
 
   <properties>
