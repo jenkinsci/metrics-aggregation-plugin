@@ -2,11 +2,22 @@ package io.jenkins.plugins.metrics.model.metric;
 
 import java.util.Objects;
 
+/**
+ * A {@link Metric} representing a double value.
+ */
 public class DoubleMetric extends Metric<Double> {
     private static final long serialVersionUID = -7838111350390919589L;
 
     private double value;
 
+    /**
+     * Constructor for a double metric.
+     *
+     * @param metricDefinition
+     *         the definition of this metric
+     * @param value
+     *         the double value
+     */
     public DoubleMetric(final MetricDefinition metricDefinition, final double value) {
         super(metricDefinition);
         this.value = value;

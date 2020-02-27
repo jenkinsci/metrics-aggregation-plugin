@@ -2,11 +2,22 @@ package io.jenkins.plugins.metrics.model.metric;
 
 import java.util.Objects;
 
+/**
+ * A {@link Metric} representing an integer value.
+ */
 public class IntegerMetric extends Metric<Integer> {
     private static final long serialVersionUID = 179851851088742850L;
 
     private int value;
 
+    /**
+     * Constructor for a integer metric.
+     *
+     * @param metricDefinition
+     *         the definition of this metric
+     * @param value
+     *         the integer value
+     */
     public IntegerMetric(final MetricDefinition metricDefinition, final int value) {
         super(metricDefinition);
         this.value = value;

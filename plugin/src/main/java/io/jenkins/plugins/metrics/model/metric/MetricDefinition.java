@@ -5,9 +5,15 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.ArrayUtils;
 
+/**
+ * A definition of a metric.
+ */
 public class MetricDefinition implements Serializable {
     private static final long serialVersionUID = 5311316796142816504L;
 
+    /**
+     * The scope of a {@link MetricDefinition}. Might be a method, or a class, or both.
+     */
     public enum Scope {
         CLASS,
         METHOD
@@ -20,10 +26,32 @@ public class MetricDefinition implements Serializable {
     private int priority;
     private Scope[] scopes;
 
+    /**
+     * Create a new {@link MetricDefinition}.
+     *
+     * @param id
+     *         the id of the metric
+     */
     public MetricDefinition(final String id) {
         this.id = id;
     }
 
+    /**
+     * Create a new {@link MetricDefinition}.
+     *
+     * @param id
+     *         the id of the metric
+     * @param displayName
+     *         the name to display
+     * @param description
+     *         the description of the metric
+     * @param reportedBy
+     *         the id of the tool which reported a metric
+     * @param priority
+     *         the priority of a metric
+     * @param scopes
+     *         the scopes of a metric (class, method, or both)
+     */
     public MetricDefinition(final String id, final String displayName, final String description,
             final String reportedBy, final int priority, final Scope[] scopes) {
         this.id = id;
@@ -82,6 +110,14 @@ public class MetricDefinition implements Serializable {
         this.scopes = scopes.clone();
     }
 
+    /**
+     * Determine if this {@link MetricDefinition} is valid for a certain {@link Scope}.
+     *
+     * @param scope
+     *         the {@link Scope} to check for
+     *
+     * @return true, if this {@link MetricDefinition} is valid for the provided {@link Scope}, false otherwise
+     */
     public boolean validForScope(final Scope scope) {
         return ArrayUtils.contains(scopes, scope);
     }

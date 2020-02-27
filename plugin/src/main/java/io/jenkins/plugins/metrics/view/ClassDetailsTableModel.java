@@ -9,15 +9,27 @@ import io.jenkins.plugins.datatables.TableColumn;
 import io.jenkins.plugins.datatables.TableConfiguration;
 import io.jenkins.plugins.datatables.TableModel;
 import io.jenkins.plugins.metrics.model.measurement.MethodMetricsMeasurement;
+import io.jenkins.plugins.metrics.model.measurement.MetricsMeasurement;
 import io.jenkins.plugins.metrics.model.metric.Metric;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
 
+/**
+ * {@link TableModel} for the class details view.
+ */
 public class ClassDetailsTableModel extends TableModel {
 
     private final List<MetricDefinition> supportedMetrics;
     private final List<MethodMetricsMeasurement> metricsMeasurements;
 
-    public ClassDetailsTableModel(final List<MetricDefinition> supportedMetrics,
+    /**
+     * Constructor for a {@link ClassDetailsTableModel}.
+     *
+     * @param supportedMetrics
+     *         the list of metrics that are supported for this table
+     * @param metricsMeasurements
+     *         the {@link MetricsMeasurement}s to display in the table
+     */
+    ClassDetailsTableModel(final List<MetricDefinition> supportedMetrics,
             final List<MethodMetricsMeasurement> metricsMeasurements) {
         this.supportedMetrics = supportedMetrics;
         this.metricsMeasurements = metricsMeasurements;
@@ -60,6 +72,10 @@ public class ClassDetailsTableModel extends TableModel {
                 .buttons("colvis");
     }
 
+    /**
+     * A row in the class details view table.
+     */
+    @SuppressWarnings("unused") // used by jelly view
     public static class Row {
         private final MethodMetricsMeasurement metricsMeasurement;
 

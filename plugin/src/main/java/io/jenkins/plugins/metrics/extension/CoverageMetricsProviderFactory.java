@@ -25,6 +25,9 @@ import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition.Scope;
 import io.jenkins.plugins.metrics.model.metric.PercentageMetric;
 
+/**
+ * {@link MetricsProviderFactory} for coverage metrics. Data fetched from the code-coverage-api-plugin.
+ */
 @Extension
 @SuppressWarnings("unused") // used via the extension
 public class CoverageMetricsProviderFactory extends MetricsProviderFactory<CoverageAction> {
@@ -84,6 +87,7 @@ public class CoverageMetricsProviderFactory extends MetricsProviderFactory<Cover
                             acc.merge(result);
                         }
                         catch (CoverageException ignored) {
+                            //ignored
                         }
                     }
                     return acc;
@@ -146,7 +150,7 @@ public class CoverageMetricsProviderFactory extends MetricsProviderFactory<Cover
         else {
             return null;
         }
-        
+
         metricsMeasurement.addMetric(new PercentageMetric(INSTRUCTION, getCoverage(result, "Instruction")));
         metricsMeasurement.addMetric(new PercentageMetric(CONDITIONAL, getCoverage(result, "Conditional")));
         metricsMeasurement.addMetric(new PercentageMetric(LINE, getCoverage(result, "Line")));

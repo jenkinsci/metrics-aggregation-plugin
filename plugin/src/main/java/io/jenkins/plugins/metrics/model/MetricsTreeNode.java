@@ -11,6 +11,9 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+/**
+ * Node for constructing a tree structure of all metrics.
+ */
 public class MetricsTreeNode {
 
     private String name;
@@ -19,10 +22,24 @@ public class MetricsTreeNode {
     @JsonIgnore
     private Map<String, MetricsTreeNode> childrenMap = new HashMap<>();
 
+    /**
+     * Create a new {@link MetricsTreeNode} with value 0.0.
+     *
+     * @param name
+     *         the name of the node
+     */
     public MetricsTreeNode(final String name) {
         this(name, 0.0);
     }
 
+    /**
+     * Create a new {@link MetricsTreeNode}.
+     *
+     * @param name
+     *         the name of the node
+     * @param value
+     *         the value of the node
+     */
     public MetricsTreeNode(final String name, final double value) {
         this.value = value;
         this.name = name;
@@ -36,7 +53,13 @@ public class MetricsTreeNode {
         this.value = value;
     }
 
-    public void addValue(final double amount) {
+    /**
+     * Add to the current value of this node.
+     *
+     * @param amount
+     *         the amount to add
+     */
+    private void addValue(final double amount) {
         this.value += amount;
     }
 
@@ -57,6 +80,11 @@ public class MetricsTreeNode {
         return new ArrayList<>(childrenMap.values());
     }
 
+    /**
+     * Collapse the package names. If a node only has one child, its name is appended to the current node and its
+     * children are now the children of the current node. This is repeated as long as there are nodes with only one
+     * child (package nodes at the top of the hierarchy).
+     */
     public void collapsePackage() {
         while (getChildren().size() == 1) {
             MetricsTreeNode singleChild = getChildrenMap().values().iterator().next();
@@ -70,6 +98,12 @@ public class MetricsTreeNode {
         }
     }
 
+    /**
+     * Insert a node in the tree.
+     *
+     * @param node
+     *         the node to insert
+     */
     public void insertNode(final MetricsTreeNode node) {
         Deque<String> packageLevels = new ArrayDeque<>(Arrays.asList(node.getName().split("\\.")));
         insertNode(node, packageLevels);
@@ -107,9 +141,9 @@ public class MetricsTreeNode {
 
         if (o instanceof MetricsTreeNode) {
             MetricsTreeNode other = (MetricsTreeNode) o;
-            return Objects.equals(name, other.name) &&
-                    Objects.equals(value, other.value) &&
-                    Objects.equals(childrenMap, other.childrenMap);
+            return Objects.equals(name, other.name)
+                    && Objects.equals(value, other.value)
+                    && Objects.equals(childrenMap, other.childrenMap);
         }
 
         return false;

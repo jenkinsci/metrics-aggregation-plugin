@@ -71,6 +71,9 @@ public class MetricsJobAction implements Action {
         }
     }
 
+    /**
+     * This {@link TransientActionFactory} provides the metrics action for a job, i.e. the link in the left side bar.
+     */
     @Extension
     public static class JobActionFactory extends TransientActionFactory<Job> {
 

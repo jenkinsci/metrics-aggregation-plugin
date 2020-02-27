@@ -35,6 +35,14 @@ public class ClassDetailsView extends DefaultAsyncTableContentProvider implement
     private final List<MetricDefinition> supportedMetrics;
     private final Map<String, String> classOverview;
 
+    /**
+     * Details view for a class.
+     *
+     * @param owner
+     *         the owning {@link Run}
+     * @param className
+     *         the className for which the metrics should be shown
+     */
     public ClassDetailsView(final Run<?, ?> owner, final String className) {
         this.owner = owner;
 

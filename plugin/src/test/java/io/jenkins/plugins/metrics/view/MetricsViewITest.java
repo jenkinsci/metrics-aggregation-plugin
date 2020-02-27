@@ -18,11 +18,25 @@ import io.jenkins.plugins.metrics.testutil.IntegrationTestUtil;
 
 import static org.assertj.core.api.Assertions.*;
 
+/**
+ * Integration test for the class {@link MetricsView}.
+ */
 public class MetricsViewITest {
 
+    /**
+     * Jenkins rule for the integration test.
+     */
     @Rule
     public JenkinsRule jenkins = new JenkinsRule();
 
+    /**
+     * Test if an empty metrics page is displayed.
+     *
+     * @throws IOException
+     *         test -> ignored
+     * @throws SAXException
+     *         test -> ignored
+     */
     @Test
     public void shoudShowEmptyMetricsPage() throws IOException, SAXException {
         FreeStyleProject project = jenkins.createFreeStyleProject();

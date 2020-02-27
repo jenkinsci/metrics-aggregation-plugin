@@ -2,6 +2,9 @@ package io.jenkins.plugins.metrics.model.measurement;
 
 import java.util.Objects;
 
+/**
+ * {@link MetricsMeasurement} representing one class.
+ */
 public class ClassMetricsMeasurement extends MetricsMeasurement {
     private static final long serialVersionUID = 6801327926336683068L;
 

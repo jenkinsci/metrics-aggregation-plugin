@@ -15,6 +15,9 @@ import io.jenkins.plugins.metrics.model.measurement.ClassMetricsMeasurement;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition.Scope;
 
+/**
+ * {@link MetricsProviderFactory} for PMD metrics.
+ */
 @Extension
 public class PMDMetricsProviderFactory extends MetricsProviderFactory<MetricsAction> {
 
@@ -32,7 +35,10 @@ public class PMDMetricsProviderFactory extends MetricsProviderFactory<MetricsAct
             ArrayUtils.toArray(Scope.METHOD, Scope.CLASS));
     private static final MetricDefinition CYCLO = new MetricDefinition("CYCLO",
             "Cyclomatic Complexity",
-            "Number of independent paths through a block of code. Formally, given that the control flow graph of the block has n vertices, e edges and p connected components, the cyclomatic complexity of the block is given by CYCLO = e - n + 2p. In practice it can be calculated by counting control flow statements following the standard rules given below.",
+            "Number of independent paths through a block of code. Formally, given that the control flow graph "
+                    + "of the block has n vertices, e edges and p connected components, the cyclomatic complexity of "
+                    + "the block is given by CYCLO = e - n + 2p. In practice it can be calculated by counting control "
+                    + "flow statements following the standard rules given below.",
             "metrics-aggregation-plugin (pmd)",
             20,
             ArrayUtils.toArray(Scope.METHOD));
@@ -44,7 +50,10 @@ public class PMDMetricsProviderFactory extends MetricsProviderFactory<MetricsAct
             ArrayUtils.toArray(Scope.METHOD, Scope.CLASS));
     private static final MetricDefinition NCSS = new MetricDefinition("NCSS",
             "Non-commenting source statements",
-            "Number of statements in a class or operation. That’s roughly equivalent to counting the number of semicolons and opening braces in the program. Comments and blank lines are ignored, and statements spread on multiple lines count as only one (e.g. int\\n a; counts a single statement).",
+            "Number of statements in a class or operation. That’s roughly equivalent to counting the number "
+                    + "of semicolons and opening braces in the program. Comments and blank lines are ignored, and "
+                    + "statements spread on multiple lines count as only one "
+                    + "(e.g. int\\n a; counts a single statement).",
             "metrics-aggregation-plugin (pmd)",
             5,
             ArrayUtils.toArray(Scope.METHOD, Scope.CLASS));
@@ -62,25 +71,32 @@ public class PMDMetricsProviderFactory extends MetricsProviderFactory<MetricsAct
             ArrayUtils.toArray(Scope.CLASS));
     private static final MetricDefinition NPATH = new MetricDefinition("NPATH",
             "NPath complexity",
-            "Number of acyclic execution paths through a piece of code. This is related to cyclomatic complexity, but the two metrics don’t count the same thing: NPath counts the number of distinct full paths from the beginning to the end of the method, while Cyclo only counts the number of decision points. NPath is not computed as simply as Cyclo. With NPath, two decision points appearing sequentially have their complexity multiplied.",
+            "Number of acyclic execution paths through a piece of code. This is related to cyclomatic "
+                    + "complexity, but the two metrics don’t count the same thing: NPath counts the number of distinct "
+                    + "full paths from the beginning to the end of the method, while Cyclo only counts the number of "
+                    + "decision points. NPath is not computed as simply as Cyclo. With NPath, two decision points "
+                    + "appearing sequentially have their complexity multiplied.",
             "metrics-aggregation-plugin (pmd)",
             20,
             ArrayUtils.toArray(Scope.METHOD));
     private static final MetricDefinition TCC = new MetricDefinition("TCC",
             "Tight Class Cohesion",
-            "The relative number of method pairs of a class that access in common at least one attribute of the measured class.",
+            "The relative number of method pairs of a class that access in common at least one attribute "
+                    + "of the measured class.",
             "metrics-aggregation-plugin (pmd)",
             20,
             ArrayUtils.toArray(Scope.CLASS));
     private static final MetricDefinition WMC = new MetricDefinition("WMC",
             "Weighted Method Count",
-            "Sum of the statistical complexity of the operations in the class. We use CYCLO to quantify the complexity of an operation.",
+            "Sum of the statistical complexity of the operations in the class. We use CYCLO to quantify "
+                    + "the complexity of an operation.",
             "metrics-aggregation-plugin (pmd)",
             20,
             ArrayUtils.toArray(Scope.CLASS));
     private static final MetricDefinition WOC = new MetricDefinition("WOC",
             "Weight of Class",
-            "Number of “functional” public methods divided by the total number of public methods. Our definition of “functional method” excludes constructors, getters, and setters.",
+            "Number of “functional” public methods divided by the total number of public methods. "
+                    + "Our definition of “functional method” excludes constructors, getters, and setters.",
             "metrics-aggregation-plugin (pmd)",
             20,
             ArrayUtils.toArray(Scope.CLASS));

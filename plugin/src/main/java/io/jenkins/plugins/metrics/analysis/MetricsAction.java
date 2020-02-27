@@ -12,11 +12,20 @@ import jenkins.tasks.SimpleBuildStep.LastBuildAction;
 
 import io.jenkins.plugins.metrics.model.measurement.MetricsMeasurement;
 
+/**
+ * An action for recording metrics in a jenkins build.
+ */
 public class MetricsAction implements RunAction2, LastBuildAction {
     private final List<MetricsMeasurement> metricsMeasurements;
 
-    public MetricsAction(final List<MetricsMeasurement> metricsReport) {
-        this.metricsMeasurements = metricsReport;
+    /**
+     * Create a new {@link MetricsAction}.
+     *
+     * @param metricsMeasurements
+     *         the {@link MetricsMeasurement}s for this action
+     */
+    public MetricsAction(final List<MetricsMeasurement> metricsMeasurements) {
+        this.metricsMeasurements = metricsMeasurements;
     }
 
     @Nullable

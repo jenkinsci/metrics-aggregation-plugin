@@ -11,8 +11,14 @@ import io.jenkins.plugins.metrics.model.metric.MetricDefinition.Scope;
 
 import static org.assertj.core.api.Assertions.*;
 
+/**
+ * Test for the class {@link MethodMetricsMeasurement}.
+ */
 public class MethodMetricsMeasurementTest {
 
+    /**
+     * Test if two metrics are merged correctly.
+     */
     @Test
     public void shouldMergeTwoMetricsMeasurements() {
         final MethodMetricsMeasurement measurement2 = new MethodMetricsMeasurement();
@@ -26,6 +32,9 @@ public class MethodMetricsMeasurementTest {
         assertThat(measurement1.getMetrics()).containsValue(metric);
     }
 
+    /**
+     * Test if it is possible to retrieve a metric correctly.
+     */
     @Test
     public void shouldGetMetric() {
         final String metricId = "TESTMETRIC";

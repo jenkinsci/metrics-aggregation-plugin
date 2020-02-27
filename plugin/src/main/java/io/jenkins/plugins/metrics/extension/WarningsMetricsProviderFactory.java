@@ -24,6 +24,10 @@ import io.jenkins.plugins.metrics.model.metric.IntegerMetric;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition.Scope;
 
+/**
+ * {@link MetricsProviderFactory} for the number of warnings and git forensics data. Uses the warnings-ng-plugin and
+ * forensics-api-plugin as sources.
+ */
 @Extension
 @SuppressWarnings("unused") // used via the extension
 public class WarningsMetricsProviderFactory extends MetricsProviderFactory<ResultAction> {

@@ -8,8 +8,14 @@ import io.jenkins.plugins.metrics.model.metric.MetricDefinition.Scope;
 
 import static org.assertj.core.api.Assertions.*;
 
+/**
+ * Test for the class {@link MetricDefinition}.
+ */
 public class MetricDefinitionTest {
 
+    /**
+     * Test if the scope check is working.
+     */
     @Test
     public void shouldBeValidForScope() {
         final MetricDefinition both = createMetricDefinitionWithScope(ArrayUtils.toArray(Scope.CLASS, Scope.METHOD));
@@ -25,7 +31,7 @@ public class MetricDefinitionTest {
         assertThat(justMethod.validForScope(Scope.CLASS)).isFalse();
     }
 
-    public MetricDefinition createMetricDefinitionWithScope(final Scope[] scopes) {
+    private MetricDefinition createMetricDefinitionWithScope(final Scope[] scopes) {
         return new MetricDefinition("", "", "", "", 0, scopes);
     }
 }

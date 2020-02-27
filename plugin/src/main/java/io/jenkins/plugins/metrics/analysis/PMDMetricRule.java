@@ -19,6 +19,9 @@ import shaded.net.sourceforge.pmd.lang.java.rule.AbstractJavaMetricsRule;
 import shaded.net.sourceforge.pmd.lang.metrics.LanguageMetricsProvider;
 import shaded.net.sourceforge.pmd.lang.metrics.MetricKey;
 
+/**
+ * PMD rule for reporting metrics.
+ */
 public class PMDMetricRule extends AbstractJavaMetricsRule {
 
     @Override

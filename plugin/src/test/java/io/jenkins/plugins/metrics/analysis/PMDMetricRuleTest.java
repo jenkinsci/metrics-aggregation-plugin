@@ -14,6 +14,9 @@ import shaded.net.sourceforge.pmd.lang.metrics.MetricKey;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Test for the class {@link PMDMetricRule}.
+ */
 public class PMDMetricRuleTest {
 
     @Test

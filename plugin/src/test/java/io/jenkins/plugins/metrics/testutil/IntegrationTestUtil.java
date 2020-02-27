@@ -8,8 +8,21 @@ import org.jvnet.hudson.test.JenkinsRule.WebClient;
 import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
 import com.gargoylesoftware.htmlunit.SilentCssErrorHandler;
 
+/**
+ * Utility class for integration tests.
+ */
 public class IntegrationTestUtil {
 
+    /**
+     * Get a {@link WebClient} for interacting with the jenkins UI.
+     *
+     * @param jenkinsRule
+     *         the {@link JenkinsRule} for this test
+     * @param javaScriptEnabled
+     *         true to enable JavaScript, false otherwise
+     *
+     * @return the {@link WebClient}
+     */
     public static WebClient getWebClient(final JenkinsRule jenkinsRule, final boolean javaScriptEnabled) {
         WebClient webClient = jenkinsRule.createWebClient();
         webClient.setCssErrorHandler(new SilentCssErrorHandler());

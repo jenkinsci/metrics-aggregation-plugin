@@ -44,6 +44,12 @@ public class MetricsView extends DefaultAsyncTableContentProvider implements Mod
     private final List<MetricDefinition> supportedMetrics;
     private final List<String> projectOverview;
 
+    /**
+     * Create a new {@link MetricsView}.
+     *
+     * @param owner
+     *         the {@link Run} owning the view
+     */
     public MetricsView(final Run<?, ?> owner) {
         this.owner = owner;
         metricsMeasurements = MetricsProviderFactory.getAllFor(owner.getAllActions()).stream()
@@ -102,6 +108,11 @@ public class MetricsView extends DefaultAsyncTableContentProvider implements Mod
         return projectOverview;
     }
 
+    /**
+     * Get all metrics for the table as JSON.
+     *
+     * @return the JSON string
+     */
     @JavaScriptMethod
     @SuppressWarnings("unused") // used by jelly view
     public String getMetricsJSON() {
@@ -109,12 +120,20 @@ public class MetricsView extends DefaultAsyncTableContentProvider implements Mod
         return toJson(new MetricsTableModel("metrics-table", supportedMetrics, metricsMeasurements));
     }
 
+    /**
+     * Get a tree consisting of {@link MetricsTreeNode}s for a specific metric.
+     *
+     * @param metricId
+     *         the id of the metric to show
+     *
+     * @return a string containing the tree's JSON
+     */
     @JavaScriptMethod
     @SuppressWarnings("unused") // used by jelly view
-    public String getMetricsTree(final String valueKey) {
+    public String getMetricsTree(final String metricId) {
         List<MetricsTreeNode> nodes = metricsMeasurements.stream()
                 .map(measurement -> {
-                    double value = measurement.getMetric(valueKey).orElse(0.0).doubleValue();
+                    double value = measurement.getMetric(metricId).orElse(0.0).doubleValue();
                     if (!Double.isFinite(value)) {
                         value = 0.0;
                     }
@@ -146,6 +165,14 @@ public class MetricsView extends DefaultAsyncTableContentProvider implements Mod
         return metric.isPresent() && metric.get() instanceof IntegerMetric;
     }
 
+    /**
+     * Get the histogram for a specific metric.
+     *
+     * @param metricId
+     *         the id of the metric to show
+     *
+     * @return the contents of the histogram as JSON
+     */
     @JavaScriptMethod
     @SuppressWarnings("unused") // used by jelly view
     public String getHistogram(final String metricId) {
@@ -160,14 +187,14 @@ public class MetricsView extends DefaultAsyncTableContentProvider implements Mod
 
         final double min = statistics.getMin();
         final double max = statistics.getMax();
-        final double IQR = statistics.getPercentile(75) - statistics.getPercentile(25);
+        final double iqr = statistics.getPercentile(75) - statistics.getPercentile(25);
         final double stdDev = statistics.getStandardDeviation();
-        
+
         final int numBins;
         double binWidth;
-        if (IQR > 0) {
+        if (iqr > 0) {
             // Freedman-Diaconis rule for calculating the binWidth
-            binWidth = (2 * IQR) / Math.cbrt(values.size());
+            binWidth = (2 * iqr) / Math.cbrt(values.size());
             numBins = (int) Math.round((max - min) / binWidth);
         }
         else if (max - min > 0) {
@@ -177,7 +204,7 @@ public class MetricsView extends DefaultAsyncTableContentProvider implements Mod
             binWidth = (max - min) / numBins;
         }
         else {
-            // IQR == 0 and min == max -> all datapoints are the same -> use just a single bin
+            // iqr == 0 and min == max -> all datapoints are the same -> use just a single bin
             numBins = 1;
             binWidth = 1;
         }
@@ -218,6 +245,16 @@ public class MetricsView extends DefaultAsyncTableContentProvider implements Mod
         return toJson(result);
     }
 
+    /**
+     * Get a scatterplot for two metrics.
+     *
+     * @param metricId
+     *         the id of the first metric to include
+     * @param secondMetricId
+     *         the id of the second metric to include
+     *
+     * @return the contens of the scatter plot as JSON
+     */
     @JavaScriptMethod
     @SuppressWarnings("unused") // used by jelly view
     public String getScatterPlot(final String metricId, final String secondMetricId) {

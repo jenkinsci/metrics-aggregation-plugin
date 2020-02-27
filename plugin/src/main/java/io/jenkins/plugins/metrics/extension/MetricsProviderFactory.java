@@ -9,24 +9,28 @@ import hudson.ExtensionPoint;
 import hudson.model.Action;
 import jenkins.model.Jenkins;
 
-import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
-import io.jenkins.plugins.metrics.model.measurement.MetricsMeasurement;
 import io.jenkins.plugins.metrics.model.MetricsProvider;
+import io.jenkins.plugins.metrics.model.measurement.MetricsMeasurement;
+import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
 
 /**
  * Extension point to support custom metrics.
+ *
+ * @param <T> the type of the action this class supports
  */
 public abstract class MetricsProviderFactory<T extends Action> implements ExtensionPoint {
 
     /**
      * Get all registered {@link MetricsProviderFactory}s.
+     *
+     * @return an {@link ExtensionList} containing all registered {@link MetricsProviderFactory}s
      */
     public static ExtensionList<MetricsProviderFactory> all() {
         return Jenkins.get().getExtensionList(MetricsProviderFactory.class);
     }
 
     /**
-     * Get all {@link MetricsProvider}s for this actions, using all registered {@link MetricsProviderFactory}s
+     * Get all {@link MetricsProvider}s for this actions, using all registered {@link MetricsProviderFactory}s.
      *
      * @param actions
      *         the actions of a run to use for getting the metrics
@@ -47,7 +51,7 @@ public abstract class MetricsProviderFactory<T extends Action> implements Extens
     }
 
     /**
-     * Get all {@link MetricsProvider}s for this actions, using all registered {@link MetricsProviderFactory}s
+     * Get all {@link MetricsProvider}s for this actions, using all registered {@link MetricsProviderFactory}s.
      *
      * @param actions
      *         the actions of a run to use for getting the metrics
@@ -98,12 +102,15 @@ public abstract class MetricsProviderFactory<T extends Action> implements Extens
      *
      * @return the {@link MetricsProvider} providing the actions
      */
-    public abstract MetricsProvider getFor(final List<T> actions);
+    public abstract MetricsProvider getFor(List<T> actions);
 
     /**
-     * Returns all metrics this {@link MetricsProviderFactory} reports.
+     * Returns all metrics this {@link MetricsProviderFactory} reports, for a list of certain builds.
+     *
+     * @param actions
+     *          the actions of a build
      *
      * @return a set containing all possibly reported metrics
      */
-    public abstract ArrayList<MetricDefinition> supportedMetricsFor(final List<T> actions);
+    public abstract ArrayList<MetricDefinition> supportedMetricsFor(List<T> actions);
 }

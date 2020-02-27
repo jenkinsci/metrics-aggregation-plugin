@@ -13,13 +13,31 @@ import hudson.model.Run;
 import jenkins.model.RunAction2;
 import jenkins.model.TransientActionFactory;
 
+/**
+ * Action for displaying a metric on the side of a job.
+ */
 public class MetricsViewAction implements RunAction2, StaplerProxy {
     private transient Run<?, ?> owner;
 
+    /**
+     * The id for the plugin.
+     */
     public static final String ID = "metrics";
+    /**
+     * The name of the plugin.
+     */
     public static final String NAME = Messages.metrics();
+    /**
+     * The icon to use with links.
+     */
     public static final String ICON = "/plugin/metrics-aggregation/icons/metrics-24x24.png";
 
+    /**
+     * Create a new {@link MetricsViewAction}.
+     *
+     * @param owner
+     *         the owning {@link Run}
+     */
     public MetricsViewAction(final Run<?, ?> owner) {
         this.owner = owner;
     }
@@ -62,6 +80,9 @@ public class MetricsViewAction implements RunAction2, StaplerProxy {
         return new MetricsView(owner);
     }
 
+    /**
+     * {@link TransientActionFactory} providing {@link MetricsViewAction}s.
+     */
     @Extension
     public static class ViewActionFactory extends TransientActionFactory<Run> {
 

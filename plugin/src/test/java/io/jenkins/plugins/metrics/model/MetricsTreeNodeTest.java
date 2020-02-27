@@ -6,8 +6,14 @@ import io.jenkins.plugins.metrics.util.JacksonFacade;
 
 import static org.assertj.core.api.Assertions.*;
 
+/**
+ * Test for the class {@link MetricsTreeNode}.
+ */
 public class MetricsTreeNodeTest {
 
+    /**
+     * Test if packages with two identical package levels are inserted correctly.
+     */
     @Test
     public void shouldInsertTwoLevelPackage() {
         MetricsTreeNode root = new MetricsTreeNode("");
@@ -35,6 +41,9 @@ public class MetricsTreeNodeTest {
         MetricsTreeNodeAssert.assertThat(child.getChildren().get(0)).hasName("OtherClass");
     }
 
+    /**
+     * Test if the value of the metric is kept correctly.
+     */
     @Test
     public void shouldGetSpecificMetricValue() {
         final double metricValue = 42;
@@ -43,6 +52,9 @@ public class MetricsTreeNodeTest {
         assertThat(node.getValue()).isEqualTo(42);
     }
 
+    /**
+     * Test if all children values are summed up correctly.
+     */
     @Test
     public void shouldSumUpChildrenValues() {
         final double metricValue1 = 42;
@@ -57,6 +69,9 @@ public class MetricsTreeNodeTest {
         assertThat(root.getValue()).isEqualTo(metricValue1 + metricValue2 + metricValue3);
     }
 
+    /**
+     * Test if the package is collapsed correctly.
+     */
     @Test
     public void shouldCollapsePackage() {
         MetricsTreeNode rootNode = threeLevelTree();
@@ -82,6 +97,9 @@ public class MetricsTreeNodeTest {
         return rootNode;
     }
 
+    /**
+     * Test the equals and hash functions.
+     */
     @Test
     public void shouldBeEqualAndHash() {
         final String name = "name";
@@ -102,6 +120,9 @@ public class MetricsTreeNodeTest {
         assertThat(node.hashCode()).isNotEqualTo(new MetricsTreeNode(name).hashCode());
     }
 
+    /**
+     * Test if the JSON serialisation is correct.
+     */
     @Test
     public void shouldContainRelevantInformationInJson() {
         JacksonFacade facade = new JacksonFacade();
@@ -110,8 +131,10 @@ public class MetricsTreeNodeTest {
         root.insertNode(new MetricsTreeNode("com.example.package.Foo", 2.0));
         root.collapsePackage();
 
-        assertThat(facade.toJson(root)).isEqualTo(
-                "{\"name\":\"com.example\",\"value\":7.0,\"children\":[{\"name\":\"Bar\",\"value\":5.0,\"children\":[]},"
-                        + "{\"name\":\"package\",\"value\":2.0,\"children\":[{\"name\":\"Foo\",\"value\":2.0,\"children\":[]}]}]}");
+        assertThat(facade.toJson(root)).isEqualTo("{\"name\":\"com.example\",\"value\":7.0,\"children\":["
+                + "{\"name\":\"Bar\",\"value\":5.0,\"children\":[]},"
+                + "{\"name\":\"package\",\"value\":2.0,\"children\":["
+                + "{\"name\":\"Foo\",\"value\":2.0,\"children\":[]}"
+                + "]}]}");
     }
 }

@@ -12,11 +12,23 @@ import hudson.model.Run;
 
 import static org.assertj.core.api.Assertions.*;
 
+/**
+ * Integration test for the class {@link MetricsPipelineStep}.
+ */
 public class MetricsPipelineStepITest {
 
+    /**
+     * Jenkins rule for the integration test.
+     */
     @Rule
     public JenkinsRule jenkins = new JenkinsRule();
 
+    /**
+     * Test if the correct files are analyzed.
+     *
+     * @throws Exception
+     *         test -> ignored
+     */
     @Test
     public void shouldMatchPatternFromPipeline() throws Exception {
         WorkflowJob project = createProjectWithPattern("Test.java");
@@ -28,6 +40,12 @@ public class MetricsPipelineStepITest {
                         .getWorkspaceFor(project));
     }
 
+    /**
+     * Test if the correct files are analyzed. Here the pattern should not match.
+     *
+     * @throws Exception
+     *         test -> ignored
+     */
     @Test
     public void shouldNotMatchPatternFromPipeline() throws Exception {
         WorkflowJob project = createProjectWithPattern("doesnotmatch");

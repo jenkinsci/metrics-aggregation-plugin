@@ -6,6 +6,9 @@ import java.util.List;
 
 import io.jenkins.plugins.metrics.model.measurement.MetricsMeasurement;
 
+/**
+ * Data class containing all metrics and entries for the detail page of a tool.
+ */
 public class MetricsProvider {
 
     private String origin;
@@ -28,6 +31,12 @@ public class MetricsProvider {
         this.projectSummaryEntries = projectSummaryEntries;
     }
 
+    /**
+     * Add an entry to the project summary.
+     *
+     * @param entry
+     *         the entry to add
+     */
     public void addProjectSummaryEntry(final String entry) {
         this.projectSummaryEntries.add(entry);
     }

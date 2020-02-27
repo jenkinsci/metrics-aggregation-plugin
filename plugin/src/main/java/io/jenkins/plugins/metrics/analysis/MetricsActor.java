@@ -43,6 +43,9 @@ import io.jenkins.plugins.metrics.model.metric.IntegerMetric;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
 import io.jenkins.plugins.metrics.util.FileFinder;
 
+/**
+ * This {@link MetricsActor} is executed on the master or slave to analyze the metrics.
+ */
 public class MetricsActor extends MasterToSlaveFileCallable<List<MetricsMeasurement>> {
     private static final long serialVersionUID = 2843497011946621955L;
 
@@ -50,6 +53,16 @@ public class MetricsActor extends MasterToSlaveFileCallable<List<MetricsMeasurem
     private final TaskListener listener;
     private final String classPathFile;
 
+    /**
+     * Create a new {@link MetricsActor}.
+     *
+     * @param filePattern
+     *         the pattern of files to analyze
+     * @param classPathFile
+     *         path to a file containing the ClassPath for the analyzed project
+     * @param listener
+     *         {@link TaskListener} for reporting errors and results
+     */
     public MetricsActor(final String filePattern, final String classPathFile, final TaskListener listener) {
         super();
         this.filePattern = filePattern;
@@ -134,6 +147,7 @@ public class MetricsActor extends MasterToSlaveFileCallable<List<MetricsMeasurem
                     .stream().collect(Collectors.toMap(MetricDefinition::getId, Function.identity()));
         }
 
+        @SuppressWarnings("checkstyle:JavaNCSS")
         @Override
         public void renderFileReport(final Report report) {
             for (final RuleViolation ruleViolation : report) {
@@ -163,9 +177,9 @@ public class MetricsActor extends MasterToSlaveFileCallable<List<MetricsMeasurem
                     ((MethodMetricsMeasurement) metricsMeasurement).setEndColumn(ruleViolation.getEndLine());
                 }
 
-                (metricsMeasurement).setFileName(ruleViolation.getFilename());
-                (metricsMeasurement).setPackageName(ruleViolation.getPackageName());
-                (metricsMeasurement).setClassName(ruleViolation.getClassName());
+                metricsMeasurement.setFileName(ruleViolation.getFilename());
+                metricsMeasurement.setPackageName(ruleViolation.getPackageName());
+                metricsMeasurement.setClassName(ruleViolation.getClassName());
 
                 String[] metrics = description.split(",");
                 for (String metric : metrics) {

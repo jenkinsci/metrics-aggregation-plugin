@@ -16,11 +16,25 @@ import hudson.model.FreeStyleProject;
 
 import io.jenkins.plugins.metrics.testutil.IntegrationTestUtil;
 
+/**
+ * Integration test for the class {@link MetricsJobAction}.
+ */
 public class MetricsJobActionITest {
 
+    /**
+     * Jenkins rule for the integration test.
+     */
     @Rule
     public JenkinsRule jenkins = new JenkinsRule();
 
+    /**
+     * The MetricsAction should only be displayed after the first build.
+     *
+     * @throws IOException
+     *         test -> ignored
+     * @throws SAXException
+     *         test -> ignored
+     */
     @Test
     public void shouldDisplayMetricsActionAfterFirstBuild() throws IOException, SAXException {
         WebClient webClient = IntegrationTestUtil.getWebClient(jenkins, false);

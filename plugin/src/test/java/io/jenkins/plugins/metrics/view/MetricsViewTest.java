@@ -1,26 +1,21 @@
 package io.jenkins.plugins.metrics.view;
 
+import java.util.ArrayList;
+
 import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 
-import hudson.model.Run;
-
-import io.jenkins.plugins.metrics.analysis.MetricsAction;
 import io.jenkins.plugins.metrics.model.measurement.ClassMetricsMeasurement;
+import io.jenkins.plugins.metrics.model.measurement.MetricsMeasurement;
 import io.jenkins.plugins.metrics.model.metric.DoubleMetric;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
-import io.jenkins.plugins.metrics.model.measurement.MetricsMeasurement;
-import io.jenkins.plugins.metrics.model.MetricsReport;
-
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 class MetricsViewTest {
 
     @Test
     public void shouldGetHistogram() {
         final String key = "key";
-        MetricsReport measurements = new MetricsReport();
+        ArrayList<MetricsMeasurement> measurements = new ArrayList<>();
         measurements.add(getMeasurementWithMetric(key, 5.0));
         measurements.add(getMeasurementWithMetric(key, 2.0));
         measurements.add(getMeasurementWithMetric(key, 1.1));
@@ -47,7 +42,7 @@ class MetricsViewTest {
     public void shouldGetStatistics() {
         final String key = "key";
 
-        MetricsReport measurements = new MetricsReport();
+        ArrayList<MetricsMeasurement> measurements = new ArrayList<>();
         measurements.add(getMeasurementWithMetric(key, 5.0));
         measurements.add(getMeasurementWithMetric(key, 2.0));
         measurements.add(getMeasurementWithMetric(key, 1.1));

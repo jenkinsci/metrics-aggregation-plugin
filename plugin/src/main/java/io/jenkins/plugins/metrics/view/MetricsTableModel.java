@@ -14,12 +14,25 @@ import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
 
 import static j2html.TagCreator.*;
 
+/**
+ * {@link TableModel} for all metrics in a project overview.
+ */
 public class MetricsTableModel extends TableModel {
 
     private final List<MetricDefinition> supportedMetrics;
     private final List<ClassMetricsMeasurement> metricsMeasurements;
     private final String id;
 
+    /**
+     * Create a new {@link MetricsTableModel}.
+     *
+     * @param id
+     *         the id of the table
+     * @param supportedMetrics
+     *         the metrics supported for this table
+     * @param metricsMeasurements
+     *         the {@link ClassMetricsMeasurement}s to display in the table
+     */
     public MetricsTableModel(final String id, final List<MetricDefinition> supportedMetrics,
             final List<ClassMetricsMeasurement> metricsMeasurements) {
         this.id = id;
@@ -63,6 +76,9 @@ public class MetricsTableModel extends TableModel {
                 .buttons("colvis");
     }
 
+    /**
+     * A row in the table in the metrics overview. Contains the name of the class plus all available metrics.
+     */
     public static class MetricsRow {
         private final ClassMetricsMeasurement metricsMeasurement;
 
