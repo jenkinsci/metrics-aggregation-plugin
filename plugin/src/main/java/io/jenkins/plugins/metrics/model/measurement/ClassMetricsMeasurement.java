@@ -31,7 +31,7 @@ public class ClassMetricsMeasurement extends MetricsMeasurement {
             return "ClassMetricsMeasurement[empty]";
         }
 
-        return String.format("ClassMetricsMeasurement[%s.%s]", packageName, className);
+        return String.format("ClassMetricsMeasurement[%s.%s; %s]", packageName, className, fileName);
     }
 
     @Override
