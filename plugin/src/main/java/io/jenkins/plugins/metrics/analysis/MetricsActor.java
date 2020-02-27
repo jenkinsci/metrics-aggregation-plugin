@@ -26,7 +26,6 @@ import shaded.net.sourceforge.pmd.RuleSetFactory;
 import shaded.net.sourceforge.pmd.RuleViolation;
 import shaded.net.sourceforge.pmd.RulesetsFactoryUtils;
 import shaded.net.sourceforge.pmd.renderers.AbstractRenderer;
-import shaded.net.sourceforge.pmd.util.ResourceLoader;
 import shaded.net.sourceforge.pmd.util.datasource.DataSource;
 import shaded.net.sourceforge.pmd.util.datasource.FileDataSource;
 
@@ -104,8 +103,7 @@ public class MetricsActor extends MasterToSlaveFileCallable<List<MetricsMeasurem
             files.add(new FileDataSource(file));
         }
 
-        RuleSetFactory ruleSetFactory = RulesetsFactoryUtils.getRulesetFactory(configuration,
-                new ResourceLoader(getClass().getClassLoader()));
+        RuleSetFactory ruleSetFactory = RulesetsFactoryUtils.createFactory(configuration, getClass().getClassLoader());
 
         List<MetricsMeasurement> metricsReport = new ArrayList<>();
         PMD.processFiles(configuration, ruleSetFactory, files, ruleContext,
