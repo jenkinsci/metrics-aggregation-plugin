@@ -36,7 +36,7 @@ class MetricsActorTest {
 
         assertThat(measurements).hasSize(5);
 
-        String fileName = MetricsActorTest.class.getResource("Test.java").toURI().getPath();
+        String fileName = new File(MetricsActorTest.class.getResource("Test.java").toURI()).toString();
         ClassMetricsMeasurement testClass = createClassMetricsMeasurement("Test",
                 "com.example.anotherpackage", fileName);
         testClass.addMetric(createDoubleMetric("TCC", 0.0));
