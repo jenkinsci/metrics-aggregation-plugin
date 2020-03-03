@@ -1,8 +1,8 @@
 # Jenkins Metrics Aggregation Plugin
 
 [![Jenkins Plugin](https://img.shields.io/jenkins/plugin/v/metrics-aggregation.svg?label=latest%20version)](https://plugins.jenkins.io/metrics-aggregation)
-[![Jenkins Plugin Installs](https://img.shields.io/jenkins/plugin/i/metrics-aggregation.svg?color=red)](https://plugins.jenkins.io/metrics-aggregation)
-[![Jenkins Version](https://img.shields.io/badge/Jenkins-2.150.3-green.svg?label=min.%20Jenkins)](https://jenkins.io/download/)
+[![Jenkins Plugin Installs](https://img.shields.io/jenkins/plugin/i/metrics-aggregation.svg)](https://plugins.jenkins.io/metrics-aggregation)
+[![Jenkins Version](https://img.shields.io/badge/Jenkins-2.150.3-green.svg)](https://jenkins.io/download/)
 ![JDK8](https://img.shields.io/badge/jdk-8-yellow.svg?label=min.%20JDK)
 [![License: MIT](https://img.shields.io/badge/license-MIT-yellow.svg)](https://opensource.org/licenses/MIT) 
 [![Jenkins](https://ci.jenkins.io/job/Plugins/job/metrics-aggregation-plugin/job/master/badge/icon)](https://ci.jenkins.io/job/Plugins/job/metrics-aggregation-plugin/job/master/)
