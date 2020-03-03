@@ -14,7 +14,7 @@
   <packaging>hpi</packaging>
   <name>Metrics Aggregation</name>
   <version>0.1.1-SNAPSHOT</version>
-  <url>https://github.com/andipabst/metrics-aggregation-plugin</url>
+  <url>https://github.com/jenkinsci/metrics-aggregation-plugin</url>
   <description>The Metrics Aggregation plugin collects and visualizes metrics from different sources</description>
 
   <properties>
