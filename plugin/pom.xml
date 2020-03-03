@@ -13,7 +13,7 @@
   <artifactId>metrics-aggregation</artifactId>
   <packaging>hpi</packaging>
   <name>Metrics Aggregation</name>
-  <version>0.1.0-beta4-SNAPSHOT</version>
+  <version>0.1.0</version>
   <url>https://github.com/andipabst/metrics-aggregation-plugin</url>
   <description>The Metrics Aggregation plugin collects and visualizes metrics from different sources</description>
 
@@ -351,7 +351,7 @@
         </executions>
         <configuration>
           <excludes>**/test/resources/**/*.*</excludes>
-          <configLocation>checkstyle.xml</configLocation>
+          <configLocation>${project.basedir}/checkstyle.xml</configLocation>
           <failOnViolation>false</failOnViolation>
         </configuration>
       </plugin>
@@ -414,7 +414,7 @@
     <connection>scm:git:git://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
     <developerConnection>scm:git:git@github.com:jenkinsci/${project.artifactId}-plugin.git</developerConnection>
     <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
-    <tag>${scmTag}</tag>
+    <tag>metrics-aggregation-0.1.0</tag>
   </scm>
 
   <repositories>
