@@ -119,9 +119,11 @@ public class WarningsMetricsProviderFactory extends MetricsProviderFactory<Resul
                             report.getSizeOf(Severity.WARNING_NORMAL)));
                     measurement.addMetric(new IntegerMetric(WARNINGS_LOW, report.getSizeOf(Severity.WARNING_LOW)));
 
-                    FileStatistics fileStatistics = stats.get(entry.getKey());
-                    measurement.addMetric(new IntegerMetric(AUTHORS, fileStatistics.getNumberOfAuthors()));
-                    measurement.addMetric(new IntegerMetric(COMMITS, fileStatistics.getNumberOfCommits()));
+                    if (stats.contains(entry.getKey())) {
+                        FileStatistics fileStatistics = stats.get(entry.getKey());
+                        measurement.addMetric(new IntegerMetric(AUTHORS, fileStatistics.getNumberOfAuthors()));
+                        measurement.addMetric(new IntegerMetric(COMMITS, fileStatistics.getNumberOfCommits()));
+                    }
 
                     return measurement;
                 })
