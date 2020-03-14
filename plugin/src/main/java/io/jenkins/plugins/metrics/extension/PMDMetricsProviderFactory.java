@@ -12,6 +12,7 @@ import hudson.Extension;
 import io.jenkins.plugins.metrics.analysis.MetricsAction;
 import io.jenkins.plugins.metrics.model.MetricsProvider;
 import io.jenkins.plugins.metrics.model.measurement.ClassMetricsMeasurement;
+import io.jenkins.plugins.metrics.model.metric.IntegerMetric;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition.Scope;
 
@@ -21,6 +22,12 @@ import io.jenkins.plugins.metrics.model.metric.MetricDefinition.Scope;
 @Extension
 public class PMDMetricsProviderFactory extends MetricsProviderFactory<MetricsAction> {
 
+    private static final MetricDefinition CLASSES = new MetricDefinition("CLASSES",
+            "Classes",
+            "Number of classes.",
+            "metrics-aggregation-plugin (pmd)",
+            100,
+            ArrayUtils.toArray());
     private static final MetricDefinition ATFD = new MetricDefinition("ATFD",
             "Access to Foreign Data",
             "Number of usages of foreign attributes, both directly and through accessors.",
@@ -124,17 +131,20 @@ public class PMDMetricsProviderFactory extends MetricsProviderFactory<MetricsAct
 
         if (numberOfClasses > 0) {
             provider.addProjectSummaryEntry(String.format("%d Classes", numberOfClasses));
+            provider.addProjectMetric(new IntegerMetric(CLASSES, (int) numberOfClasses));
         }
 
         double totalLOC = getMetricSum(actions, LOC.getId());
         if (totalLOC > 0) {
             provider.addProjectSummaryEntry(String.format("%d Lines of Code", (long) totalLOC));
+            provider.addProjectMetric(new IntegerMetric(LOC, (int) totalLOC));
         }
         double totalNCSS = getMetricSum(actions, NCSS.getId());
         if (totalNCSS > 0) {
             provider.addProjectSummaryEntry(
                     String.format("%d Non-Commenting Source Statements (%.1f%%)", (long) totalNCSS,
                             totalNCSS / totalLOC * 100));
+            provider.addProjectMetric(new IntegerMetric(NCSS, (int) totalNCSS));
         }
 
         return provider;

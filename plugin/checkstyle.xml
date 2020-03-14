@@ -145,7 +145,9 @@
     <module name="ArrayTypeStyle"/>
     <module name="UpperEll"/>
     <module name="IllegalCatch"/>
-    <module name="IllegalImport"/>
+    <module name="IllegalImport">
+      <property name="illegalPkgs" value="io.jenkins.plugins.analysis"/>
+    </module>
   </module>
   <module name="FileTabCharacter"/>
   <module name="FileLength"/>
