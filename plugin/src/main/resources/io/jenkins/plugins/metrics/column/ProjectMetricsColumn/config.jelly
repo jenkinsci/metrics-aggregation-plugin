@@ -1,0 +1,12 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
+
+  <f:entry title="${%Name}" field="name">
+    <f:textbox default="${%Lines of Code}"/>
+  </f:entry>
+
+  <f:entry title="${%title.metric}" description="${%description.metric}" field="metricId">
+    <f:textbox default="LOC"/>
+  </f:entry>
+
+</j:jelly>

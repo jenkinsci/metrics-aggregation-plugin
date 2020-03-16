@@ -1,0 +1,14 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core">
+  <j:set var="metricValue" value="${it.getMetricValue(job)}"/>
+  <td>
+    <j:choose>
+      <j:when test="${metricValue.isPresent()}">
+        <a href="${it.getUrl(job)}">${metricValue.get()}</a>
+      </j:when>
+      <j:otherwise>
+        -
+      </j:otherwise>
+    </j:choose>
+  </td>
+</j:jelly>
