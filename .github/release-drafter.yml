@@ -1,4 +1,4 @@
-tag-template: metrics-aggregation-plugin-$NEXT_PATCH_VERSION
+tag-template: metrics-aggregation-$NEXT_PATCH_VERSION
 name-template: Metrics Aggregation Plugin $NEXT_PATCH_VERSION 🎁
 
 template: |
