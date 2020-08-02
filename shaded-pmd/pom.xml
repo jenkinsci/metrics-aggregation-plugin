@@ -16,7 +16,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <pmd.version>6.21.0</pmd.version>
+    <pmd.version>6.26.0</pmd.version>
     <java.level>8</java.level>
     <jenkins.version>2.150.3</jenkins.version>
   </properties>
