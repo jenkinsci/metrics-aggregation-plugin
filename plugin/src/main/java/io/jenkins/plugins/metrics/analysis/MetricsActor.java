@@ -75,6 +75,7 @@ public class MetricsActor extends MasterToSlaveFileCallable<List<MetricsMeasurem
         configuration.setDebug(true);
         configuration.setIgnoreIncrementalAnalysis(true);
         configuration.setRuleSets("io/jenkins/plugins/metrics/metricsRuleset.xml");
+        // set the auxiliary classpath for pmd
         if (!classPathFile.isEmpty()) {
             try {
                 final String classPath = new String(Files.readAllBytes(
@@ -108,6 +109,8 @@ public class MetricsActor extends MasterToSlaveFileCallable<List<MetricsMeasurem
         List<MetricsMeasurement> metricsReport = new ArrayList<>();
         PMD.processFiles(configuration, ruleSetFactory, files, ruleContext,
                 Collections.singletonList(new MetricsLogRenderer(metricsReport, listener)));
+        
+        //TODO: Close the auxiliary class loader? (https://pmd.github.io/pmd-6.26.0/pmd_userdocs_tools_java_api.html)
 
         return metricsReport;
     }
