@@ -26,7 +26,7 @@
     <java.level>8</java.level>
     <jenkins-test-harness.version>2.59</jenkins-test-harness.version>
 
-    <shaded-pmd.version>6.26.0-0</shaded-pmd.version>
+    <shaded-pmd.version>6.36.0-0</shaded-pmd.version>
     <forensics-api-plugin.version>0.7.0</forensics-api-plugin.version>
     <warnings-ng-plugin.version>8.0.0</warnings-ng-plugin.version>
     <plugin-util-api.version>1.0.1</plugin-util-api.version>
