@@ -11,11 +11,11 @@
   <groupId>io.jenkins.plugins</groupId>
   <artifactId>metrics-aggregation-shaded-pmd</artifactId>
   <packaging>jar</packaging>
-  <version>6.36.0-1</version>
+  <version>${revision}${changelist}</version>
   <name>Shaded PMD for Metrics Aggregation plugin</name>
 
   <properties>
-    <revision>6.36.0-0</revision>
+    <revision>6.36.0-2</revision>
     <changelist>-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/metrics-aggregation-plugin</gitHubRepo>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -116,7 +116,7 @@
     <connection>scm:git:git://github.com/${gitHubRepo}.git</connection>
     <developerConnection>scm:git:git@github.com:${gitHubRepo}.git</developerConnection>
     <url>https://github.com/${gitHubRepo}</url>
-    <tag>metrics-aggregation-shaded-pmd-6.36.0-1</tag>
+    <tag>${scmTag}</tag>
   </scm>
 
 </project>
