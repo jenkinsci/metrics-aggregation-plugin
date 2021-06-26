@@ -30,6 +30,14 @@ If you are a Jenkins plugin maintainer and would like to to add your plugin, all
 
 If there is anything you would like to add to the extension point, please open a ticket in the [Jenkins JIRA](https://issues.jenkins-ci.org/).
 
+## Development
+To make the plugin work in IntelliJ IDEA, mark the pom.xml of the `shaded-pom` module as ignored.
+After that, you may have to reimport the whole project. 
+
+This workaround tells IntelliJ to use the generated jar from maven
+instead of the source (where it can not find the shaded classes).
+More information can be found in the Jetbrains Bugtracker, e.g. in [IDEA-126596](https://youtrack.jetbrains.com/issue/IDEA-126596).
+
 -------------------------------------------------------
 This plugin was created as part of a masters thesis at University of Applied Sciences, Munich.
 
