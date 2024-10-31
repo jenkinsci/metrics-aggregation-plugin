@@ -188,7 +188,6 @@ public class MetricsView extends DefaultAsyncTableContentProvider implements Mod
         final double min = statistics.getMin();
         final double max = statistics.getMax();
         final double iqr = statistics.getPercentile(75) - statistics.getPercentile(25);
-        final double stdDev = statistics.getStandardDeviation();
 
         final int numBins;
         double binWidth;

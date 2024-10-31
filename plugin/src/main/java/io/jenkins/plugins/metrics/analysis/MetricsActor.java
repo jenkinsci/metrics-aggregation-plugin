@@ -2,6 +2,7 @@ package io.jenkins.plugins.metrics.analysis;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -78,8 +79,9 @@ public class MetricsActor extends MasterToSlaveFileCallable<List<MetricsMeasurem
         // set the auxiliary classpath for pmd
         if (!classPathFile.isEmpty()) {
             try {
-                final String classPath = new String(Files.readAllBytes(
-                        Paths.get(workspace.getAbsolutePath(), classPathFile)));
+                final String classPath = new String(
+                        Files.readAllBytes(Paths.get(workspace.getAbsolutePath(), classPathFile)),
+                        StandardCharsets.UTF_8);
                 configuration.prependClasspath(classPath);
             }
             catch (IOException e) {
@@ -109,7 +111,7 @@ public class MetricsActor extends MasterToSlaveFileCallable<List<MetricsMeasurem
         List<MetricsMeasurement> metricsReport = new ArrayList<>();
         PMD.processFiles(configuration, ruleSetFactory, files, ruleContext,
                 Collections.singletonList(new MetricsLogRenderer(metricsReport, listener)));
-        
+
         //TODO: Close the auxiliary class loader? (https://pmd.github.io/pmd-6.26.0/pmd_userdocs_tools_java_api.html)
 
         return metricsReport;
