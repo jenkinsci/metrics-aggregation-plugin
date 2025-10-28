@@ -1,38 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.jenkins-ci.plugins</groupId>
-    <artifactId>plugin</artifactId>
-    <version>4.16</version>
+    <groupId>org.jvnet.hudson.plugins</groupId>
+    <artifactId>analysis-pom</artifactId>
+    <version>11.2812.vde3e22ec61c7</version>
     <relativePath />
   </parent>
 
   <groupId>io.jenkins.plugins</groupId>
-  <artifactId>metrics-aggregation-parent</artifactId>
-  <packaging>pom</packaging>
-  <version>${revision}${changelist}</version>
-  <name>Parent for Metrics Aggregation</name>
-  <description>Parent pom to build the metrics aggregation Jenkins plugin (plugin and shaded pmd library)</description>
+  <artifactId>metrics-aggregation</artifactId>
+  <version>${revision}.${changelist}</version>
+  <packaging>hpi</packaging>
 
-  <properties>
-    <revision>0.1.0-beta4</revision>
-    <changelist>-SNAPSHOT</changelist>
-    <jenkins.version>2.263</jenkins.version>
-    <java.level>8</java.level>
-  </properties>
-
-  <modules>
-    <!--<module>shaded-pmd</module>-->
-    <module>plugin</module>
-  </modules>
+  <name>Metrics Aggregation Plugin</name>
+  <description>Jenkins Plugin that collects and visualizes metrics from different sources.</description>
+  <url>https://github.com/jenkinsci/metrics-aggregation-plugin</url>
 
   <licenses>
     <license>
-      <name>MIT License</name>
-      <url>https://opensource.org/licenses/MIT</url>
+      <name>MIT license</name>
+      <comments>All source code is under the MIT license.</comments>
     </license>
   </licenses>
+
+  <developers>
+    <developer>
+      <id>andipabst</id>
+      <name>Andreas Pabst</name>
+    </developer>
+    <developer>
+      <name>Ullrich Hafner</name>
+      <id>uhafner</id>
+      <email>ullrich.hafner@gmail.com</email>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:git://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
+    <developerConnection>scm:git:git@github.com:jenkinsci/${project.artifactId}-plugin.git</developerConnection>
+    <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
+    <tag>${scmTag}</tag>
+  </scm>
+
+
+  <properties>
+    <revision>1</revision>
+    <changelist>999999-SNAPSHOT</changelist>
+
+    <module.name>${project.groupId}.metrics.aggregation</module.name>
+
+    <j2html.version>1.4.0</j2html.version>
+
+    <maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
+    <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
+    <mathjs.version>6.0.2</mathjs.version>
+    <bootstrap-select.version>1.13.11</bootstrap-select.version>
+
+    <eclipse-collections.version>9.2.0</eclipse-collections.version>
+
+    <commons.math.version>3.6.1</commons.math.version>
+  </properties>
+
+  <dependencies>
+    <!-- Jenkins Plugin dependencies-->
+    <dependency>
+      <groupId>org.jenkins-ci.plugins</groupId>
+      <artifactId>structs</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jenkins-ci.plugins.workflow</groupId>
+      <artifactId>workflow-step-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jenkins-ci.plugins.workflow</groupId>
+      <artifactId>workflow-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jenkins-ci.plugins</groupId>
+      <artifactId>jackson2-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.jenkins.plugins</groupId>
+      <artifactId>commons-math3-api</artifactId>
+    </dependency>
+
+    <!-- UI plugins -->
+    <dependency>
+      <groupId>io.jenkins.plugins</groupId>
+      <artifactId>plugin-util-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.jenkins.plugins</groupId>
+      <artifactId>font-awesome-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.jenkins.plugins</groupId>
+      <artifactId>bootstrap4-api</artifactId>
+      <version>4.6.0-1</version>
+    </dependency>
+    <dependency>
+      <groupId>io.jenkins.plugins</groupId>
+      <artifactId>echarts-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.jenkins.plugins</groupId>
+      <artifactId>data-tables-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.jenkins.plugins</groupId>
+      <artifactId>jquery3-api</artifactId>
+    </dependency>
+
+    <!-- other plugins to get metrics from -->
+    <dependency>
+      <groupId>io.jenkins.plugins</groupId>
+      <artifactId>forensics-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.jenkins.plugins</groupId>
+      <artifactId>warnings-ng</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.jenkins.plugins</groupId>
+      <artifactId>coverage</artifactId>
+    </dependency>
+
+    <!-- Java libraries -->
+    <dependency>
+      <groupId>org.eclipse.collections</groupId>
+      <artifactId>eclipse-collections-api</artifactId>
+      <version>${eclipse-collections.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.collections</groupId>
+      <artifactId>eclipse-collections</artifactId>
+      <version>${eclipse-collections.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.j2html</groupId>
+      <artifactId>j2html</artifactId>
+      <version>${j2html.version}</version>
+    </dependency>
+
+    <!-- JS archives -->
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>mathjs</artifactId>
+      <version>${mathjs.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>bootstrap-select</artifactId>
+      <version>${bootstrap-select.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- Test dependencies -->
+    <dependency>
+      <groupId>org.jenkins-ci.plugins.workflow</groupId>
+      <artifactId>workflow-cps</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jenkins-ci.plugins.workflow</groupId>
+      <artifactId>workflow-job</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jenkins-ci.plugins.workflow</groupId>
+      <artifactId>workflow-basic-steps</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jenkins-ci.plugins.workflow</groupId>
+      <artifactId>workflow-durable-task-step</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.assertj</groupId>
+        <artifactId>assertj-assertions-generator-maven-plugin</artifactId>
+        <configuration>
+          <packages combine.children="append">
+            <package>io.jenkins.plugins.metrics.model</package>
+            <package>io.jenkins.plugins.metrics.util</package>
+          </packages>
+          <entryPointClassPackage>io.jenkins.plugins.metrics.assertions</entryPointClassPackage>
+          <excludes combine.children="append">
+            <exclude>.*ITest</exclude>
+          </excludes>
+          <cleanTargetDir>true</cleanTargetDir>
+          <hierarchical>false</hierarchical>
+          <generateBddAssertions>false</generateBddAssertions>
+          <generateJUnitSoftAssertions>false</generateJUnitSoftAssertions>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>${maven-dependency-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>unpack-dependencies</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/webjars</outputDirectory>
+              <includeArtifactIds>mathjs,bootstrap-select</includeArtifactIds>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>${maven-resources-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>copy-resources</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/${project.artifactId}/webjars</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>
+                    ${project.build.directory}/webjars/META-INF/resources/webjars/mathjs/${mathjs.version}
+                  </directory>
+                  <filtering>false</filtering>
+                </resource>
+                <resource>
+                  <directory>
+                    ${project.build.directory}/webjars/META-INF/resources/webjars/bootstrap-select/${bootstrap-select.version}
+                  </directory>
+                  <filtering>false</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 
   <repositories>
     <repository>
@@ -52,18 +270,4 @@
     </pluginRepository>
   </pluginRepositories>
 
-  <developers>
-    <developer>
-      <id>andipabst</id>
-      <name>Andreas Pabst</name>
-    </developer>
-  </developers>
-
-  <scm>
-    <connection>scm:git:git://github.com/jenkinsci/metrics-aggregation-plugin.git</connection>
-    <developerConnection>scm:git:git@github.com:jenkinsci/metrics-aggregation-plugin.git</developerConnection>
-    <url>https://github.com/jenkinsci/metrics-aggregation-plugin</url>
-    <tag>${scmTag}</tag>
-  </scm>
-  
 </project>

@@ -6,7 +6,7 @@ JENKINS_HOME=../docker/volumes/jenkins-home
 
 echo "Installing plugin ${1} in $JENKINS_HOME"
 rm -rf $JENKINS_HOME/plugins/${1}*
-cp -fv plugin/target/${1}.hpi $JENKINS_HOME/plugins/${1}.jpi
+cp -fv target/${1}.hpi $JENKINS_HOME/plugins/${1}.jpi
 
 CURRENT_UID="$(id -u):$(id -g)"
 export CURRENT_UID
