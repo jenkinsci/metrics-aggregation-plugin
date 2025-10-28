@@ -20,7 +20,6 @@
 
       <!-- custom -->
       <link rel="stylesheet" href="${resURL}/plugin/metrics-aggregation/css/custom-style.css"/>
-      <script type="text/javascript" src="${resURL}/plugin/metrics-aggregation/js/no-prototype.js"/>
 
       <!-- bootstrap select -->
       <link rel="stylesheet" href="${resURL}/plugin/metrics-aggregation/webjars/css/bootstrap-select.min.css"/>

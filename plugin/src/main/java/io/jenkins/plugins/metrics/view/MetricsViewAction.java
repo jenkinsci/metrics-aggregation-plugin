@@ -1,10 +1,11 @@
 package io.jenkins.plugins.metrics.view;
 
-import java.util.Collection;
-import java.util.Collections;
 import javax.annotation.Nonnull;
 
 import edu.umd.cs.findbugs.annotations.Nullable;
+
+import java.util.Collection;
+import java.util.Collections;
 
 import org.kohsuke.stapler.StaplerProxy;
 import hudson.Extension;
@@ -22,7 +23,7 @@ public class MetricsViewAction implements RunAction2, StaplerProxy {
     /**
      * The id for the plugin.
      */
-    public static final String ID = "metrics";
+    public static final String ID = "metrics-aggregation";
     /**
      * The name of the plugin.
      */
