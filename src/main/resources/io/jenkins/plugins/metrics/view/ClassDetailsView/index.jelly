@@ -8,7 +8,6 @@
     <st:include it="${it.owner}" page="sidepanel.jelly"/>
 
     <l:main-panel>
-      <st:adjunct includes="io.jenkins.plugins.font-awesome"/>
       <st:adjunct includes="io.jenkins.plugins.jquery3"/>
       <st:adjunct includes="io.jenkins.plugins.popper"/>
       <st:adjunct includes="io.jenkins.plugins.bootstrap4"/>
@@ -94,9 +93,7 @@
         </bs:card>
       </div>
 
-      <script>var view =
-        <st:bind value="${it}"/>
-      </script>
+      <st:bind var="view" value="${it}" />
 
     </l:main-panel>
 
