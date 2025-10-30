@@ -1,4 +1,4 @@
-package io.jenkins.plugins.metrics.model;
+package io.jenkins.plugins.metrics.view;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -15,7 +15,6 @@ import java.util.Objects;
  * Node for constructing a tree structure of all metrics.
  */
 public class MetricsTreeNode {
-
     private String name;
     private double value;
 

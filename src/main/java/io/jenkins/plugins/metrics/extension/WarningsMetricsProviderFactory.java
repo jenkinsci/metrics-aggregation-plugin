@@ -17,7 +17,6 @@ import io.jenkins.plugins.analysis.core.model.AnalysisResult;
 import io.jenkins.plugins.analysis.core.model.ResultAction;
 import io.jenkins.plugins.forensics.miner.FileStatistics;
 import io.jenkins.plugins.forensics.miner.RepositoryStatistics;
-import io.jenkins.plugins.metrics.model.MetricsProvider;
 import io.jenkins.plugins.metrics.model.measurement.ClassMetricsMeasurement;
 import io.jenkins.plugins.metrics.model.measurement.MetricsMeasurement;
 import io.jenkins.plugins.metrics.model.metric.IntegerMetric;
@@ -30,8 +29,8 @@ import io.jenkins.plugins.metrics.model.metric.MetricDefinition.Scope;
  */
 @Extension
 @SuppressWarnings("unused") // used via the extension
+// TODO: This class should only collect warnings and should be moved to the warnings plugin
 public class WarningsMetricsProviderFactory extends MetricsProviderFactory<ResultAction> {
-
     private static final MetricDefinition ERRORS = new MetricDefinition("ERRORS",
             "Errors",
             "An error, e.g. a compile error.",

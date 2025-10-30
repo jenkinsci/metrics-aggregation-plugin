@@ -12,7 +12,6 @@ import static org.assertj.core.api.Assertions.*;
  * Test for the class {@link MetricDefinition}.
  */
 public class MetricDefinitionTest {
-
     /**
      * Test if the scope check is working.
      */

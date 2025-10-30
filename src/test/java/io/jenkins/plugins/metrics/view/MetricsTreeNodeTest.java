@@ -1,7 +1,8 @@
-package io.jenkins.plugins.metrics.model;
+package io.jenkins.plugins.metrics.view;
 
 import org.junit.jupiter.api.Test;
 
+import io.jenkins.plugins.metrics.model.MetricsTreeNodeAssert;
 import io.jenkins.plugins.metrics.util.JacksonFacade;
 
 import static org.assertj.core.api.Assertions.*;

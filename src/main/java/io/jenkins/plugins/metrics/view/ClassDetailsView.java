@@ -12,8 +12,8 @@ import hudson.model.Run;
 
 import io.jenkins.plugins.datatables.DefaultAsyncTableContentProvider;
 import io.jenkins.plugins.datatables.TableModel;
+import io.jenkins.plugins.metrics.extension.MetricsProvider;
 import io.jenkins.plugins.metrics.extension.MetricsProviderFactory;
-import io.jenkins.plugins.metrics.model.MetricsProvider;
 import io.jenkins.plugins.metrics.model.measurement.ClassMetricsMeasurement;
 import io.jenkins.plugins.metrics.model.measurement.MethodMetricsMeasurement;
 import io.jenkins.plugins.metrics.model.measurement.MetricsMeasurement;

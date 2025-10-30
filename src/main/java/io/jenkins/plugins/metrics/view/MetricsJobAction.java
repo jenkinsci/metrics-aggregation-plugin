@@ -1,13 +1,13 @@
 package io.jenkins.plugins.metrics.view;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
 import hudson.Extension;
 import hudson.model.Action;
 import hudson.model.Job;
@@ -19,6 +19,7 @@ import jenkins.model.TransientActionFactory;
  *
  * @author Andreas Pabst
  */
+@SuppressWarnings("unused")
 public class MetricsJobAction implements Action {
     private final Job<?, ?> owner;
 
@@ -44,7 +45,7 @@ public class MetricsJobAction implements Action {
      */
     @Override
     public String getIconFileName() {
-        return MetricsViewAction.ICON;
+        return "symbol-solid/scale-balanced plugin-font-awesome-api";
     }
 
     @Override
@@ -64,7 +65,7 @@ public class MetricsJobAction implements Action {
      *         in case of an error
      */
     @SuppressWarnings("unused") // Called by jelly view
-    public void doIndex(final StaplerRequest request, final StaplerResponse response) throws IOException {
+    public void doIndex(final StaplerRequest2 request, final StaplerResponse2 response) throws IOException {
         final Run<?, ?> lastCompletedBuild = owner.getLastCompletedBuild();
 
         if (lastCompletedBuild != null) {
@@ -73,19 +74,20 @@ public class MetricsJobAction implements Action {
     }
 
     /**
-     * This {@link TransientActionFactory} provides the metrics action for a job, i.e. the link in the left side bar.
+     * Provides the metrics action for a job, i.e. the link in the side panel.
      */
     @Extension
-    public static class JobActionFactory extends TransientActionFactory<Job> {
-
+    public static class JobActionFactory extends TransientActionFactory<Job<?, ?>> {
         @Override
-        public Class<Job> type() {
-            return Job.class;
+        @SuppressWarnings({"unchecked", "rawtypes"})
+        public Class<Job<?, ?>> type() {
+            return (Class) Job.class;
         }
 
-        @Nonnull
+        @NonNull
         @Override
-        public Collection<? extends Action> createFor(@Nonnull final Job target) {
+        public Collection<? extends Action> createFor(@NonNull final Job<?, ?> target) {
+            // TODO: Do we need to hide the action if there are no results?
             if (target.getFirstBuild() != null) {
                 return Collections.singleton(new MetricsJobAction(target));
             }

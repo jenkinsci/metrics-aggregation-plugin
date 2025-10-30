@@ -9,8 +9,6 @@ import hudson.ExtensionPoint;
 import hudson.model.Action;
 import jenkins.model.Jenkins;
 
-import io.jenkins.plugins.metrics.model.MetricsProvider;
-import io.jenkins.plugins.metrics.model.measurement.MetricsMeasurement;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
 
 /**
@@ -19,7 +17,6 @@ import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
  * @param <T> the type of the action this class supports
  */
 public abstract class MetricsProviderFactory<T extends Action> implements ExtensionPoint {
-
     /**
      * Get all registered {@link MetricsProviderFactory}s.
      *
@@ -51,7 +48,8 @@ public abstract class MetricsProviderFactory<T extends Action> implements Extens
     }
 
     /**
-     * Get all {@link MetricsProvider}s for this actions, using all registered {@link MetricsProviderFactory}s.
+     * Get all {@link MetricsProvider}s for the specified build actions,
+     * using all registered {@link MetricsProviderFactory}s.
      *
      * @param actions
      *         the actions of a run to use for getting the metrics
@@ -59,8 +57,9 @@ public abstract class MetricsProviderFactory<T extends Action> implements Extens
      * @return a list of {@link MetricsProvider}s, ordered by their priorities
      */
     @SuppressWarnings("unchecked")
-    public static ArrayList<MetricDefinition> getAllSupportedMetricsFor(final List<? extends Action> actions) {
-        ArrayList<MetricDefinition> supportedMetrics = all().stream()
+    public static List<MetricDefinition> getAllSupportedMetricsFor(final List<? extends Action> actions) {
+        // TODO: Use the Jenkins Facade to obtain the elements
+        List<MetricDefinition> supportedMetrics = all().stream()
                 .map(metricsProviderFactory -> {
                     List<? extends Action> actionsOfType = actions.stream()
                             .filter(action -> action.getClass().isAssignableFrom(metricsProviderFactory.type()))
@@ -86,19 +85,20 @@ public abstract class MetricsProviderFactory<T extends Action> implements Extens
     }
 
     /**
-     * Get the type of action this {@link MetricsProviderFactory} is for. (This is necessary to be able to provide the
-     * correct classes for the getFor(List) method.)
+     * Get the type of action this {@link MetricsProviderFactory} is for.
+     * This is necessary to be able to provide the correct classes for the getFor(List) method.
      *
      * @return the class of the action (same as the generic type)
      */
     public abstract Class<T> type();
 
     /**
-     * Get all {@link MetricsMeasurement}s for the actions of a build. An implementing extension is supposed to filter
-     * the relevant actions from the list and calculate their metrics from them.
+     * Returns the {@link MetricsProvider} for the specified actions of a build.
+     * An implementing extension is supposed to filter the relevant actions from the list and
+     * calculate their metrics from them.
      *
      * @param actions
-     *         the actions of a build
+     *         the available actions of a build
      *
      * @return the {@link MetricsProvider} providing the actions
      */
@@ -110,7 +110,7 @@ public abstract class MetricsProviderFactory<T extends Action> implements Extens
      * @param actions
      *          the actions of a build
      *
-     * @return a set containing all possibly reported metrics
+     * @return containing all possibly reported metrics
      */
-    public abstract ArrayList<MetricDefinition> supportedMetricsFor(List<T> actions);
+    public abstract List<MetricDefinition> supportedMetricsFor(List<T> actions);
 }

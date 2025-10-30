@@ -1,11 +1,13 @@
 package io.jenkins.plugins.metrics.model.measurement;
 
+import java.io.Serial;
 import java.util.Objects;
 
 /**
  * {@link MetricsMeasurement} representing one class.
  */
 public class ClassMetricsMeasurement extends MetricsMeasurement {
+    @Serial
     private static final long serialVersionUID = 6801327926336683068L;
 
     /**
@@ -40,11 +42,9 @@ public class ClassMetricsMeasurement extends MetricsMeasurement {
             return true;
         }
 
-        if (!(o instanceof ClassMetricsMeasurement)) {
+        if (!(o instanceof ClassMetricsMeasurement other)) {
             return false;
         }
-
-        ClassMetricsMeasurement other = (ClassMetricsMeasurement) o;
 
         return Objects.equals(fileName, other.fileName)
                 && Objects.equals(packageName, other.packageName)

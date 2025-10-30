@@ -1,4 +1,4 @@
-package io.jenkins.plugins.metrics.model;
+package io.jenkins.plugins.metrics.extension;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -11,11 +11,11 @@ import io.jenkins.plugins.metrics.model.metric.Metric;
  * Data class containing all metrics and entries for the detail page of a tool.
  */
 public class MetricsProvider {
-
     private String origin;
+
     private List<MetricsMeasurement> metricsMeasurements = new ArrayList<>();
     private List<String> projectSummaryEntries = new LinkedList<>();
-    private List<Metric> projectMetrics = new ArrayList<>();
+    private List<Metric<?>> projectMetrics = new ArrayList<>();
 
     public List<MetricsMeasurement> getMetricsMeasurements() {
         return metricsMeasurements;
@@ -51,15 +51,15 @@ public class MetricsProvider {
         this.origin = origin;
     }
 
-    public void setProjectMetrics(final List<Metric> projectMetrics) {
+    public void setProjectMetrics(final List<Metric<?>> projectMetrics) {
         this.projectMetrics = projectMetrics;
     }
 
-    public List<Metric> getProjectMetrics() {
+    public List<Metric<?>> getProjectMetrics() {
         return projectMetrics;
     }
 
-    public void addProjectMetric(final Metric metric) {
+    public void addProjectMetric(final Metric<?> metric) {
         projectMetrics.add(metric);
     }
 }
