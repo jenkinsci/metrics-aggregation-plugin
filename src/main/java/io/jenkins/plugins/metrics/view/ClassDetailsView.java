@@ -20,7 +20,6 @@ import io.jenkins.plugins.metrics.model.measurement.MetricsMeasurement;
 import io.jenkins.plugins.metrics.model.metric.Metric;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition.Scope;
-import io.jenkins.plugins.metrics.util.JacksonFacade;
 
 /**
  * Detail view for displaying metrics information for a specific class.
@@ -46,13 +45,13 @@ public class ClassDetailsView extends DefaultAsyncTableContentProvider implement
     public ClassDetailsView(final Run<?, ?> owner, final String className) {
         this.owner = owner;
 
-        List<MetricsMeasurement> allMeasurements = MetricsProviderFactory.getAllFor(owner.getAllActions())
+        List<MetricsMeasurement> allMeasurements = MetricsProviderFactory.getAllFor(owner)
                 .stream()
                 .map(MetricsProvider::getMetricsMeasurements)
                 .flatMap(List::stream)
                 .filter(m -> m.getQualifiedClassName().equals(className))
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+                .toList();
 
         methodMetricsMeasurements = allMeasurements.stream()
                 .filter(m -> m instanceof MethodMetricsMeasurement)
@@ -70,7 +69,7 @@ public class ClassDetailsView extends DefaultAsyncTableContentProvider implement
                 .reduce(ClassMetricsMeasurement::merge)
                 .orElse(new ClassMetricsMeasurement());
 
-        supportedMetrics = MetricsProviderFactory.getAllSupportedMetricsFor(owner.getAllActions())
+        supportedMetrics = MetricsProviderFactory.getAllSupportedMetricsFor(owner)
                 .stream()
                 .filter(metricDefinition -> metricDefinition.validForScope(Scope.METHOD))
                 .collect(Collectors.toList());

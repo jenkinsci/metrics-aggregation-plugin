@@ -1,4 +1,4 @@
-package io.jenkins.plugins.metrics.util;
+package io.jenkins.plugins.metrics.view;
 
 import org.junit.jupiter.api.Test;
 

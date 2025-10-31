@@ -29,7 +29,6 @@ import io.jenkins.plugins.metrics.model.metric.IntegerMetric;
 import io.jenkins.plugins.metrics.model.metric.Metric;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition.Scope;
-import io.jenkins.plugins.metrics.util.JacksonFacade;
 
 /**
  * Build view for displaying metrics.
@@ -46,12 +45,12 @@ public class MetricsView extends DefaultAsyncTableContentProvider implements Mod
     /**
      * Create a new {@link MetricsView}.
      *
-     * @param owner
-     *         the {@link Run} owning the view
+     * @param build
+     *         the {@link Run} that is shown in the view
      */
-    public MetricsView(final Run<?, ?> owner) {
-        this.owner = owner;
-        metricsMeasurements = MetricsProviderFactory.getAllFor(owner.getAllActions()).stream()
+    public MetricsView(final Run<?, ?> build) {
+        this.owner = build;
+        metricsMeasurements = MetricsProviderFactory.getAllFor(build).stream()
                 .map(MetricsProvider::getMetricsMeasurements)
                 .flatMap(List::stream)
                 .filter(m -> m instanceof ClassMetricsMeasurement)
@@ -62,12 +61,12 @@ public class MetricsView extends DefaultAsyncTableContentProvider implements Mod
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
-        supportedMetrics = MetricsProviderFactory.getAllSupportedMetricsFor(owner.getAllActions())
+        supportedMetrics = MetricsProviderFactory.getAllSupportedMetricsFor(build)
                 .stream()
                 .filter(metricDefinition -> metricDefinition.validForScope(Scope.CLASS))
                 .collect(Collectors.toList());
 
-        projectOverview = MetricsProviderFactory.getAllFor(owner.getAllActions()).stream()
+        projectOverview = MetricsProviderFactory.getAllFor(build).stream()
                 .map(MetricsProvider::getProjectSummaryEntries)
                 .reduce(new LinkedList<>(), (acc, summary) -> {
                     acc.addAll(summary);

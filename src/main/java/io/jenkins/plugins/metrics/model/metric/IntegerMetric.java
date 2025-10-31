@@ -1,14 +1,16 @@
 package io.jenkins.plugins.metrics.model.metric;
 
+import java.io.Serial;
 import java.util.Objects;
 
 /**
  * A {@link Metric} representing an integer value.
  */
 public class IntegerMetric extends Metric<Integer> {
+    @Serial
     private static final long serialVersionUID = 179851851088742850L;
 
-    private int value;
+    private final int value;
 
     /**
      * Constructor for a integer metric.
@@ -20,6 +22,7 @@ public class IntegerMetric extends Metric<Integer> {
      */
     public IntegerMetric(final MetricDefinition metricDefinition, final int value) {
         super(metricDefinition);
+
         this.value = value;
     }
 
@@ -35,11 +38,10 @@ public class IntegerMetric extends Metric<Integer> {
 
     @Override
     public boolean equals(final Object o) {
-        if (!(o instanceof IntegerMetric)) {
+        if (!(o instanceof IntegerMetric other)) {
             return false;
         }
 
-        IntegerMetric other = (IntegerMetric) o;
         return Objects.equals(other.value, value) && Objects.equals(other.metricDefinition, metricDefinition);
     }
 

@@ -2,13 +2,15 @@ package io.jenkins.plugins.metrics.model.metric;
 
 import org.apache.commons.lang3.ArrayUtils;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
 /**
  * A definition of a metric.
  */
-public class MetricDefinition implements Serializable {
+public class MetricDefinition implements Serializable, Comparable<MetricDefinition> {
+    @Serial
     private static final long serialVersionUID = 5311316796142816504L;
 
     /**
@@ -144,5 +146,10 @@ public class MetricDefinition implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public int compareTo(final MetricDefinition o) {
+        return priority - o.priority;
     }
 }

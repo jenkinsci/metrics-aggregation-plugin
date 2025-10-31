@@ -1,14 +1,16 @@
 package io.jenkins.plugins.metrics.model.metric;
 
+import java.io.Serial;
 import java.util.Objects;
 
 /**
  * {@link Metric} for percentage metrics.
  */
 public class PercentageMetric extends Metric<Float> {
+    @Serial
     private static final long serialVersionUID = -239297826452518258L;
 
-    private float value;
+    private final float value;
 
     /**
      * Constructor for a percentage metric.
@@ -35,11 +37,10 @@ public class PercentageMetric extends Metric<Float> {
 
     @Override
     public boolean equals(final Object o) {
-        if (!(o instanceof PercentageMetric)) {
+        if (!(o instanceof PercentageMetric other)) {
             return false;
         }
 
-        PercentageMetric other = (PercentageMetric) o;
         return Objects.equals(other.value, value) && Objects.equals(other.metricDefinition, metricDefinition);
     }
 

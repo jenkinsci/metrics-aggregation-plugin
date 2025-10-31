@@ -7,11 +7,11 @@ import edu.hm.hafner.analysis.Report;
 import edu.hm.hafner.analysis.Severity;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import hudson.Extension;
+import hudson.model.Run;
 
 import io.jenkins.plugins.analysis.core.model.AnalysisResult;
 import io.jenkins.plugins.analysis.core.model.ResultAction;
@@ -30,7 +30,7 @@ import io.jenkins.plugins.metrics.model.metric.MetricDefinition.Scope;
 @Extension
 @SuppressWarnings("unused") // used via the extension
 // TODO: This class should only collect warnings and should be moved to the warnings plugin
-public class WarningsMetricsProviderFactory extends MetricsProviderFactory<ResultAction> {
+public class WarningsMetricsProviderFactory extends MetricsProviderFactory {
     private static final MetricDefinition ERRORS = new MetricDefinition("ERRORS",
             "Errors",
             "An error, e.g. a compile error.",
@@ -69,15 +69,11 @@ public class WarningsMetricsProviderFactory extends MetricsProviderFactory<Resul
             ArrayUtils.toArray(Scope.CLASS));
 
     @Override
-    public Class<ResultAction> type() {
-        return ResultAction.class;
-    }
-
-    @Override
-    public MetricsProvider getFor(final List<ResultAction> actions) {
+    public MetricsProvider getFor(final Run<?, ?> build) {
         MetricsProvider provider = new MetricsProvider();
         provider.setOrigin("warnings-ng-plugin");
 
+        var actions = build.getActions(ResultAction.class);
         RepositoryStatistics stats = actions.stream()
                 .map(ResultAction::getResult)
                 .map(AnalysisResult::getForensics)
@@ -133,16 +129,12 @@ public class WarningsMetricsProviderFactory extends MetricsProviderFactory<Resul
     }
 
     @Override
-    public ArrayList<MetricDefinition> supportedMetricsFor(final List<ResultAction> actions) {
+    public List<MetricDefinition> supportedMetricsFor(final Run<?, ?> build) {
+        var actions = build.getActions(ResultAction.class);
         if (actions.isEmpty()) {
             return new ArrayList<>();
         }
 
-        return new ArrayList<>(Arrays.asList(ERRORS,
-                WARNINGS_HIGH,
-                WARNINGS_NORMAL,
-                WARNINGS_LOW,
-                AUTHORS,
-                COMMITS));
+        return List.of(ERRORS, WARNINGS_HIGH, WARNINGS_NORMAL, WARNINGS_LOW, AUTHORS, COMMITS);
     }
 }

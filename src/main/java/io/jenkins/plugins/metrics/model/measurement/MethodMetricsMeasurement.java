@@ -1,11 +1,13 @@
 package io.jenkins.plugins.metrics.model.measurement;
 
+import java.io.Serial;
 import java.util.Objects;
 
 /**
  * {@link MetricsMeasurement} for a method.
  */
 public class MethodMetricsMeasurement extends MetricsMeasurement {
+    @Serial
     private static final long serialVersionUID = 6103621887323104682L;
 
     private String methodName = "";
@@ -91,11 +93,9 @@ public class MethodMetricsMeasurement extends MetricsMeasurement {
             return true;
         }
 
-        if (!(o instanceof MethodMetricsMeasurement)) {
+        if (!(o instanceof MethodMetricsMeasurement other)) {
             return false;
         }
-
-        MethodMetricsMeasurement other = (MethodMetricsMeasurement) o;
 
         return this.beginLine == other.beginLine
                 && this.beginColumn == other.beginColumn

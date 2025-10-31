@@ -1,5 +1,6 @@
 package io.jenkins.plugins.metrics.model.measurement;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,6 +12,7 @@ import io.jenkins.plugins.metrics.model.metric.Metric;
  * Measurement point of metrics. Combines the location of the measurement with the metrics measured there.
  */
 public abstract class MetricsMeasurement implements Serializable {
+    @Serial
     private static final long serialVersionUID = 7472039462715167623L;
 
     /**
@@ -93,5 +95,5 @@ public abstract class MetricsMeasurement implements Serializable {
      *
      * @return the combined {@link MetricsMeasurement}
      */
-    public abstract MetricsMeasurement merge(MetricsMeasurement metricsMeasurement);    
+    public abstract MetricsMeasurement merge(MetricsMeasurement metricsMeasurement);
 }

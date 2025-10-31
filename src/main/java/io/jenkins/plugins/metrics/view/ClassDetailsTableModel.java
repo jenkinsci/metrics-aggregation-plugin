@@ -17,7 +17,6 @@ import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
  * {@link TableModel} for the class details view.
  */
 public class ClassDetailsTableModel extends TableModel {
-
     private final List<MetricDefinition> supportedMetrics;
     private final List<MethodMetricsMeasurement> metricsMeasurements;
 

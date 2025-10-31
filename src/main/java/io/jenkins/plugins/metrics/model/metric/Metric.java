@@ -1,5 +1,6 @@
 package io.jenkins.plugins.metrics.model.metric;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -9,6 +10,7 @@ import java.io.Serializable;
  *         the data type for the metric
  */
 public abstract class Metric<T extends Number> implements Serializable {
+    @Serial
     private static final long serialVersionUID = -8143304414028170807L;
 
     /**

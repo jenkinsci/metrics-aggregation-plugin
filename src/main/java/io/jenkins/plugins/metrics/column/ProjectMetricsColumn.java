@@ -81,7 +81,7 @@ public class ProjectMetricsColumn extends ListViewColumn {
             return Optional.empty();
         }
 
-        return MetricsProviderFactory.getAllFor(lastCompletedBuild.getAllActions())
+        return MetricsProviderFactory.getAllFor(lastCompletedBuild)
                 .stream()
                 .flatMap(metricsProvider -> metricsProvider.getProjectMetrics().stream())
                 .filter(metric -> metric.getId().equals(metricId))

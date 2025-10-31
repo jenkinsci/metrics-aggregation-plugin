@@ -1,22 +1,19 @@
 package io.jenkins.plugins.metrics.extension;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
-import hudson.model.Action;
+import hudson.model.Run;
 import jenkins.model.Jenkins;
 
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
 
 /**
  * Extension point to support custom metrics.
- *
- * @param <T> the type of the action this class supports
  */
-public abstract class MetricsProviderFactory<T extends Action> implements ExtensionPoint {
+public abstract class MetricsProviderFactory implements ExtensionPoint {
     /**
      * Get all registered {@link MetricsProviderFactory}s.
      *
@@ -27,90 +24,55 @@ public abstract class MetricsProviderFactory<T extends Action> implements Extens
     }
 
     /**
-     * Get all {@link MetricsProvider}s for this actions, using all registered {@link MetricsProviderFactory}s.
+     * Returns all {@link MetricsProvider}s for the specified build, iterating over all registered
+     * {@link MetricsProviderFactory}s.
      *
-     * @param actions
-     *         the actions of a run to use for getting the metrics
+     * @param build
+     *         the build to get the metrics for
      *
      * @return a list of {@link MetricsProvider}s
      */
-    @SuppressWarnings("unchecked")
-    public static List<MetricsProvider> getAllFor(final List<? extends Action> actions) {
+    public static List<MetricsProvider> getAllFor(final Run<?, ?> build) {
         return all().stream()
-                .map(metricsProviderFactory -> {
-                    List<? extends Action> actionsOfType = actions.stream()
-                            .filter(action -> action.getClass().isAssignableFrom(metricsProviderFactory.type()))
-                            .collect(Collectors.toList());
-
-                    return metricsProviderFactory.getFor(actionsOfType);
-                })
-                .collect(Collectors.toList());
+                .map(f -> f.getFor(build))
+                .toList();
     }
 
     /**
-     * Get all {@link MetricsProvider}s for the specified build actions,
-     * using all registered {@link MetricsProviderFactory}s.
+     * Get all {@link MetricsProvider}s for the specified build actions, using all registered
+     * {@link MetricsProviderFactory}s.
      *
-     * @param actions
-     *         the actions of a run to use for getting the metrics
+     * @param build
+     *         the build to get the metrics for
      *
      * @return a list of {@link MetricsProvider}s, ordered by their priorities
      */
-    @SuppressWarnings("unchecked")
-    public static List<MetricDefinition> getAllSupportedMetricsFor(final List<? extends Action> actions) {
-        // TODO: Use the Jenkins Facade to obtain the elements
-        List<MetricDefinition> supportedMetrics = all().stream()
-                .map(metricsProviderFactory -> {
-                    List<? extends Action> actionsOfType = actions.stream()
-                            .filter(action -> action.getClass().isAssignableFrom(metricsProviderFactory.type()))
-                            .collect(Collectors.toList());
-
-                    return metricsProviderFactory.supportedMetricsFor(actionsOfType);
-                })
-                .reduce(new ArrayList<MetricDefinition>(), (acc, metrics) -> {
-                    acc.addAll(metrics);
-                    return acc;
-                });
-
-        // sort by priorities
-        supportedMetrics.sort((m1, m2) -> {
-            if (m1 == null || m2 == null) {
-                throw new NullPointerException("NullPointerException while comparing " + m1 + " and " + m2);
-            }
-
-            return Integer.compare(m1.getPriority(), m2.getPriority());
-        });
-
-        return supportedMetrics;
+    public static List<MetricDefinition> getAllSupportedMetricsFor(final Run<?, ?> build) {
+        return all().stream()
+                .map(f -> f.supportedMetricsFor(build))
+                .flatMap(Collection::stream)
+                .sorted()
+                .toList();
     }
 
     /**
-     * Get the type of action this {@link MetricsProviderFactory} is for.
-     * This is necessary to be able to provide the correct classes for the getFor(List) method.
+     * Returns the {@link MetricsProvider} for the specified build. An implementing extension is supposed calculate
+     * their metrics from the build on the fly.
      *
-     * @return the class of the action (same as the generic type)
-     */
-    public abstract Class<T> type();
-
-    /**
-     * Returns the {@link MetricsProvider} for the specified actions of a build.
-     * An implementing extension is supposed to filter the relevant actions from the list and
-     * calculate their metrics from them.
-     *
-     * @param actions
-     *         the available actions of a build
+     * @param build
+     *         the build to get the metrics for
      *
      * @return the {@link MetricsProvider} providing the actions
      */
-    public abstract MetricsProvider getFor(List<T> actions);
+    public abstract MetricsProvider getFor(Run<?, ?> build);
 
     /**
-     * Returns all metrics this {@link MetricsProviderFactory} reports, for a list of certain builds.
+     * Returns all metrics this {@link MetricsProviderFactory} reports, for the specified build.
      *
-     * @param actions
-     *          the actions of a build
+     * @param build
+     *         the build to get the metrics for
      *
      * @return containing all possibly reported metrics
      */
-    public abstract List<MetricDefinition> supportedMetricsFor(List<T> actions);
+    public abstract List<MetricDefinition> supportedMetricsFor(Run<?, ?> build);
 }

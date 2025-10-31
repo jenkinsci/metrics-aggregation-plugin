@@ -15,7 +15,6 @@ import static org.assertj.core.api.Assertions.*;
  * Test for the class {@link ClassMetricsMeasurement}.
  */
 public class ClassMetricsMeasurementTest {
-
     /**
      * Get a metric from a {@link ClassMetricsMeasurement}.
      */

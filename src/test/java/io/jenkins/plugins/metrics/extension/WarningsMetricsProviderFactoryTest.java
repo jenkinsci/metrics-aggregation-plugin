@@ -6,18 +6,18 @@ import edu.hm.hafner.analysis.Issue;
 import edu.hm.hafner.analysis.IssueBuilder;
 import edu.hm.hafner.analysis.Report;
 
-import java.util.Collections;
+import java.util.List;
+
+import hudson.model.Run;
 
 import io.jenkins.plugins.analysis.core.model.AnalysisResult;
 import io.jenkins.plugins.analysis.core.model.ResultAction;
 import io.jenkins.plugins.forensics.miner.RepositoryStatistics;
-import io.jenkins.plugins.metrics.model.MetricsProviderAssert;
 
-import static org.assertj.core.api.Assertions.*;
+import static io.jenkins.plugins.metrics.assertions.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class WarningsMetricsProviderFactoryTest {
-
     /**
      * Get measurements with forensics missing.
      */
@@ -38,10 +38,13 @@ class WarningsMetricsProviderFactoryTest {
         ResultAction action = mock(ResultAction.class);
         when(action.getResult()).thenReturn(analysisResult);
 
-        MetricsProvider metricsProvider = warningsFactory.getFor(Collections.singletonList(action));
+        var run = mock(Run.class);
+        when(run.getActions(ResultAction.class)).thenReturn(List.of(action));
+
+        MetricsProvider metricsProvider = warningsFactory.getFor(run);
 
         assertThat(metricsProvider.getMetricsMeasurements()).hasSize(1);
-        MetricsProviderAssert.assertThat(metricsProvider).hasProjectSummaryEntries("0 Errors",
+        assertThat(metricsProvider).hasProjectSummaryEntries("0 Errors",
                 "1 Warnings (0 high, 1 normal, 0 low)");
     }
 }

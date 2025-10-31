@@ -188,17 +188,14 @@
         <artifactId>assertj-assertions-generator-maven-plugin</artifactId>
         <configuration>
           <packages combine.children="append">
+            <package>io.jenkins.plugins.metrics.extension</package>
             <package>io.jenkins.plugins.metrics.model</package>
-            <package>io.jenkins.plugins.metrics.util</package>
+            <package>io.jenkins.plugins.metrics.view</package>
           </packages>
           <entryPointClassPackage>io.jenkins.plugins.metrics.assertions</entryPointClassPackage>
           <excludes combine.children="append">
             <exclude>.*ITest</exclude>
           </excludes>
-          <cleanTargetDir>true</cleanTargetDir>
-          <hierarchical>false</hierarchical>
-          <generateBddAssertions>false</generateBddAssertions>
-          <generateJUnitSoftAssertions>false</generateJUnitSoftAssertions>
         </configuration>
       </plugin>
       <plugin>
