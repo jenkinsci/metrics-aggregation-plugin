@@ -17,15 +17,15 @@ public class MetricDefinitionTest {
      */
     @Test
     public void shouldBeValidForScope() {
-        final MetricDefinition both = createMetricDefinitionWithScope(ArrayUtils.toArray(Scope.CLASS, Scope.METHOD));
+        var both = createMetricDefinitionWithScope(ArrayUtils.toArray(Scope.CLASS, Scope.METHOD));
         assertThat(both.validForScope(Scope.CLASS)).isTrue();
         assertThat(both.validForScope(Scope.METHOD)).isTrue();
 
-        final MetricDefinition justClass = createMetricDefinitionWithScope(ArrayUtils.toArray(Scope.CLASS));
+        var justClass = createMetricDefinitionWithScope(ArrayUtils.toArray(Scope.CLASS));
         assertThat(justClass.validForScope(Scope.CLASS)).isTrue();
         assertThat(justClass.validForScope(Scope.METHOD)).isFalse();
 
-        final MetricDefinition justMethod = createMetricDefinitionWithScope(ArrayUtils.toArray(Scope.METHOD));
+        var justMethod = createMetricDefinitionWithScope(ArrayUtils.toArray(Scope.METHOD));
         assertThat(justMethod.validForScope(Scope.METHOD)).isTrue();
         assertThat(justMethod.validForScope(Scope.CLASS)).isFalse();
     }

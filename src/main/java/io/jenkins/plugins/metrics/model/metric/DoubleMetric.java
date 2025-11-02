@@ -28,7 +28,7 @@ public class DoubleMetric extends Metric<Double> {
 
     @Override
     public String renderValue() {
-        return String.format("%.2f", value);
+        return "%.2f".formatted(value);
     }
 
     @Override
@@ -42,11 +42,11 @@ public class DoubleMetric extends Metric<Double> {
             return false;
         }
 
-        return Objects.equals(other.value, value) && Objects.equals(other.metricDefinition, metricDefinition);
+        return Objects.equals(other.value, value) && Objects.equals(other.getMetricDefinition(), getMetricDefinition());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(metricDefinition, value);
+        return Objects.hash(getMetricDefinition(), value);
     }
 }

@@ -86,7 +86,7 @@ public class MetricsTreeNode {
      */
     public void collapsePackage() {
         while (getChildren().size() == 1) {
-            MetricsTreeNode singleChild = getChildrenMap().values().iterator().next();
+            var singleChild = getChildrenMap().values().iterator().next();
             if (!name.isEmpty()) {
                 setName(name + "." + singleChild.getName());
             }
@@ -109,7 +109,7 @@ public class MetricsTreeNode {
     }
 
     private void insertNode(final MetricsTreeNode node, final Deque<String> levels) {
-        String nextLevelName = levels.pop();
+        var nextLevelName = levels.pop();
 
         addValue(node.getValue());
         if (levels.isEmpty()) {
@@ -124,7 +124,7 @@ public class MetricsTreeNode {
 
     @Override
     public String toString() {
-        return String.format("MetricsTreeNode '%s' (%s)", name, value);
+        return "MetricsTreeNode '%s' (%s)".formatted(name, value);
     }
 
     @Override

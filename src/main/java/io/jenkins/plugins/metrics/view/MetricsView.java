@@ -53,7 +53,7 @@ public class MetricsView extends DefaultAsyncTableContentProvider implements Mod
         metricsMeasurements = MetricsProviderFactory.getAllFor(build).stream()
                 .map(MetricsProvider::getMetricsMeasurements)
                 .flatMap(List::stream)
-                .filter(m -> m instanceof ClassMetricsMeasurement)
+                .filter(ClassMetricsMeasurement.class::isInstance)
                 .collect(Collectors.groupingBy(MetricsMeasurement::getQualifiedClassName))
                 .values().stream()
                 .map(measurementsPerFile -> (ClassMetricsMeasurement) measurementsPerFile.stream()
@@ -72,7 +72,6 @@ public class MetricsView extends DefaultAsyncTableContentProvider implements Mod
                     acc.addAll(summary);
                     return acc;
                 });
-
     }
 
     @Override
@@ -139,7 +138,7 @@ public class MetricsView extends DefaultAsyncTableContentProvider implements Mod
                 })
                 .collect(Collectors.toList());
 
-        MetricsTreeNode root = new MetricsTreeNode("");
+        var root = new MetricsTreeNode("");
         nodes.forEach(root::insertNode);
         root.collapsePackage();
 
@@ -180,7 +179,7 @@ public class MetricsView extends DefaultAsyncTableContentProvider implements Mod
             return "{\"data\": [], \"labels\":[]}";
         }
 
-        DescriptiveStatistics statistics = new DescriptiveStatistics();
+        var statistics = new DescriptiveStatistics();
         values.forEach(statistics::addValue);
 
         final double min = statistics.getMin();
@@ -229,12 +228,12 @@ public class MetricsView extends DefaultAsyncTableContentProvider implements Mod
             histogramData[binId] += 1;
         }
 
-        final DecimalFormat labelFormat = new DecimalFormat("#.##");
+        final var labelFormat = new DecimalFormat("#.##");
         final String[] binLabels = new String[numBins];
         for (int i = 0; i < numBins; i++) {
             double left = min + i * binWidth;
             double right = min + (i + 1) * binWidth;
-            binLabels[i] = String.format("%s - %s", labelFormat.format(left), labelFormat.format(right));
+            binLabels[i] = "%s - %s".formatted(labelFormat.format(left), labelFormat.format(right));
         }
 
         Map<String, Object> result = new HashMap<>();
@@ -266,7 +265,7 @@ public class MetricsView extends DefaultAsyncTableContentProvider implements Mod
     }
 
     private String toJson(final Object object) {
-        JacksonFacade facade = new JacksonFacade();
+        var facade = new JacksonFacade();
         return facade.toJson(object);
     }
 

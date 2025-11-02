@@ -23,7 +23,7 @@ public class JacksonFacade {
         }
         catch (JsonProcessingException exception) {
             throw new IllegalArgumentException(
-                    String.format("Can't convert %s to JSON object", object), exception);
+                    "Can't convert %s to JSON object".formatted(object), exception);
         }
     }
 }

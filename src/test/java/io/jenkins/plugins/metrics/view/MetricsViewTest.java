@@ -11,10 +11,9 @@ import io.jenkins.plugins.metrics.model.metric.DoubleMetric;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
 
 class MetricsViewTest {
-
     @Test
     public void shouldGetHistogram() {
-        final String key = "key";
+        final var key = "key";
         ArrayList<MetricsMeasurement> measurements = new ArrayList<>();
         measurements.add(getMeasurementWithMetric(key, 5.0));
         measurements.add(getMeasurementWithMetric(key, 2.0));
@@ -40,7 +39,7 @@ class MetricsViewTest {
     @Test
     @Ignore
     public void shouldGetStatistics() {
-        final String key = "key";
+        final var key = "key";
 
         ArrayList<MetricsMeasurement> measurements = new ArrayList<>();
         measurements.add(getMeasurementWithMetric(key, 5.0));
@@ -55,14 +54,13 @@ class MetricsViewTest {
         when(run.getAction(MetricsAction.class)).thenReturn(new MetricsAction(measurements));
         MetricsDetailView metricsDetailView = new MetricsDetailView(run);
 
-
         //String json = metricsDetail.getStatistics(key);
         */
     }
 
     private MetricsMeasurement getMeasurementWithMetric(final String key, final double value) {
-        MetricsMeasurement metricsMeasurement = new ClassMetricsMeasurement();
-        MetricDefinition metricsDefinition = new MetricDefinition(key);
+        var metricsMeasurement = new ClassMetricsMeasurement();
+        var metricsDefinition = new MetricDefinition(key);
         metricsMeasurement.addMetric(new DoubleMetric(metricsDefinition, value));
         return metricsMeasurement;
     }

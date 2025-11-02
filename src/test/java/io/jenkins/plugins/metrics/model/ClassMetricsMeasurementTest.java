@@ -20,10 +20,10 @@ public class ClassMetricsMeasurementTest {
      */
     @Test
     public void shouldGetMetric() {
-        final String metricId = "TESTMETRIC";
-        final int metricValue = 17;
-        final Metric metric = createIntMetric(metricId, metricValue);
-        final ClassMetricsMeasurement measurement = new ClassMetricsMeasurement();
+        var metricId = "TESTMETRIC";
+        int metricValue = 17;
+        var metric = createIntMetric(metricId, metricValue);
+        var measurement = new ClassMetricsMeasurement();
         measurement.addMetric(metric);
 
         assertThat(measurement.getMetric(metricId)).isNotEmpty();

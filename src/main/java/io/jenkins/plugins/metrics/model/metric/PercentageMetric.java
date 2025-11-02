@@ -27,7 +27,7 @@ public class PercentageMetric extends Metric<Float> {
 
     @Override
     public String renderValue() {
-        return String.format("%d%%", Math.round(value));
+        return "%d%%".formatted(Math.round(value));
     }
 
     @Override
@@ -41,11 +41,11 @@ public class PercentageMetric extends Metric<Float> {
             return false;
         }
 
-        return Objects.equals(other.value, value) && Objects.equals(other.metricDefinition, metricDefinition);
+        return Objects.equals(other.value, value) && Objects.equals(other.getMetricDefinition(), getMetricDefinition());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(metricDefinition, value);
+        return Objects.hash(getMetricDefinition(), value);
     }
 }

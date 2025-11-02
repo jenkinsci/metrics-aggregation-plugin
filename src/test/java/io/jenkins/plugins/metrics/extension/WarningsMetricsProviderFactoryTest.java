@@ -2,7 +2,6 @@ package io.jenkins.plugins.metrics.extension;
 
 import org.junit.jupiter.api.Test;
 
-import edu.hm.hafner.analysis.Issue;
 import edu.hm.hafner.analysis.IssueBuilder;
 import edu.hm.hafner.analysis.Report;
 
@@ -24,14 +23,14 @@ class WarningsMetricsProviderFactoryTest {
     @Test
     @org.jvnet.hudson.test.Issue("JENKINS-61401")
     void getMetricsWithMissingForensics() {
-        WarningsMetricsProviderFactory warningsFactory = new WarningsMetricsProviderFactory();
+        var warningsFactory = new WarningsMetricsProviderFactory();
 
         AnalysisResult analysisResult = mock(AnalysisResult.class);
         when(analysisResult.getForensics()).thenReturn(new RepositoryStatistics());
 
-        Report report = new Report();
+        var report = new Report();
 
-        Issue issue = new IssueBuilder().setFileName("Test.java").build();
+        var issue = new IssueBuilder().setFileName("Test.java").build();
         report.add(issue);
         when(analysisResult.getIssues()).thenReturn(report);
 
@@ -41,7 +40,7 @@ class WarningsMetricsProviderFactoryTest {
         var run = mock(Run.class);
         when(run.getActions(ResultAction.class)).thenReturn(List.of(action));
 
-        MetricsProvider metricsProvider = warningsFactory.getFor(run);
+        var metricsProvider = warningsFactory.getFor(run);
 
         assertThat(metricsProvider.getMetricsMeasurements()).hasSize(1);
         assertThat(metricsProvider).hasProjectSummaryEntries("0 Errors",

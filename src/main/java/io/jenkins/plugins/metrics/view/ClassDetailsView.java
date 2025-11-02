@@ -54,8 +54,8 @@ public class ClassDetailsView extends DefaultAsyncTableContentProvider implement
                 .toList();
 
         methodMetricsMeasurements = allMeasurements.stream()
-                .filter(m -> m instanceof MethodMetricsMeasurement)
-                .map(m -> (MethodMetricsMeasurement) m)
+                .filter(MethodMetricsMeasurement.class::isInstance)
+                .map(MethodMetricsMeasurement.class::cast)
                 .collect(Collectors.groupingBy(MethodMetricsMeasurement::getMethodName))
                 .values().stream()
                 .map(measurementsPerMethod -> measurementsPerMethod.stream()
@@ -64,8 +64,8 @@ public class ClassDetailsView extends DefaultAsyncTableContentProvider implement
                 .collect(Collectors.toList());
 
         classMetricsMeasurement = allMeasurements.stream()
-                .filter(m -> m instanceof ClassMetricsMeasurement)
-                .map(m -> (ClassMetricsMeasurement) m)
+                .filter(ClassMetricsMeasurement.class::isInstance)
+                .map(ClassMetricsMeasurement.class::cast)
                 .reduce(ClassMetricsMeasurement::merge)
                 .orElse(new ClassMetricsMeasurement());
 
@@ -122,7 +122,7 @@ public class ClassDetailsView extends DefaultAsyncTableContentProvider implement
     }
 
     private String toJson(final Object object) {
-        JacksonFacade facade = new JacksonFacade();
+        var facade = new JacksonFacade();
         return facade.toJson(object);
     }
 

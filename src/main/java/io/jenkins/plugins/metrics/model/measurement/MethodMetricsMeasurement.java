@@ -79,7 +79,7 @@ public class MethodMetricsMeasurement extends MetricsMeasurement {
             return "MethodMetricsMeasurement[empty]";
         }
 
-        return String.format("MethodMetricsMeasurement[%s.%s#%s:%d:%d]",
+        return "MethodMetricsMeasurement[%s.%s#%s:%d:%d]".formatted(
                 getPackageName(),
                 getClassName(),
                 methodName,

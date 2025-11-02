@@ -13,10 +13,7 @@ public abstract class Metric<T extends Number> implements Serializable {
     @Serial
     private static final long serialVersionUID = -8143304414028170807L;
 
-    /**
-     * The definition for this metric.
-     */
-    protected final MetricDefinition metricDefinition;
+    private final MetricDefinition metricDefinition;
 
     protected Metric(final MetricDefinition metricDefinition) {
         this.metricDefinition = metricDefinition;
@@ -46,6 +43,6 @@ public abstract class Metric<T extends Number> implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("Metric %s: %s (%s)", getId(), renderValue(), rawValue());
+        return "Metric %s: %s (%s)".formatted(getId(), renderValue(), rawValue());
     }
 }

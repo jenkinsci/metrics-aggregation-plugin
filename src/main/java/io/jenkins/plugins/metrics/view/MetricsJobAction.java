@@ -5,6 +5,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Set;
 
 import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.StaplerResponse2;
@@ -69,7 +70,7 @@ public class MetricsJobAction implements Action {
         final Run<?, ?> lastCompletedBuild = owner.getLastCompletedBuild();
 
         if (lastCompletedBuild != null) {
-            response.sendRedirect2(String.format("../%d/%s", lastCompletedBuild.getNumber(), MetricsViewAction.ID));
+            response.sendRedirect2("../%d/%s".formatted(lastCompletedBuild.getNumber(), MetricsViewAction.ID));
         }
     }
 
@@ -89,10 +90,9 @@ public class MetricsJobAction implements Action {
         public Collection<? extends Action> createFor(@NonNull final Job<?, ?> target) {
             // TODO: Do we need to hide the action if there are no results?
             if (target.getFirstBuild() != null) {
-                return Collections.singleton(new MetricsJobAction(target));
+                return Set.of(new MetricsJobAction(target));
             }
             return Collections.emptySet();
         }
     }
-
 }

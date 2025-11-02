@@ -15,17 +15,16 @@ import static org.assertj.core.api.Assertions.*;
  * Test for the class {@link MethodMetricsMeasurement}.
  */
 public class MethodMetricsMeasurementTest {
-
     /**
      * Test if two metrics are merged correctly.
      */
     @Test
     public void shouldMergeTwoMetricsMeasurements() {
-        final MethodMetricsMeasurement measurement2 = new MethodMetricsMeasurement();
-        final Metric metric = createIntMetric("TESTMETRIC", 17);
+        var measurement2 = new MethodMetricsMeasurement();
+        var metric = createIntMetric("TESTMETRIC", 17);
         measurement2.addMetric(metric);
 
-        final MethodMetricsMeasurement measurement1 = new MethodMetricsMeasurement();
+        var measurement1 = new MethodMetricsMeasurement();
 
         assertThat(measurement1.getMetrics()).isEmpty();
         measurement1.merge(measurement2);
@@ -37,10 +36,10 @@ public class MethodMetricsMeasurementTest {
      */
     @Test
     public void shouldGetMetric() {
-        final String metricId = "TESTMETRIC";
-        final int metricValue = 17;
-        final Metric metric = createIntMetric(metricId, metricValue);
-        final MethodMetricsMeasurement measurement = new MethodMetricsMeasurement();
+        var metricId = "TESTMETRIC";
+        int metricValue = 17;
+        var metric = createIntMetric(metricId, metricValue);
+        var measurement = new MethodMetricsMeasurement();
         measurement.addMetric(metric);
 
         assertThat(measurement.getMetric(metricId)).isNotEmpty();

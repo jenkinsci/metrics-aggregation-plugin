@@ -12,13 +12,12 @@ import static org.mockito.Mockito.*;
  * Test for the class {@link JacksonFacade}.
  */
 public class JacksonFacadeTest {
-
     /**
      * Test if a list is correctly converted to json.
      */
     @Test
     public void shouldConvertListToJson() {
-        JacksonFacade facade = new JacksonFacade();
+        var facade = new JacksonFacade();
 
         assertThat(facade.toJson(Arrays.asList("hello", "world", 1))).isEqualTo("[\"hello\",\"world\",1]");
     }
@@ -31,9 +30,8 @@ public class JacksonFacadeTest {
         Object faultyObject = mock(Object.class);
         when(faultyObject.toString()).thenReturn(faultyObject.getClass().getName());
 
-        JacksonFacade facade = new JacksonFacade();
-        assertThrows(IllegalArgumentException.class, () -> {
-            facade.toJson(faultyObject);
-        });
+        var facade = new JacksonFacade();
+        assertThrows(IllegalArgumentException.class, () ->
+                facade.toJson(faultyObject));
     }
 }

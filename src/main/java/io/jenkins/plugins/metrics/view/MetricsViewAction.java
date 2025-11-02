@@ -1,11 +1,9 @@
 package io.jenkins.plugins.metrics.view;
 
-import javax.annotation.Nonnull;
-
-import edu.umd.cs.findbugs.annotations.Nullable;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Set;
 
 import org.kohsuke.stapler.StaplerProxy;
 import hudson.Extension;
@@ -31,7 +29,7 @@ public class MetricsViewAction implements RunAction2, StaplerProxy {
     /**
      * The icon to use with links.
      */
-    public static final String ICON = "/plugin/metrics-aggregation/icons/metrics-24x24.png";
+    public static final String ICON = "symbol-solid/ruler-combined plugin-font-awesome-api";
 
     /**
      * Create a new {@link MetricsViewAction}.
@@ -43,19 +41,19 @@ public class MetricsViewAction implements RunAction2, StaplerProxy {
         this.owner = owner;
     }
 
-    @Nullable
+    @NonNull
     @Override
     public String getIconFileName() {
         return ICON;
     }
 
-    @Nullable
+    @NonNull
     @Override
     public String getDisplayName() {
         return NAME;
     }
 
-    @Nullable
+    @NonNull
     @Override
     public String getUrlName() {
         return ID;
@@ -86,16 +84,16 @@ public class MetricsViewAction implements RunAction2, StaplerProxy {
      */
     @Extension
     public static class ViewActionFactory extends TransientActionFactory<Run> {
-
+        @SuppressWarnings("rawtypes")
         @Override
         public Class<Run> type() {
             return Run.class;
         }
 
-        @Nonnull
+        @NonNull
         @Override
-        public Collection<? extends Action> createFor(@Nonnull final Run target) {
-            return Collections.singleton(new MetricsViewAction(target));
+        public Collection<? extends Action> createFor(@NonNull final Run target) {
+            return Set.of(new MetricsViewAction(target));
         }
     }
 }
