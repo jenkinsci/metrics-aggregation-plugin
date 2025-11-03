@@ -104,7 +104,7 @@ public class ClassDetailsTableModel extends TableModel {
         }
 
         /**
-         * Get the raw metrics of this measurement e.g. for use in filtering.
+         * Get the raw metrics of this measurement e.g., for use in filtering.
          *
          * @return the map of metrics
          */

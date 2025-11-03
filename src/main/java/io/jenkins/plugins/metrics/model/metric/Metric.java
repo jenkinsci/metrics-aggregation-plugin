@@ -27,7 +27,7 @@ public abstract class Metric<T extends Number> implements Serializable {
     public abstract String renderValue();
 
     /**
-     * Return the raw value of this metric, e.g. used for calculations.
+     * Return the raw value of this metric, e.g., used for calculations.
      *
      * @return the raw value
      */

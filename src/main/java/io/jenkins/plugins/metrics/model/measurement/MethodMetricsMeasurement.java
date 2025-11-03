@@ -57,7 +57,7 @@ public class MethodMetricsMeasurement extends MetricsMeasurement {
     }
 
     /**
-     * Merge another {@link MetricsMeasurement} with this one. Returns itself to be usable for chaining.
+     * Merge another {@link MetricsMeasurement} with this one. Returns this to be usable for chaining.
      *
      * @param metricsMeasurement
      *         the {@link MetricsMeasurement} to merge. If it is a {@link MethodMetricsMeasurement},their metrics are

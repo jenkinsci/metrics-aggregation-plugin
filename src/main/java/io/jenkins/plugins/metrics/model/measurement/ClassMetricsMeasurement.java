@@ -11,13 +11,13 @@ public class ClassMetricsMeasurement extends MetricsMeasurement {
     private static final long serialVersionUID = 6801327926336683068L;
 
     /**
-     * Merge another {@link MetricsMeasurement} with this one. Returns itself to be usable for chaining.
+     * Merge another {@link MetricsMeasurement} with this one. Returns this to be usable for chaining.
      *
      * @param metricsMeasurement
      *         the {@link MetricsMeasurement} to merge. If it is a {@link ClassMetricsMeasurement}, their metrics are
-     *         merged together. In case of a {@link MethodMetricsMeasurement} nothing happens.
+     *         merged. In case of a {@link MethodMetricsMeasurement} nothing happens.
      *
-     * @return itself
+     * @return this
      */
     @Override
     public ClassMetricsMeasurement merge(final MetricsMeasurement metricsMeasurement) {

@@ -45,7 +45,7 @@ public class ClassDetailsView extends DefaultAsyncTableContentProvider implement
     public ClassDetailsView(final Run<?, ?> owner, final String className) {
         this.owner = owner;
 
-        List<MetricsMeasurement> allMeasurements = MetricsProviderFactory.getAllFor(owner)
+        List<MetricsMeasurement> allMeasurements = MetricsProviderFactory.findAllFor(owner)
                 .stream()
                 .map(MetricsProvider::getMetricsMeasurements)
                 .flatMap(List::stream)
@@ -69,7 +69,7 @@ public class ClassDetailsView extends DefaultAsyncTableContentProvider implement
                 .reduce(ClassMetricsMeasurement::merge)
                 .orElse(new ClassMetricsMeasurement());
 
-        supportedMetrics = MetricsProviderFactory.getAllSupportedMetricsFor(owner)
+        supportedMetrics = MetricsProviderFactory.findAllAvailableMetricsFor(owner)
                 .stream()
                 .filter(metricDefinition -> metricDefinition.validForScope(Scope.METHOD))
                 .collect(Collectors.toList());

@@ -5,9 +5,9 @@ import org.apache.commons.lang3.ArrayUtils;
 import edu.hm.hafner.analysis.Report;
 import edu.hm.hafner.analysis.Severity;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import hudson.Extension;
@@ -68,7 +68,7 @@ public class WarningsMetricsProviderFactory extends MetricsProviderFactory {
             ArrayUtils.toArray(Scope.CLASS));
 
     @Override
-    public MetricsProvider getFor(final Run<?, ?> build) {
+    public MetricsProvider getMetricsProviderFor(final Run<?, ?> build) {
         var provider = new MetricsProvider();
         provider.setOrigin("warnings-ng-plugin");
 
@@ -131,12 +131,13 @@ public class WarningsMetricsProviderFactory extends MetricsProviderFactory {
     }
 
     @Override
-    public List<MetricDefinition> supportedMetricsFor(final Run<?, ?> build) {
+    public Set<MetricDefinition> getAvailableMetricsFor(final Run<?, ?> build) {
         var actions = build.getActions(ResultAction.class);
         if (actions.isEmpty()) {
-            return new ArrayList<>();
+            return Set.of();
         }
 
-        return List.of(ERRORS, WARNINGS_HIGH, WARNINGS_NORMAL, WARNINGS_LOW, AUTHORS, COMMITS);
+        // TODO: we should report by report ID as well
+        return Set.of(ERRORS, WARNINGS_HIGH, WARNINGS_NORMAL, WARNINGS_LOW, AUTHORS, COMMITS);
     }
 }

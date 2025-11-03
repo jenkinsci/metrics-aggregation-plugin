@@ -50,7 +50,7 @@ public class MetricsView extends DefaultAsyncTableContentProvider implements Mod
      */
     public MetricsView(final Run<?, ?> build) {
         this.owner = build;
-        metricsMeasurements = MetricsProviderFactory.getAllFor(build).stream()
+        metricsMeasurements = MetricsProviderFactory.findAllFor(build).stream()
                 .map(MetricsProvider::getMetricsMeasurements)
                 .flatMap(List::stream)
                 .filter(ClassMetricsMeasurement.class::isInstance)
@@ -61,12 +61,12 @@ public class MetricsView extends DefaultAsyncTableContentProvider implements Mod
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
-        supportedMetrics = MetricsProviderFactory.getAllSupportedMetricsFor(build)
+        supportedMetrics = MetricsProviderFactory.findAllAvailableMetricsFor(build)
                 .stream()
                 .filter(metricDefinition -> metricDefinition.validForScope(Scope.CLASS))
                 .collect(Collectors.toList());
 
-        projectOverview = MetricsProviderFactory.getAllFor(build).stream()
+        projectOverview = MetricsProviderFactory.findAllFor(build).stream()
                 .map(MetricsProvider::getProjectSummaryEntries)
                 .reduce(new LinkedList<>(), (acc, summary) -> {
                     acc.addAll(summary);
