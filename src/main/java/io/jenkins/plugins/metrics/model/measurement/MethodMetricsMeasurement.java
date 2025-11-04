@@ -195,6 +195,7 @@ public class MethodMetricsMeasurement extends MetricsMeasurement {
          *
          * @return the built {@link MethodMetricsMeasurement}
          */
+        @Override
         public MethodMetricsMeasurement build() {
             return new MethodMetricsMeasurement(getMetrics(), getFileName(), getPackageName(), getClassName(),
                     methodName, beginLine, beginColumn, endLine, endColumn);

@@ -48,6 +48,7 @@ public final class ClassMetricsMeasurement extends MetricsMeasurement {
          *
          * @return the built {@link ClassMetricsMeasurement} instance
          */
+        @Override
         public ClassMetricsMeasurement build() {
             return new ClassMetricsMeasurement(getMetrics(), getFileName(), getPackageName(), getClassName());
         }

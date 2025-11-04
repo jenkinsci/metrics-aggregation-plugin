@@ -131,8 +131,8 @@ public abstract class MetricsMeasurement implements Serializable {
      * @author Ullrich Hafner
      * @param <T> the type of the builder
      */
-    @SuppressWarnings({"unchecked", "checkstyle:HiddenField"})
-    public static class MetricsMeasurementBuilder<T extends MetricsMeasurementBuilder<T>> {
+    @SuppressWarnings({"unchecked", "checkstyle:HiddenField", "ParameterHidesMemberVariable"})
+    public abstract static class MetricsMeasurementBuilder<T extends MetricsMeasurementBuilder<T>> {
         private final Map<String, Metric> metrics = new HashMap<>();
         private String fileName;
         private String packageName;
@@ -152,6 +152,9 @@ public abstract class MetricsMeasurement implements Serializable {
          */
         @CanIgnoreReturnValue
         public T withMetric(final Metric metric) {
+            if (this.metrics.containsKey(metric.getId())) {
+                throw new IllegalArgumentException("Metric with id '%s' is already present".formatted(metric.getId()));
+            }
             this.metrics.put(metric.getId(), metric);
 
             return (T) this;
@@ -214,5 +217,12 @@ public abstract class MetricsMeasurement implements Serializable {
 
             return (T) this;
         }
+
+        /**
+         * Builds the {@link MetricsMeasurement} instance.
+         *
+         * @return the built {@link MetricsMeasurement} instance
+         */
+        public abstract MetricsMeasurement build();
     }
 }
