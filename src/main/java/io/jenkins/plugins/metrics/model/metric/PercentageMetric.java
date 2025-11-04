@@ -1,5 +1,7 @@
 package io.jenkins.plugins.metrics.model.metric;
 
+import edu.hm.hafner.util.Generated;
+
 import java.io.Serial;
 import java.util.Objects;
 
@@ -22,6 +24,7 @@ public class PercentageMetric extends Metric<Float> {
      */
     public PercentageMetric(final MetricDefinition metricDefinition, final float value) {
         super(metricDefinition);
+
         this.value = value;
     }
 
@@ -36,16 +39,21 @@ public class PercentageMetric extends Metric<Float> {
     }
 
     @Override
+    @Generated
     public boolean equals(final Object o) {
-        if (!(o instanceof PercentageMetric other)) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
-
-        return Objects.equals(other.value, value) && Objects.equals(other.getMetricDefinition(), getMetricDefinition());
+        if (!super.equals(o)) {
+            return false;
+        }
+        var that = (PercentageMetric) o;
+        return Float.compare(value, that.value) == 0;
     }
 
     @Override
+    @Generated
     public int hashCode() {
-        return Objects.hash(getMetricDefinition(), value);
+        return Objects.hash(super.hashCode(), value);
     }
 }

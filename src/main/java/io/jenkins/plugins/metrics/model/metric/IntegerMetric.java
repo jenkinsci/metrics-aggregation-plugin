@@ -1,5 +1,7 @@
 package io.jenkins.plugins.metrics.model.metric;
 
+import edu.hm.hafner.util.Generated;
+
 import java.io.Serial;
 import java.util.Objects;
 
@@ -37,16 +39,21 @@ public class IntegerMetric extends Metric<Integer> {
     }
 
     @Override
+    @Generated
     public boolean equals(final Object o) {
-        if (!(o instanceof IntegerMetric other)) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
-
-        return Objects.equals(other.value, value) && Objects.equals(other.getMetricDefinition(), getMetricDefinition());
+        if (!super.equals(o)) {
+            return false;
+        }
+        var that = (IntegerMetric) o;
+        return value == that.value;
     }
 
     @Override
+    @Generated
     public int hashCode() {
-        return Objects.hash(getMetricDefinition(), value);
+        return Objects.hash(super.hashCode(), value);
     }
 }

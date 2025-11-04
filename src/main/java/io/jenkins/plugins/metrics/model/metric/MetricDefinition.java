@@ -1,15 +1,16 @@
 package io.jenkins.plugins.metrics.model.metric;
 
-import org.apache.commons.lang3.ArrayUtils;
-
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * A definition of a metric.
  */
-public class MetricDefinition implements Serializable, Comparable<MetricDefinition> {
+public final class MetricDefinition implements Serializable, Comparable<MetricDefinition> {
     @Serial
     private static final long serialVersionUID = 5311316796142816504L;
 
@@ -21,25 +22,15 @@ public class MetricDefinition implements Serializable, Comparable<MetricDefiniti
         METHOD
     }
 
-    private String id;
-    private String displayName;
-    private String description;
-    private String reportedBy;
-    private int priority;
-    private Scope[] scopes;
+    private final String id;
+    private final String displayName;
+    private final String description;
+    private final String reportedBy;
+    private final int priority;
+    private final Set<Scope> scopes;
 
     /**
-     * Create a new {@link MetricDefinition}.
-     *
-     * @param id
-     *         the id of the metric
-     */
-    public MetricDefinition(final String id) {
-        this.id = id;
-    }
-
-    /**
-     * Create a new {@link MetricDefinition}.
+     * Creates a new {@link MetricDefinition}.
      *
      * @param id
      *         the id of the metric
@@ -55,61 +46,37 @@ public class MetricDefinition implements Serializable, Comparable<MetricDefiniti
      *         the scopes of a metric (class, method, or both)
      */
     public MetricDefinition(final String id, final String displayName, final String description,
-            final String reportedBy, final int priority, final Scope[] scopes) {
+            final String reportedBy, final int priority, final Scope... scopes) {
         this.id = id;
         this.displayName = displayName;
         this.description = description;
         this.reportedBy = reportedBy;
         this.priority = priority;
-        this.scopes = scopes.clone();
+        this.scopes = Arrays.stream(scopes).collect(Collectors.toSet());
     }
 
     public String getDisplayName() {
         return displayName;
     }
 
-    public void setDisplayName(final String displayName) {
-        this.displayName = displayName;
-    }
-
     public String getId() {
         return id;
-    }
-
-    public void setId(final String id) {
-        this.id = id;
     }
 
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(final String description) {
-        this.description = description;
-    }
-
     public String getReportedBy() {
         return reportedBy;
-    }
-
-    public void setReportedBy(final String reportedBy) {
-        this.reportedBy = reportedBy;
     }
 
     public int getPriority() {
         return priority;
     }
 
-    public void setPriority(final int priority) {
-        this.priority = priority;
-    }
-
-    public Scope[] getScopes() {
-        return scopes.clone();
-    }
-
-    public void setScopes(final Scope[] scopes) {
-        this.scopes = scopes.clone();
+    public Set<Scope> getScopes() {
+        return scopes;
     }
 
     /**
@@ -120,14 +87,13 @@ public class MetricDefinition implements Serializable, Comparable<MetricDefiniti
      *
      * @return true, if this {@link MetricDefinition} is valid for the provided {@link Scope}, false otherwise
      */
-    public boolean validForScope(final Scope scope) {
-        return ArrayUtils.contains(scopes, scope);
+    public boolean isValidForScope(final Scope scope) {
+        return scopes.contains(scope);
     }
 
     @Override
     public String toString() {
-        // needs to be just the ID to be usable for jelly
-        return id;
+        return id; // needs to be just the ID to be usable for jelly
     }
 
     @Override

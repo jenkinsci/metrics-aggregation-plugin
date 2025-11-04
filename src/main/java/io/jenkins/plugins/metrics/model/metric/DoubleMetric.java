@@ -1,12 +1,14 @@
 package io.jenkins.plugins.metrics.model.metric;
 
+import edu.hm.hafner.util.Generated;
+
 import java.io.Serial;
 import java.util.Objects;
 
 /**
  * A {@link Metric} representing a double value.
  */
-public class DoubleMetric extends Metric<Double> {
+public final class DoubleMetric extends Metric<Double> {
     @Serial
     private static final long serialVersionUID = -7838111350390919589L;
 
@@ -37,16 +39,21 @@ public class DoubleMetric extends Metric<Double> {
     }
 
     @Override
+    @Generated
     public boolean equals(final Object o) {
-        if (!(o instanceof DoubleMetric other)) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
-
-        return Objects.equals(other.value, value) && Objects.equals(other.getMetricDefinition(), getMetricDefinition());
+        if (!super.equals(o)) {
+            return false;
+        }
+        var that = (DoubleMetric) o;
+        return Double.compare(value, that.value) == 0;
     }
 
     @Override
+    @Generated
     public int hashCode() {
-        return Objects.hash(getMetricDefinition(), value);
+        return Objects.hash(super.hashCode(), value);
     }
 }

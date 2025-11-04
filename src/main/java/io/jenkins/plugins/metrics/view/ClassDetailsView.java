@@ -71,7 +71,7 @@ public class ClassDetailsView extends DefaultAsyncTableContentProvider implement
 
         supportedMetrics = MetricsProviderFactory.findAllAvailableMetricsFor(owner)
                 .stream()
-                .filter(metricDefinition -> metricDefinition.validForScope(Scope.METHOD))
+                .filter(metricDefinition -> metricDefinition.isValidForScope(Scope.METHOD))
                 .collect(Collectors.toList());
 
         classOverview = classMetricsMeasurement.getMetrics()

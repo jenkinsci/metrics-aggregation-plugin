@@ -9,6 +9,7 @@ import io.jenkins.plugins.metrics.model.measurement.ClassMetricsMeasurement;
 import io.jenkins.plugins.metrics.model.measurement.MetricsMeasurement;
 import io.jenkins.plugins.metrics.model.metric.DoubleMetric;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
+import io.jenkins.plugins.metrics.model.metric.MetricDefinition.Scope;
 
 class MetricsViewTest {
     @Test
@@ -60,7 +61,8 @@ class MetricsViewTest {
 
     private MetricsMeasurement getMeasurementWithMetric(final String key, final double value) {
         var metricsMeasurement = new ClassMetricsMeasurement();
-        var metricsDefinition = new MetricDefinition(key);
+        var metricsDefinition = new MetricDefinition(key, "Display " + key, "unit",
+                "warnings", 1, Scope.CLASS);
         metricsMeasurement.addMetric(new DoubleMetric(metricsDefinition, value));
         return metricsMeasurement;
     }

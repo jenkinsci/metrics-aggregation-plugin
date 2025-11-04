@@ -63,7 +63,7 @@ public class MetricsView extends DefaultAsyncTableContentProvider implements Mod
 
         supportedMetrics = MetricsProviderFactory.findAllAvailableMetricsFor(build)
                 .stream()
-                .filter(metricDefinition -> metricDefinition.validForScope(Scope.CLASS))
+                .filter(metricDefinition -> metricDefinition.isValidForScope(Scope.CLASS))
                 .collect(Collectors.toList());
 
         projectOverview = MetricsProviderFactory.findAllFor(build).stream()

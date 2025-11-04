@@ -117,8 +117,7 @@ public class WarningsMetricsProviderFactory extends MetricsProviderFactory {
 
         measurement.addMetric(new IntegerMetric(ERRORS, report.getSizeOf(Severity.ERROR)));
         measurement.addMetric(new IntegerMetric(WARNINGS_HIGH, report.getSizeOf(Severity.WARNING_HIGH)));
-        measurement.addMetric(new IntegerMetric(WARNINGS_NORMAL,
-                report.getSizeOf(Severity.WARNING_NORMAL)));
+        measurement.addMetric(new IntegerMetric(WARNINGS_NORMAL, report.getSizeOf(Severity.WARNING_NORMAL)));
         measurement.addMetric(new IntegerMetric(WARNINGS_LOW, report.getSizeOf(Severity.WARNING_LOW)));
 
         if (stats.contains(entry.getKey())) {

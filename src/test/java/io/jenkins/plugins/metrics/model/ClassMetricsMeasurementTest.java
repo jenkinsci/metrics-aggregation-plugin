@@ -1,6 +1,5 @@
 package io.jenkins.plugins.metrics.model;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.Test;
 
 import io.jenkins.plugins.metrics.model.measurement.ClassMetricsMeasurement;
@@ -14,15 +13,13 @@ import static org.assertj.core.api.Assertions.*;
 /**
  * Test for the class {@link ClassMetricsMeasurement}.
  */
-public class ClassMetricsMeasurementTest {
-    /**
-     * Get a metric from a {@link ClassMetricsMeasurement}.
-     */
+class ClassMetricsMeasurementTest {
     @Test
-    public void shouldGetMetric() {
+    void shouldGetMetric() {
         var metricId = "TESTMETRIC";
         int metricValue = 17;
         var metric = createIntMetric(metricId, metricValue);
+
         var measurement = new ClassMetricsMeasurement();
         measurement.addMetric(metric);
 
@@ -30,8 +27,9 @@ public class ClassMetricsMeasurementTest {
         assertThat(measurement.getMetric(metricId)).hasValue(metricValue);
     }
 
-    private Metric createIntMetric(final String id, final int value) {
-        return new IntegerMetric(new MetricDefinition(id, "",
-                "", "", 0, ArrayUtils.toArray(Scope.CLASS, Scope.METHOD)), value);
+    private Metric<Integer> createIntMetric(final String id, final int value) {
+        var definition = new MetricDefinition(id, id, id, id, 0, Scope.CLASS, Scope.METHOD);
+
+        return new IntegerMetric(definition, value);
     }
 }
