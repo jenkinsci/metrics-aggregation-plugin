@@ -12,6 +12,8 @@ import hudson.model.Run;
 import jenkins.model.RunAction2;
 import jenkins.model.TransientActionFactory;
 
+import static io.jenkins.plugins.metrics.view.MetricsJobAction.*;
+
 /**
  * Action for displaying a metric on the side of a job.
  */
@@ -26,10 +28,6 @@ public class MetricsViewAction implements RunAction2, StaplerProxy {
      * The name of the plugin.
      */
     public static final String NAME = Messages.metrics();
-    /**
-     * The icon to use with links.
-     */
-    public static final String ICON = "symbol-solid/ruler-combined plugin-font-awesome-api";
 
     /**
      * Create a new {@link MetricsViewAction}.
@@ -44,7 +42,7 @@ public class MetricsViewAction implements RunAction2, StaplerProxy {
     @NonNull
     @Override
     public String getIconFileName() {
-        return ICON;
+        return METRICS_ICON;
     }
 
     @NonNull

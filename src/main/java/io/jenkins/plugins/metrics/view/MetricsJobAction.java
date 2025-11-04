@@ -22,6 +22,8 @@ import jenkins.model.TransientActionFactory;
  */
 @SuppressWarnings("unused")
 public class MetricsJobAction implements Action {
+    static final String METRICS_ICON = "symbol-solid/scale-unbalanced plugin-font-awesome-api";
+
     private final Job<?, ?> owner;
 
     /**
@@ -46,7 +48,7 @@ public class MetricsJobAction implements Action {
      */
     @Override
     public String getIconFileName() {
-        return "symbol-solid/scale-balanced plugin-font-awesome-api";
+        return METRICS_ICON;
     }
 
     @Override
