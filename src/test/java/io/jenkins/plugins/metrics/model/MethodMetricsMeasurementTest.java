@@ -15,12 +15,12 @@ import static org.assertj.core.api.Assertions.*;
 /**
  * Test for the class {@link MethodMetricsMeasurement}.
  */
-public class MethodMetricsMeasurementTest {
+class MethodMetricsMeasurementTest {
     /**
      * Test if two metrics are merged correctly.
      */
     @Test
-    public void shouldMergeTwoMetricsMeasurements() {
+    void shouldMergeTwoMetricsMeasurements() {
         var measurement2 = new MethodMetricsMeasurementBuilder();
         var metric = createIntMetric("TESTMETRIC", 17);
         measurement2.withMetric(metric);
@@ -36,7 +36,7 @@ public class MethodMetricsMeasurementTest {
      * Test if it is possible to retrieve a metric correctly.
      */
     @Test
-    public void shouldGetMetric() {
+    void shouldGetMetric() {
         var metricId = "TESTMETRIC";
         int metricValue = 17;
         var metric = createIntMetric(metricId, metricValue);

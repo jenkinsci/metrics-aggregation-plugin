@@ -13,12 +13,12 @@ import static io.jenkins.plugins.metrics.assertions.Assertions.*;
 /**
  * Test for the class {@link MetricDefinition}.
  */
-public class MetricDefinitionTest {
+class MetricDefinitionTest {
     /**
      * Test if the scope check is working.
      */
     @Test
-    public void shouldBeValidForScope() {
+    void shouldBeValidForScope() {
         var both = createMetricDefinitionWithScope(Scope.CLASS, Scope.METHOD);
         assertThat(both.isValidForScope(Scope.CLASS)).isTrue();
         assertThat(both.isValidForScope(Scope.METHOD)).isTrue();

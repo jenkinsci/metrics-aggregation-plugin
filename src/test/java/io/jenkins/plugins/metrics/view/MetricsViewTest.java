@@ -1,6 +1,6 @@
 package io.jenkins.plugins.metrics.view;
 
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ import io.jenkins.plugins.metrics.model.metric.MetricDefinition.Scope;
 
 class MetricsViewTest {
     @Test
-    public void shouldGetHistogram() {
+    void shouldGetHistogram() {
         final var key = "key";
         ArrayList<MetricsMeasurement> measurements = new ArrayList<>();
         measurements.add(getMeasurementWithMetric(key, 5.0));
@@ -38,8 +38,8 @@ class MetricsViewTest {
     }
 
     @Test
-    @Ignore
-    public void shouldGetStatistics() {
+    @Disabled
+    void shouldGetStatistics() {
         final var key = "key";
 
         ArrayList<MetricsMeasurement> measurements = new ArrayList<>();

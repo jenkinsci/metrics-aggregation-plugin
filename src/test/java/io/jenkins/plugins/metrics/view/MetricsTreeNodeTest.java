@@ -7,12 +7,12 @@ import static org.assertj.core.api.Assertions.*;
 /**
  * Test for the class {@link MetricsTreeNode}.
  */
-public class MetricsTreeNodeTest {
+class MetricsTreeNodeTest {
     /**
      * Test if packages with two identical package levels are inserted correctly.
      */
     @Test
-    public void shouldInsertTwoLevelPackage() {
+    void shouldInsertTwoLevelPackage() {
         var root = new MetricsTreeNode("");
 
         var myClass = new MetricsTreeNode("com.example.MyClass");
@@ -42,7 +42,7 @@ public class MetricsTreeNodeTest {
      * Test if the value of the metric is kept correctly.
      */
     @Test
-    public void shouldGetSpecificMetricValue() {
+    void shouldGetSpecificMetricValue() {
         final double metricValue = 42;
 
         var node = new MetricsTreeNode("node", metricValue);
@@ -53,7 +53,7 @@ public class MetricsTreeNodeTest {
      * Test if all children values are summed up correctly.
      */
     @Test
-    public void shouldSumUpChildrenValues() {
+    void shouldSumUpChildrenValues() {
         final double metricValue1 = 42;
         final double metricValue2 = 47;
         final double metricValue3 = 11;
@@ -70,7 +70,7 @@ public class MetricsTreeNodeTest {
      * Test if the package is collapsed correctly.
      */
     @Test
-    public void shouldCollapsePackage() {
+    void shouldCollapsePackage() {
         var rootNode = threeLevelTree();
         rootNode.collapsePackage();
 
@@ -98,7 +98,7 @@ public class MetricsTreeNodeTest {
      * Test the equals and hash functions.
      */
     @Test
-    public void shouldBeEqualAndHash() {
+    void shouldBeEqualAndHash() {
         var name = "name";
         double one = 1.0;
         var node = new MetricsTreeNode(name);
@@ -121,7 +121,7 @@ public class MetricsTreeNodeTest {
      * Test if the JSON serialisation is correct.
      */
     @Test
-    public void shouldContainRelevantInformationInJson() {
+    void shouldContainRelevantInformationInJson() {
         var facade = new JacksonFacade();
         var root = new MetricsTreeNode("");
         root.insertNode(new MetricsTreeNode("com.example.Bar", 5.0));
