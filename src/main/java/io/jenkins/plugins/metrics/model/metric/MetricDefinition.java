@@ -1,11 +1,13 @@
 package io.jenkins.plugins.metrics.model.metric;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * A definition of a metric.
@@ -45,14 +47,14 @@ public final class MetricDefinition implements Serializable, Comparable<MetricDe
      * @param scopes
      *         the scopes of a metric (class, method, or both)
      */
-    public MetricDefinition(final String id, final String displayName, final String description,
-            final String reportedBy, final int priority, final Scope... scopes) {
+    private MetricDefinition(final String id, final String displayName, final String description,
+            final String reportedBy, final int priority, final Set<Scope> scopes) {
         this.id = id;
         this.displayName = displayName;
         this.description = description;
         this.reportedBy = reportedBy;
         this.priority = priority;
-        this.scopes = Arrays.stream(scopes).collect(Collectors.toSet());
+        this.scopes = Set.copyOf(scopes);
     }
 
     public String getDisplayName() {
@@ -117,5 +119,104 @@ public final class MetricDefinition implements Serializable, Comparable<MetricDe
     @Override
     public int compareTo(final MetricDefinition o) {
         return priority - o.priority;
+    }
+
+    /**
+     * Builder for {@link MetricDefinition} instances.
+     */
+    @SuppressWarnings("checkstyle:HiddenField")
+    public static class MetricDefinitionBuilder {
+        private final String id;
+        private final Set<Scope> scopes = new HashSet<>();
+
+        private String displayName = StringUtils.EMPTY;
+        private String description = StringUtils.EMPTY;
+        private String reportedBy = StringUtils.EMPTY;
+        private int priority = 0;
+
+        /**
+         * Creates a new {@link MetricDefinitionBuilder} with the given id.
+         *
+         * @param id
+         *         the id of the metric definition
+         */
+        public MetricDefinitionBuilder(final String id) {
+            this.id = id;
+        }
+
+        /**
+         * Sets the display name of the metric definition.
+         *
+         * @param displayName
+         *         the display name
+         *
+         * @return the builder instance
+         */
+        public MetricDefinitionBuilder withDisplayName(final String displayName) {
+            this.displayName = displayName;
+            return this;
+        }
+
+        /**
+         * Sets the description of the metric definition.
+         *
+         * @param description
+         *         the description
+         *
+         * @return the builder instance
+         */
+        public MetricDefinitionBuilder withDescription(final String description) {
+            this.description = description;
+            return this;
+        }
+
+        /**
+         * Defines the plugin that reported the metric definition.
+         *
+         * @param reportedBy
+         *         the plugin that reported this metric
+         *
+         * @return the builder instance
+         */
+        public MetricDefinitionBuilder withReportedBy(final String reportedBy) {
+            this.reportedBy = reportedBy;
+            return this;
+        }
+
+        /**
+         * Sets the priority of the metric definition.
+         *
+         * @param priority
+         *         the priority of the metric
+         *
+         * @return the builder instance
+         */
+        public MetricDefinitionBuilder withPriority(final int priority) {
+            this.priority = priority;
+            return this;
+        }
+
+        /**
+         * Sets the scopes of the metric definition.
+         *
+         * @param scopes
+         *         the scopes of the metric
+         *
+         * @return the builder instance
+         */
+        public MetricDefinitionBuilder withScopes(final Scope... scopes) {
+            Collections.addAll(this.scopes, scopes);
+
+            return this;
+        }
+
+        /**
+         * Creates the {@link MetricDefinition} instance.
+         *
+         * @return the created {@link MetricDefinition} instance
+         */
+        public MetricDefinition build() {
+            return new MetricDefinition(id, displayName, description, reportedBy, priority, scopes);
+        }
     }
 }

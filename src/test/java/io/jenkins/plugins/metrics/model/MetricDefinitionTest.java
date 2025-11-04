@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
+import io.jenkins.plugins.metrics.model.metric.MetricDefinition.MetricDefinitionBuilder;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition.Scope;
 
 import static io.jenkins.plugins.metrics.assertions.Assertions.*;
@@ -33,10 +34,20 @@ public class MetricDefinitionTest {
 
     @Test
     void shouldCreateMetricDefinition() {
-        var first = new MetricDefinition("First", "First Metric", "First Description",
-                "First Reported By", 1, Scope.CLASS);
-        var second = new MetricDefinition("Second", "Second Metric", "Second Description",
-                "Second Reported By", 2, Scope.METHOD);
+        var first = new MetricDefinitionBuilder("First")
+                .withDisplayName("First Metric")
+                .withDescription("First Description")
+                .withReportedBy("First Reported By")
+                .withPriority(1)
+                .withScopes(Scope.CLASS)
+                .build();
+        var second = new MetricDefinitionBuilder("Second")
+                .withDisplayName("Second Metric")
+                .withDescription("Second Description")
+                .withReportedBy("Second Reported By")
+                .withPriority(2)
+                .withScopes(Scope.METHOD)
+                .build();
 
         assertThat(first.compareTo(second)).isNegative();
         assertThat(second.compareTo(first)).isPositive();
@@ -56,7 +67,7 @@ public class MetricDefinitionTest {
     }
 
     private MetricDefinition createMetricDefinitionWithScope(final Scope... scopes) {
-        return new MetricDefinition("", "", "", "", 0, scopes);
+        return new MetricDefinitionBuilder("ID").withScopes(scopes).build();
     }
 
     @Test

@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import io.jenkins.plugins.metrics.model.measurement.MethodMetricsMeasurement;
 import io.jenkins.plugins.metrics.model.metric.IntegerMetric;
 import io.jenkins.plugins.metrics.model.metric.Metric;
-import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
+import io.jenkins.plugins.metrics.model.metric.MetricDefinition.MetricDefinitionBuilder;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition.Scope;
 
 import static org.assertj.core.api.Assertions.*;
@@ -47,7 +47,12 @@ public class MethodMetricsMeasurementTest {
     }
 
     private Metric createIntMetric(final String id, final int value) {
-        return new IntegerMetric(new MetricDefinition(id, "",
-                "", "", 0, ArrayUtils.toArray(Scope.CLASS, Scope.METHOD)), value);
+        return new IntegerMetric(new MetricDefinitionBuilder(id)
+                .withDisplayName("")
+                .withDescription("")
+                .withReportedBy("")
+                .withPriority(0)
+                .withScopes(ArrayUtils.toArray(Scope.CLASS, Scope.METHOD))
+                .build(), value);
     }
 }

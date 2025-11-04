@@ -1,7 +1,5 @@
 package io.jenkins.plugins.metrics.extension;
 
-import org.apache.commons.lang3.ArrayUtils;
-
 import edu.hm.hafner.analysis.Report;
 import edu.hm.hafner.analysis.Severity;
 
@@ -20,6 +18,7 @@ import io.jenkins.plugins.metrics.model.measurement.ClassMetricsMeasurement;
 import io.jenkins.plugins.metrics.model.measurement.MetricsMeasurement;
 import io.jenkins.plugins.metrics.model.metric.IntegerMetric;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
+import io.jenkins.plugins.metrics.model.metric.MetricDefinition.MetricDefinitionBuilder;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition.Scope;
 
 /**
@@ -30,42 +29,48 @@ import io.jenkins.plugins.metrics.model.metric.MetricDefinition.Scope;
 @SuppressWarnings("unused") // used via the extension
 // TODO: This class should only collect warnings and should be moved to the warnings plugin
 public class WarningsMetricsProviderFactory extends MetricsProviderFactory {
-    private static final MetricDefinition ERRORS = new MetricDefinition("ERRORS",
-            "Errors",
-            "An error, e.g. a compile error.",
-            "warnings-ng-plugin",
-            10,
-            ArrayUtils.toArray(Scope.METHOD, Scope.CLASS));
-    private static final MetricDefinition WARNINGS_HIGH = new MetricDefinition("WARNING_HIGH",
-            "Warning (high)",
-            "A warning with priority high.",
-            "warnings-ng-plugin",
-            10,
-            ArrayUtils.toArray(Scope.METHOD, Scope.CLASS));
-    private static final MetricDefinition WARNINGS_NORMAL = new MetricDefinition("WARNING_NORMAL",
-            "Warning (normal)",
-            "A warning with priority normal.",
-            "warnings-ng-plugin",
-            10,
-            ArrayUtils.toArray(Scope.METHOD, Scope.CLASS));
-    private static final MetricDefinition WARNINGS_LOW = new MetricDefinition("WARNING_LOW",
-            "Warning (low)",
-            "A warning with priority low.",
-            "warnings-ng-plugin",
-            10,
-            ArrayUtils.toArray(Scope.METHOD, Scope.CLASS));
-    private static final MetricDefinition AUTHORS = new MetricDefinition("AUTHORS",
-            "Authors",
-            "The number of unique authors for this file.",
-            "forensics-api-plugin",
-            20,
-            ArrayUtils.toArray(Scope.CLASS));
-    private static final MetricDefinition COMMITS = new MetricDefinition("COMMITS",
-            "Commits",
-            "The number of commits for this file.",
-            "forensics-api-plugin",
-            20,
-            ArrayUtils.toArray(Scope.CLASS));
+    private static final MetricDefinition ERRORS = new MetricDefinitionBuilder("ERRORS")
+            .withDisplayName("Errors")
+            .withDescription("An error, e.g. a compile error.")
+            .withReportedBy("warnings-ng-plugin")
+            .withPriority(10)
+            .withScopes(Scope.METHOD, Scope.CLASS)
+            .build();
+    private static final MetricDefinition WARNINGS_HIGH = new MetricDefinitionBuilder("WARNING_HIGH")
+            .withDisplayName("Warning (high)")
+            .withDescription("A warning with priority high.")
+            .withReportedBy("warnings-ng-plugin")
+            .withPriority(10)
+            .withScopes(Scope.METHOD, Scope.CLASS)
+            .build();
+    private static final MetricDefinition WARNINGS_NORMAL = new MetricDefinitionBuilder("WARNING_NORMAL")
+            .withDisplayName("Warning (normal)")
+            .withDescription("A warning with priority normal.")
+            .withReportedBy("warnings-ng-plugin")
+            .withPriority(10)
+            .withScopes(Scope.METHOD, Scope.CLASS)
+            .build();
+    private static final MetricDefinition WARNINGS_LOW = new MetricDefinitionBuilder("WARNING_LOW")
+            .withDisplayName("Warning (low)")
+            .withDescription("A warning with priority low.")
+            .withReportedBy("warnings-ng-plugin")
+            .withPriority(10)
+            .withScopes(Scope.METHOD, Scope.CLASS)
+            .build();
+    private static final MetricDefinition AUTHORS = new MetricDefinitionBuilder("AUTHORS")
+            .withDisplayName("Authors")
+            .withDescription("The number of unique authors for this file.")
+            .withReportedBy("forensics-api-plugin")
+            .withPriority(20)
+            .withScopes(Scope.CLASS)
+            .build();
+    private static final MetricDefinition COMMITS = new MetricDefinitionBuilder("COMMITS")
+            .withDisplayName("Commits")
+            .withDescription("The number of commits for this file.")
+            .withReportedBy("forensics-api-plugin")
+            .withPriority(20)
+            .withScopes(Scope.CLASS)
+            .build();
 
     @Override
     public MetricsProvider getMetricsProviderFor(final Run<?, ?> build) {

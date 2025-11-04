@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import io.jenkins.plugins.metrics.model.measurement.ClassMetricsMeasurement;
 import io.jenkins.plugins.metrics.model.measurement.MetricsMeasurement;
 import io.jenkins.plugins.metrics.model.metric.DoubleMetric;
-import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
+import io.jenkins.plugins.metrics.model.metric.MetricDefinition.MetricDefinitionBuilder;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition.Scope;
 
 class MetricsViewTest {
@@ -61,8 +61,13 @@ class MetricsViewTest {
 
     private MetricsMeasurement getMeasurementWithMetric(final String key, final double value) {
         var metricsMeasurement = new ClassMetricsMeasurement();
-        var metricsDefinition = new MetricDefinition(key, "Display " + key, "unit",
-                "warnings", 1, Scope.CLASS);
+        var metricsDefinition = new MetricDefinitionBuilder(key)
+                .withDisplayName("Display " + key)
+                .withDescription("unit")
+                .withReportedBy("warnings")
+                .withPriority(1)
+                .withScopes(Scope.CLASS)
+                .build();
         metricsMeasurement.addMetric(new DoubleMetric(metricsDefinition, value));
         return metricsMeasurement;
     }
