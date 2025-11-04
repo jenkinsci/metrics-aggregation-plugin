@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import io.jenkins.plugins.metrics.model.measurement.ClassMetricsMeasurement;
 import io.jenkins.plugins.metrics.model.measurement.ClassMetricsMeasurement.ClassMetricsMeasurementBuilder;
+import io.jenkins.plugins.metrics.model.measurement.MethodMetricsMeasurement.MethodMetricsMeasurementBuilder;
 import io.jenkins.plugins.metrics.model.metric.DoubleMetric;
 import io.jenkins.plugins.metrics.model.metric.IntegerMetric;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
@@ -49,6 +50,12 @@ class ClassMetricsMeasurementTest {
 
         empty.merge(measurement);
         assertThat(empty.getMetrics()).hasSize(1);
+
+        var wrongType = new MethodMetricsMeasurementBuilder().build();
+        assertThat(wrongType.getMetrics()).isEmpty();
+
+        wrongType.merge(measurement); // skips merging
+        assertThat(wrongType.getMetrics()).isEmpty();
     }
 
     private ClassMetricsMeasurement build() {

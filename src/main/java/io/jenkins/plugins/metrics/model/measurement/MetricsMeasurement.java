@@ -20,10 +20,10 @@ public abstract class MetricsMeasurement implements Serializable {
     @Serial
     private static final long serialVersionUID = 7472039462715167623L;
 
-    private Map<String, Metric> metrics = new HashMap<>();
-    private String fileName = "";
-    private String packageName = "";
-    private String className = "";
+    private final Map<String, Metric> metrics;
+    private final String fileName;
+    private final String packageName;
+    private final String className;
 
     /**
      * Creates a new empty {@link MetricsMeasurement}.
@@ -39,7 +39,7 @@ public abstract class MetricsMeasurement implements Serializable {
      */
     protected MetricsMeasurement(final Map<String, Metric> metrics, final String fileName, final String packageName,
             final String className) {
-        this.metrics = metrics;
+        this.metrics = new HashMap<>(metrics);
         this.fileName = fileName;
         this.packageName = packageName;
         this.className = className;
