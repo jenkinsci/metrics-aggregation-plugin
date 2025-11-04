@@ -1,14 +1,21 @@
 package io.jenkins.plugins.metrics.model.measurement;
 
 import java.io.Serial;
-import java.util.Objects;
+import java.util.Map;
+
+import io.jenkins.plugins.metrics.model.metric.Metric;
 
 /**
  * {@link MetricsMeasurement} representing one class.
  */
-public class ClassMetricsMeasurement extends MetricsMeasurement {
+public final class ClassMetricsMeasurement extends MetricsMeasurement {
     @Serial
     private static final long serialVersionUID = 6801327926336683068L;
+
+    private ClassMetricsMeasurement(final Map<String, Metric> metrics, final String fileName,
+            final String packageName, final String className) {
+        super(metrics, fileName, packageName, className);
+    }
 
     /**
      * Merge another {@link MetricsMeasurement} with this one. Returns this to be usable for chaining.
@@ -22,38 +29,27 @@ public class ClassMetricsMeasurement extends MetricsMeasurement {
     @Override
     public ClassMetricsMeasurement merge(final MetricsMeasurement metricsMeasurement) {
         if (metricsMeasurement instanceof ClassMetricsMeasurement) {
-            metrics.putAll(metricsMeasurement.getMetrics());
+            getMetrics().putAll(metricsMeasurement.getMetrics());
         }
         return this;
     }
 
     @Override
     public String toString() {
-        if (this.equals(new ClassMetricsMeasurement())) {
-            return "ClassMetricsMeasurement[empty]";
-        }
-
-        return "ClassMetricsMeasurement[%s.%s; %s]".formatted(packageName, className, fileName);
+        return "ClassMetricsMeasurement[%s.%s; %s]".formatted(getPackageName(), getClassName(), getFileName());
     }
 
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
+    /**
+     * Builder for {@link ClassMetricsMeasurement} instances.
+     */
+    public static class ClassMetricsMeasurementBuilder extends MetricsMeasurementBuilder<ClassMetricsMeasurementBuilder> {
+        /**
+         * Builds the {@link ClassMetricsMeasurement} instance.
+         *
+         * @return the built {@link ClassMetricsMeasurement} instance
+         */
+        public ClassMetricsMeasurement build() {
+            return new ClassMetricsMeasurement(getMetrics(), getFileName(), getPackageName(), getClassName());
         }
-
-        if (!(o instanceof ClassMetricsMeasurement other)) {
-            return false;
-        }
-
-        return Objects.equals(fileName, other.fileName)
-                && Objects.equals(packageName, other.packageName)
-                && Objects.equals(className, other.className)
-                && Objects.equals(metrics, other.metrics);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(fileName, packageName, className, metrics);
     }
 }

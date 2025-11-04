@@ -8,7 +8,7 @@ import java.util.Objects;
 /**
  * A {@link Metric} representing a double value.
  */
-public final class DoubleMetric extends Metric<Double> {
+public final class DoubleMetric extends Metric {
     @Serial
     private static final long serialVersionUID = -7838111350390919589L;
 

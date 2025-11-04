@@ -15,6 +15,7 @@ import io.jenkins.plugins.analysis.core.model.AnalysisResult;
 import io.jenkins.plugins.analysis.core.model.ResultAction;
 import io.jenkins.plugins.forensics.miner.RepositoryStatistics;
 import io.jenkins.plugins.metrics.model.measurement.ClassMetricsMeasurement;
+import io.jenkins.plugins.metrics.model.measurement.ClassMetricsMeasurement.ClassMetricsMeasurementBuilder;
 import io.jenkins.plugins.metrics.model.measurement.MetricsMeasurement;
 import io.jenkins.plugins.metrics.model.metric.IntegerMetric;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
@@ -112,26 +113,26 @@ public class WarningsMetricsProviderFactory extends MetricsProviderFactory {
 
     private ClassMetricsMeasurement createMetric(final Entry<String, Report> entry,
             final RepositoryStatistics stats) {
-        var measurement = new ClassMetricsMeasurement();
+        var measurement = new ClassMetricsMeasurementBuilder();
+        measurement.withFileName(entry.getKey());
+
         var report = entry.getValue();
-        measurement.setFileName(entry.getKey());
-
         var first = report.get(0);
-        measurement.setPackageName(first.getPackageName());
-        measurement.setClassName(first.getBaseName().replace(".java", ""));
+        measurement.withPackageName(first.getPackageName());
+        measurement.withClassName(first.getBaseName().replace(".java", ""));
 
-        measurement.addMetric(new IntegerMetric(ERRORS, report.getSizeOf(Severity.ERROR)));
-        measurement.addMetric(new IntegerMetric(WARNINGS_HIGH, report.getSizeOf(Severity.WARNING_HIGH)));
-        measurement.addMetric(new IntegerMetric(WARNINGS_NORMAL, report.getSizeOf(Severity.WARNING_NORMAL)));
-        measurement.addMetric(new IntegerMetric(WARNINGS_LOW, report.getSizeOf(Severity.WARNING_LOW)));
+        measurement.withMetric(new IntegerMetric(ERRORS, report.getSizeOf(Severity.ERROR)));
+        measurement.withMetric(new IntegerMetric(WARNINGS_HIGH, report.getSizeOf(Severity.WARNING_HIGH)));
+        measurement.withMetric(new IntegerMetric(WARNINGS_NORMAL, report.getSizeOf(Severity.WARNING_NORMAL)));
+        measurement.withMetric(new IntegerMetric(WARNINGS_LOW, report.getSizeOf(Severity.WARNING_LOW)));
 
         if (stats.contains(entry.getKey())) {
             var fileStatistics = stats.get(entry.getKey());
-            measurement.addMetric(new IntegerMetric(AUTHORS, fileStatistics.getNumberOfAuthors()));
-            measurement.addMetric(new IntegerMetric(COMMITS, fileStatistics.getNumberOfCommits()));
+            measurement.withMetric(new IntegerMetric(AUTHORS, fileStatistics.getNumberOfAuthors()));
+            measurement.withMetric(new IntegerMetric(COMMITS, fileStatistics.getNumberOfCommits()));
         }
 
-        return measurement;
+        return measurement.build();
     }
 
     @Override

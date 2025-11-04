@@ -3,6 +3,7 @@ package io.jenkins.plugins.metrics.model;
 import org.junit.jupiter.api.Test;
 
 import io.jenkins.plugins.metrics.model.measurement.ClassMetricsMeasurement;
+import io.jenkins.plugins.metrics.model.measurement.ClassMetricsMeasurement.ClassMetricsMeasurementBuilder;
 import io.jenkins.plugins.metrics.model.metric.IntegerMetric;
 import io.jenkins.plugins.metrics.model.metric.Metric;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition.MetricDefinitionBuilder;
@@ -20,14 +21,13 @@ class ClassMetricsMeasurementTest {
         int metricValue = 17;
         var metric = createIntMetric(metricId, metricValue);
 
-        var measurement = new ClassMetricsMeasurement();
-        measurement.addMetric(metric);
+        var measurement = new ClassMetricsMeasurementBuilder().withMetric(metric).build();
 
         assertThat(measurement.getMetric(metricId)).isNotEmpty();
         assertThat(measurement.getMetric(metricId)).hasValue(metricValue);
     }
 
-    private Metric<Integer> createIntMetric(final String id, final int value) {
+    private Metric createIntMetric(final String id, final int value) {
         var definition = new MetricDefinitionBuilder(id)
                 .withDisplayName(id)
                 .withDescription(id)

@@ -4,6 +4,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.Test;
 
 import io.jenkins.plugins.metrics.model.measurement.MethodMetricsMeasurement;
+import io.jenkins.plugins.metrics.model.measurement.MethodMetricsMeasurement.MethodMetricsMeasurementBuilder;
 import io.jenkins.plugins.metrics.model.metric.IntegerMetric;
 import io.jenkins.plugins.metrics.model.metric.Metric;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition.MetricDefinitionBuilder;
@@ -20,14 +21,14 @@ public class MethodMetricsMeasurementTest {
      */
     @Test
     public void shouldMergeTwoMetricsMeasurements() {
-        var measurement2 = new MethodMetricsMeasurement();
+        var measurement2 = new MethodMetricsMeasurementBuilder();
         var metric = createIntMetric("TESTMETRIC", 17);
-        measurement2.addMetric(metric);
+        measurement2.withMetric(metric);
 
-        var measurement1 = new MethodMetricsMeasurement();
+        var measurement1 = new MethodMetricsMeasurementBuilder().build();
 
         assertThat(measurement1.getMetrics()).isEmpty();
-        measurement1.merge(measurement2);
+        measurement1.merge(measurement2.build());
         assertThat(measurement1.getMetrics()).containsValue(metric);
     }
 
@@ -39,8 +40,7 @@ public class MethodMetricsMeasurementTest {
         var metricId = "TESTMETRIC";
         int metricValue = 17;
         var metric = createIntMetric(metricId, metricValue);
-        var measurement = new MethodMetricsMeasurement();
-        measurement.addMetric(metric);
+        var measurement = new MethodMetricsMeasurementBuilder().withMetric(metric).build();
 
         assertThat(measurement.getMetric(metricId)).isNotEmpty();
         assertThat(measurement.getMetric(metricId)).hasValue(metricValue);

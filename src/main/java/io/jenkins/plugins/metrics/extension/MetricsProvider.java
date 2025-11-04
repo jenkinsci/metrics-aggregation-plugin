@@ -15,7 +15,7 @@ public class MetricsProvider {
 
     private List<MetricsMeasurement> metricsMeasurements = new ArrayList<>();
     private List<String> projectSummaryEntries = new LinkedList<>();
-    private List<Metric<?>> projectMetrics = new ArrayList<>();
+    private List<Metric> projectMetrics = new ArrayList<>();
 
     public List<MetricsMeasurement> getMetricsMeasurements() {
         return metricsMeasurements;
@@ -51,15 +51,20 @@ public class MetricsProvider {
         this.origin = origin;
     }
 
-    public void setProjectMetrics(final List<Metric<?>> projectMetrics) {
+    public void setProjectMetrics(final List<Metric> projectMetrics) {
         this.projectMetrics = projectMetrics;
     }
 
-    public List<Metric<?>> getProjectMetrics() {
+    public List<Metric> getProjectMetrics() {
         return projectMetrics;
     }
 
-    public void addProjectMetric(final Metric<?> metric) {
+    /**
+     * Adds a project metric.
+     *
+     * @param metric the metric to add
+     */
+    public void addProjectMetric(final Metric metric) {
         projectMetrics.add(metric);
     }
 }

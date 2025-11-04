@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 
-import io.jenkins.plugins.metrics.model.measurement.ClassMetricsMeasurement;
+import io.jenkins.plugins.metrics.model.measurement.ClassMetricsMeasurement.ClassMetricsMeasurementBuilder;
 import io.jenkins.plugins.metrics.model.measurement.MetricsMeasurement;
 import io.jenkins.plugins.metrics.model.metric.DoubleMetric;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition.MetricDefinitionBuilder;
@@ -60,7 +60,7 @@ class MetricsViewTest {
     }
 
     private MetricsMeasurement getMeasurementWithMetric(final String key, final double value) {
-        var metricsMeasurement = new ClassMetricsMeasurement();
+        var metricsMeasurement = new ClassMetricsMeasurementBuilder();
         var metricsDefinition = new MetricDefinitionBuilder(key)
                 .withDisplayName("Display " + key)
                 .withDescription("unit")
@@ -68,7 +68,7 @@ class MetricsViewTest {
                 .withPriority(1)
                 .withScopes(Scope.CLASS)
                 .build();
-        metricsMeasurement.addMetric(new DoubleMetric(metricsDefinition, value));
-        return metricsMeasurement;
+        metricsMeasurement.withMetric(new DoubleMetric(metricsDefinition, value));
+        return metricsMeasurement.build();
     }
 }

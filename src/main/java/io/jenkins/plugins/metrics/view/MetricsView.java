@@ -9,11 +9,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
 import org.kohsuke.stapler.bind.JavaScriptMethod;
 import org.kohsuke.stapler.export.ExportedBean;
 import hudson.model.ModelObject;
@@ -25,7 +24,6 @@ import io.jenkins.plugins.metrics.extension.MetricsProvider;
 import io.jenkins.plugins.metrics.extension.MetricsProviderFactory;
 import io.jenkins.plugins.metrics.model.measurement.ClassMetricsMeasurement;
 import io.jenkins.plugins.metrics.model.measurement.MetricsMeasurement;
-import io.jenkins.plugins.metrics.model.metric.IntegerMetric;
 import io.jenkins.plugins.metrics.model.metric.Metric;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition.Scope;
@@ -153,13 +151,10 @@ public class MetricsView extends DefaultAsyncTableContentProvider implements Mod
                 .collect(Collectors.toList());
     }
 
-    private boolean isIntegerMetric(final String metricId) {
-        Optional<Metric> metric = metricsMeasurements.stream()
+    private boolean needsRounding(final String metricId) {
+        return metricsMeasurements.stream()
                 .map(m -> m.getMetrics().get(metricId))
-                .filter(Objects::nonNull)
-                .findFirst();
-
-        return metric.isPresent() && metric.get() instanceof IntegerMetric;
+                .findFirst().map(Metric::needsRounding).orElse(false);
     }
 
     /**
@@ -207,7 +202,7 @@ public class MetricsView extends DefaultAsyncTableContentProvider implements Mod
         }
 
         // round the binWidth, if an integer metric is requested
-        if (isIntegerMetric(metricId)) {
+        if (needsRounding(metricId)) {
             binWidth = Math.round(binWidth);
             // the binWidth should not be smaller than 1
             if (binWidth < 1) {
@@ -282,7 +277,7 @@ public class MetricsView extends DefaultAsyncTableContentProvider implements Mod
      * @return the new class details view
      */
     @SuppressWarnings("unused") // Called by jelly view
-    public Object getDynamic(final String link, final StaplerRequest request, final StaplerResponse response) {
+    public Object getDynamic(final String link, final StaplerRequest2 request, final StaplerResponse2 response) {
         return new ClassDetailsView(owner, link);
     }
 

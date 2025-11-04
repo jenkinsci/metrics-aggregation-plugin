@@ -8,7 +8,7 @@ import java.util.Objects;
 /**
  * {@link Metric} for percentage metrics.
  */
-public class PercentageMetric extends Metric<Float> {
+public class PercentageMetric extends Metric {
     @Serial
     private static final long serialVersionUID = -239297826452518258L;
 

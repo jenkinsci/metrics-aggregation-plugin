@@ -8,7 +8,7 @@ import java.util.Objects;
 /**
  * A {@link Metric} representing an integer value.
  */
-public class IntegerMetric extends Metric<Integer> {
+public class IntegerMetric extends Metric {
     @Serial
     private static final long serialVersionUID = 179851851088742850L;
 
@@ -26,6 +26,11 @@ public class IntegerMetric extends Metric<Integer> {
         super(metricDefinition);
 
         this.value = value;
+    }
+
+    @Override
+    public boolean needsRounding() {
+        return true;
     }
 
     @Override

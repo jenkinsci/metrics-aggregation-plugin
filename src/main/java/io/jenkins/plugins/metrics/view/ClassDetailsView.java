@@ -15,7 +15,9 @@ import io.jenkins.plugins.datatables.TableModel;
 import io.jenkins.plugins.metrics.extension.MetricsProvider;
 import io.jenkins.plugins.metrics.extension.MetricsProviderFactory;
 import io.jenkins.plugins.metrics.model.measurement.ClassMetricsMeasurement;
+import io.jenkins.plugins.metrics.model.measurement.ClassMetricsMeasurement.ClassMetricsMeasurementBuilder;
 import io.jenkins.plugins.metrics.model.measurement.MethodMetricsMeasurement;
+import io.jenkins.plugins.metrics.model.measurement.MethodMetricsMeasurement.MethodMetricsMeasurementBuilder;
 import io.jenkins.plugins.metrics.model.measurement.MetricsMeasurement;
 import io.jenkins.plugins.metrics.model.metric.Metric;
 import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
@@ -60,14 +62,14 @@ public class ClassDetailsView extends DefaultAsyncTableContentProvider implement
                 .values().stream()
                 .map(measurementsPerMethod -> measurementsPerMethod.stream()
                         .reduce(MethodMetricsMeasurement::merge)
-                        .orElse(new MethodMetricsMeasurement()))
+                        .orElse(new MethodMetricsMeasurementBuilder().build()))
                 .collect(Collectors.toList());
 
         classMetricsMeasurement = allMeasurements.stream()
                 .filter(ClassMetricsMeasurement.class::isInstance)
                 .map(ClassMetricsMeasurement.class::cast)
                 .reduce(ClassMetricsMeasurement::merge)
-                .orElse(new ClassMetricsMeasurement());
+                .orElse(new ClassMetricsMeasurementBuilder().build());
 
         supportedMetrics = MetricsProviderFactory.findAllAvailableMetricsFor(owner)
                 .stream()

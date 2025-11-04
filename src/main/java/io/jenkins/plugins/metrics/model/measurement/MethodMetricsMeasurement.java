@@ -1,7 +1,12 @@
 package io.jenkins.plugins.metrics.model.measurement;
 
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
+
 import java.io.Serial;
+import java.util.Map;
 import java.util.Objects;
+
+import io.jenkins.plugins.metrics.model.metric.Metric;
 
 /**
  * {@link MetricsMeasurement} for a method.
@@ -16,44 +21,37 @@ public class MethodMetricsMeasurement extends MetricsMeasurement {
     private int endLine = -1;
     private int endColumn = -1;
 
-    public String getMethodName() {
-        return methodName;
+    @SuppressWarnings("checkstyle:ParameterNumber")
+    private MethodMetricsMeasurement(final Map<String, Metric> metrics,
+            final String fileName, final String packageName, final String className, final String methodName,
+            final int beginLine, final int beginColumn, final int endLine, final int endColumn) {
+        super(metrics, fileName, packageName, className);
+
+        this.methodName = methodName;
+        this.beginLine = beginLine;
+        this.beginColumn = beginColumn;
+        this.endLine = endLine;
+        this.endColumn = endColumn;
     }
 
-    public void setMethodName(final String methodName) {
-        this.methodName = methodName;
+    public String getMethodName() {
+        return methodName;
     }
 
     public int getBeginLine() {
         return beginLine;
     }
 
-    public void setBeginLine(final int beginLine) {
-        this.beginLine = beginLine;
-    }
-
     public int getBeginColumn() {
         return beginColumn;
-    }
-
-    public void setBeginColumn(final int beginColumn) {
-        this.beginColumn = beginColumn;
     }
 
     public int getEndLine() {
         return endLine;
     }
 
-    public void setEndLine(final int endLine) {
-        this.endLine = endLine;
-    }
-
     public int getEndColumn() {
         return endColumn;
-    }
-
-    public void setEndColumn(final int endColumn) {
-        this.endColumn = endColumn;
     }
 
     /**
@@ -68,17 +66,13 @@ public class MethodMetricsMeasurement extends MetricsMeasurement {
     @Override
     public MethodMetricsMeasurement merge(final MetricsMeasurement metricsMeasurement) {
         if (metricsMeasurement instanceof MethodMetricsMeasurement) {
-            metrics.putAll(metricsMeasurement.getMetrics());
+            getMetrics().putAll(metricsMeasurement.getMetrics());
         }
         return this;
     }
 
     @Override
     public String toString() {
-        if (this.equals(new MethodMetricsMeasurement())) {
-            return "MethodMetricsMeasurement[empty]";
-        }
-
         return "MethodMetricsMeasurement[%s.%s#%s:%d:%d]".formatted(
                 getPackageName(),
                 getClassName(),
@@ -102,15 +96,108 @@ public class MethodMetricsMeasurement extends MetricsMeasurement {
                 && this.endLine == other.endLine
                 && this.endColumn == other.endColumn
                 && Objects.equals(methodName, other.methodName)
-                && Objects.equals(metrics, other.metrics)
-                && Objects.equals(className, other.className)
-                && Objects.equals(fileName, other.fileName)
-                && Objects.equals(packageName, other.packageName);
+                && Objects.equals(getMetrics(), other.getMetrics())
+                && Objects.equals(getClassName(), other.getClassName())
+                && Objects.equals(getFileName(), other.getFileName())
+                && Objects.equals(getPackageName(), other.getPackageName());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(beginColumn, beginLine, endLine, endColumn, methodName, className, fileName, packageName,
-                metrics);
+        return Objects.hash(beginColumn, beginLine, endLine, endColumn, methodName,
+                getClassName(), getFileName(), getPackageName(), getMetrics());
+    }
+
+    /**
+     * Builder for {@link MethodMetricsMeasurement} instances.
+     */
+    @SuppressWarnings("checkstyle:HiddenField")
+    public static class MethodMetricsMeasurementBuilder
+            extends MetricsMeasurementBuilder<MethodMetricsMeasurementBuilder> {
+        private String methodName;
+        private int beginLine;
+        private int beginColumn;
+        private int endLine;
+        private int endColumn;
+
+        /**
+         * Sets the method name.
+         *
+         * @param methodName
+         *         the method name
+         *
+         * @return the builder instance
+         */
+        @CanIgnoreReturnValue
+        public MethodMetricsMeasurementBuilder withMethodName(final String methodName) {
+            this.methodName = methodName;
+            return this;
+        }
+
+        /**
+         * Sets the first line for the metric.
+         *
+         * @param beginLine
+         *         the first line
+         *
+         * @return the builder instance
+         */
+        @CanIgnoreReturnValue
+        public MethodMetricsMeasurementBuilder withBeginLine(final int beginLine) {
+            this.beginLine = beginLine;
+            return this;
+        }
+
+        /**
+         * Sets the last line for the metric.
+         *
+         * @param endLine
+         *         the last line
+         *
+         * @return the builder instance
+         */
+        @CanIgnoreReturnValue
+        public MethodMetricsMeasurementBuilder withEndLine(final int endLine) {
+            this.endLine = endLine;
+            return this;
+        }
+
+        /**
+         * Sets the first column for the metric.
+         *
+         * @param beginColumn
+         *         the first column
+         *
+         * @return the builder instance
+         */
+        @CanIgnoreReturnValue
+        public MethodMetricsMeasurementBuilder withBeginColumn(final int beginColumn) {
+            this.beginColumn = beginColumn;
+            return this;
+        }
+
+        /**
+         * Sets the last column for the metric.
+         *
+         * @param endColumn
+         *         the last column
+         *
+         * @return the builder instance
+         */
+        @CanIgnoreReturnValue
+        public MethodMetricsMeasurementBuilder withEndColumn(final int endColumn) {
+            this.endColumn = endColumn;
+            return this;
+        }
+
+        /**
+         * Builds the {@link MethodMetricsMeasurement}.
+         *
+         * @return the built {@link MethodMetricsMeasurement}
+         */
+        public MethodMetricsMeasurement build() {
+            return new MethodMetricsMeasurement(getMetrics(), getFileName(), getPackageName(), getClassName(),
+                    methodName, beginLine, beginColumn, endLine, endColumn);
+        }
     }
 }

@@ -1,9 +1,14 @@
 package io.jenkins.plugins.metrics.model.measurement;
 
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
+
+import edu.hm.hafner.util.Generated;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import io.jenkins.plugins.metrics.model.metric.Metric;
@@ -15,63 +20,54 @@ public abstract class MetricsMeasurement implements Serializable {
     @Serial
     private static final long serialVersionUID = 7472039462715167623L;
 
+    private Map<String, Metric> metrics = new HashMap<>();
+    private String fileName = "";
+    private String packageName = "";
+    private String className = "";
+
     /**
-     * The metrics reported for this measurement.
+     * Creates a new empty {@link MetricsMeasurement}.
+     *
+     * @param metrics
+     *         the metrics measured
+     * @param fileName
+     *         the file name where the measurement was taken
+     * @param packageName
+     *         the package name where the measurement was taken
+     * @param className
+     *         the class name where the measurement was taken
      */
-    protected Map<String, Metric> metrics = new HashMap<>();
-    /**
-     * The file name of the measurement.
-     */
-    protected String fileName = "";
-    /**
-     * The package name of the measurement.
-     */
-    protected String packageName = "";
-    /**
-     * The class name of the measurement.
-     */
-    protected String className = "";
+    protected MetricsMeasurement(final Map<String, Metric> metrics, final String fileName, final String packageName,
+            final String className) {
+        this.metrics = metrics;
+        this.fileName = fileName;
+        this.packageName = packageName;
+        this.className = className;
+    }
 
     public String getFileName() {
         return fileName;
-    }
-
-    public void setFileName(final String fileName) {
-        this.fileName = fileName;
     }
 
     public String getPackageName() {
         return packageName;
     }
 
-    public void setPackageName(final String packageName) {
-        this.packageName = packageName;
-    }
-
     public String getClassName() {
         return className;
     }
 
-    public void setClassName(final String className) {
-        this.className = className;
-    }
-
     public String getQualifiedClassName() {
-        return this.packageName + '.' + this.className;
+        return this.getPackageName() + '.' + this.getClassName();
     }
 
     /**
-     * Add a new {@link Metric}.
+     * The metrics reported for this measurement.
      *
-     * @param metric
-     *         the metric to add
+     * @return the metrics mapping from metric id to metric
      */
-    public void addMetric(final Metric metric) {
-        metrics.put(metric.getId(), metric);
-    }
-
     public Map<String, Metric> getMetrics() {
-        return metrics;
+        return Map.copyOf(metrics);
     }
 
     /**
@@ -84,7 +80,7 @@ public abstract class MetricsMeasurement implements Serializable {
      *         otherwise
      */
     public Optional<Number> getMetric(final String id) {
-        return Optional.ofNullable(metrics.get(id)).map(Metric::rawValue);
+        return Optional.ofNullable(getMetrics().get(id)).map(Metric::rawValue);
     }
 
     /**
@@ -96,4 +92,114 @@ public abstract class MetricsMeasurement implements Serializable {
      * @return the combined {@link MetricsMeasurement}
      */
     public abstract MetricsMeasurement merge(MetricsMeasurement metricsMeasurement);
+
+    @Override
+    @Generated
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        var that = (MetricsMeasurement) o;
+        return Objects.equals(metrics, that.metrics)
+                && Objects.equals(fileName, that.fileName)
+                && Objects.equals(packageName, that.packageName)
+                && Objects.equals(className, that.className);
+    }
+
+    @Override
+    @Generated
+    public int hashCode() {
+        return Objects.hash(metrics, fileName, packageName, className);
+    }
+
+    /**
+     * Base builder for {@link MetricsMeasurement} instances.
+     *
+     * @author Ullrich Hafner
+     * @param <T> the type of the builder
+     */
+    @SuppressWarnings({"unchecked", "checkstyle:HiddenField"})
+    public static class MetricsMeasurementBuilder<T extends MetricsMeasurementBuilder<T>> {
+        private final Map<String, Metric> metrics = new HashMap<>();
+        private String fileName;
+        private String packageName;
+        private String className;
+
+        public Map<String, Metric> getMetrics() {
+            return metrics;
+        }
+
+        /**
+         * Sets the metrics for the metrics measurement.
+         *
+         * @param metric
+         *         the new metric to add
+         *
+         * @return the builder instance
+         */
+        @CanIgnoreReturnValue
+        public T withMetric(final Metric metric) {
+            this.metrics.put(metric.getId(), metric);
+
+            return (T) this;
+        }
+
+        public String getFileName() {
+            return fileName;
+        }
+
+        /**
+         * Sets the file name for the metrics measurement.
+         *
+         * @param fileName
+         *         the file name
+         *
+         * @return the builder instance
+         */
+        @CanIgnoreReturnValue
+        public T withFileName(final String fileName) {
+            this.fileName = fileName;
+
+            return (T) this;
+        }
+
+        public String getPackageName() {
+            return packageName;
+        }
+
+        /**
+         * Sets the package name for the metrics measurement.
+         *
+         * @param packageName
+         *         the package name
+         *
+         * @return the builder instance
+         */
+        @CanIgnoreReturnValue
+        public T withPackageName(final String packageName) {
+            this.packageName = packageName;
+
+            return (T) this;
+        }
+
+        public String getClassName() {
+            return className;
+        }
+
+
+        /**
+         * Sets the class name for the metrics measurement.
+         *
+         * @param className
+         *         the class name
+         *
+         * @return the builder instance
+         */
+        @CanIgnoreReturnValue
+        public T withClassName(final String className) {
+            this.className = className;
+
+            return (T) this;
+        }
+    }
 }
