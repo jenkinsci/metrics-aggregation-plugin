@@ -2,6 +2,8 @@ package io.jenkins.plugins.metrics.model.metric;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collections;
@@ -124,7 +126,7 @@ public final class MetricDefinition implements Serializable, Comparable<MetricDe
     /**
      * Builder for {@link MetricDefinition} instances.
      */
-    @SuppressWarnings("checkstyle:HiddenField")
+    @SuppressWarnings({"checkstyle:HiddenField", "ParameterHidesMemberVariable"})
     public static class MetricDefinitionBuilder {
         private final String id;
         private final Set<Scope> scopes = new HashSet<>();
@@ -152,6 +154,7 @@ public final class MetricDefinition implements Serializable, Comparable<MetricDe
          *
          * @return the builder instance
          */
+        @CanIgnoreReturnValue
         public MetricDefinitionBuilder withDisplayName(final String displayName) {
             this.displayName = displayName;
             return this;
@@ -165,6 +168,7 @@ public final class MetricDefinition implements Serializable, Comparable<MetricDe
          *
          * @return the builder instance
          */
+        @CanIgnoreReturnValue
         public MetricDefinitionBuilder withDescription(final String description) {
             this.description = description;
             return this;
@@ -178,6 +182,7 @@ public final class MetricDefinition implements Serializable, Comparable<MetricDe
          *
          * @return the builder instance
          */
+        @CanIgnoreReturnValue
         public MetricDefinitionBuilder withReportedBy(final String reportedBy) {
             this.reportedBy = reportedBy;
             return this;
@@ -191,6 +196,7 @@ public final class MetricDefinition implements Serializable, Comparable<MetricDe
          *
          * @return the builder instance
          */
+        @CanIgnoreReturnValue
         public MetricDefinitionBuilder withPriority(final int priority) {
             this.priority = priority;
             return this;
@@ -204,6 +210,7 @@ public final class MetricDefinition implements Serializable, Comparable<MetricDe
          *
          * @return the builder instance
          */
+        @CanIgnoreReturnValue
         public MetricDefinitionBuilder withScopes(final Scope... scopes) {
             Collections.addAll(this.scopes, scopes);
 

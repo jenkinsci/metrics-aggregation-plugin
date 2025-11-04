@@ -71,6 +71,19 @@ public abstract class MetricsMeasurement implements Serializable {
     }
 
     /**
+     * Merges the given metric into this measurement.
+     *
+     * @param metric
+     *         the metric to merge
+     */
+    protected void merge(final Metric metric) {
+        if (metrics.containsKey(metric.getId())) {
+            throw new IllegalArgumentException("Metric with id '%s' is already present".formatted(metric.getId()));
+        }
+        this.metrics.put(metric.getId(), metric);
+    }
+
+    /**
      * Get a metric based on its id.
      *
      * @param id

@@ -66,7 +66,7 @@ public class MethodMetricsMeasurement extends MetricsMeasurement {
     @Override
     public MethodMetricsMeasurement merge(final MetricsMeasurement metricsMeasurement) {
         if (metricsMeasurement instanceof MethodMetricsMeasurement) {
-            getMetrics().putAll(metricsMeasurement.getMetrics());
+            metricsMeasurement.getMetrics().values().forEach(this::merge);
         }
         return this;
     }
@@ -111,7 +111,7 @@ public class MethodMetricsMeasurement extends MetricsMeasurement {
     /**
      * Builder for {@link MethodMetricsMeasurement} instances.
      */
-    @SuppressWarnings("checkstyle:HiddenField")
+    @SuppressWarnings({"checkstyle:HiddenField", "ParameterHidesMemberVariable"})
     public static class MethodMetricsMeasurementBuilder
             extends MetricsMeasurementBuilder<MethodMetricsMeasurementBuilder> {
         private String methodName;

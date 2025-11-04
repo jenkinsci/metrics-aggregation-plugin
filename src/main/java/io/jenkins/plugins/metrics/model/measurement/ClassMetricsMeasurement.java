@@ -29,7 +29,7 @@ public final class ClassMetricsMeasurement extends MetricsMeasurement {
     @Override
     public ClassMetricsMeasurement merge(final MetricsMeasurement metricsMeasurement) {
         if (metricsMeasurement instanceof ClassMetricsMeasurement) {
-            getMetrics().putAll(metricsMeasurement.getMetrics());
+            metricsMeasurement.getMetrics().values().forEach(this::merge);
         }
         return this;
     }
