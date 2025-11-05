@@ -7,21 +7,17 @@ skinparam component {
 }
 
 [API] <<..metrics.extension>>
-[Measurement] <<..metrics.model.measurement>>
-[Metric] <<..metrics.model.metric>>
+[Model] <<..metrics.model>>
 [Column] <<..metrics.column>>
 [View] <<..metrics.view>>
 
 [View] --> [API]
-[View] --> [Measurement]
-[View] --> [Metric]
+[View] --> [Model]
 
-[Column] --> [Measurement]
-[Column] --> [Metric]
+[Column] --> [Model]
 [Column] --> [API]
 
-[API] --> [Measurement]
-[API] --> [Metric]
-[Measurement] --> [Metric]
+[API] --> [Model]
+[API] --> [Model]
 
 @enduml

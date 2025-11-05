@@ -8,9 +8,9 @@ import java.util.stream.Collectors;
 import io.jenkins.plugins.datatables.TableColumn;
 import io.jenkins.plugins.datatables.TableConfiguration;
 import io.jenkins.plugins.datatables.TableModel;
-import io.jenkins.plugins.metrics.model.measurement.ClassMetricsMeasurement;
-import io.jenkins.plugins.metrics.model.metric.Metric;
-import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
+import io.jenkins.plugins.metrics.model.ClassMetricsMeasurement;
+import io.jenkins.plugins.metrics.model.Metric;
+import io.jenkins.plugins.metrics.model.MetricDefinition;
 
 import static j2html.TagCreator.*;
 

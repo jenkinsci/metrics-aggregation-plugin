@@ -1,4 +1,4 @@
-package io.jenkins.plugins.metrics.model.metric;
+package io.jenkins.plugins.metrics.model;
 
 import edu.hm.hafner.util.Generated;
 

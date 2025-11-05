@@ -8,10 +8,10 @@ import java.util.stream.Collectors;
 import io.jenkins.plugins.datatables.TableColumn;
 import io.jenkins.plugins.datatables.TableConfiguration;
 import io.jenkins.plugins.datatables.TableModel;
-import io.jenkins.plugins.metrics.model.measurement.MethodMetricsMeasurement;
-import io.jenkins.plugins.metrics.model.measurement.MetricsMeasurement;
-import io.jenkins.plugins.metrics.model.metric.Metric;
-import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
+import io.jenkins.plugins.metrics.model.MethodMetricsMeasurement;
+import io.jenkins.plugins.metrics.model.Metric;
+import io.jenkins.plugins.metrics.model.MetricDefinition;
+import io.jenkins.plugins.metrics.model.MetricsMeasurement;
 
 /**
  * {@link TableModel} for the class details view.

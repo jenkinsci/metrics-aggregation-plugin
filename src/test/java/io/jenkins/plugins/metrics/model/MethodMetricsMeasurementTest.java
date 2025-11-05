@@ -3,12 +3,9 @@ package io.jenkins.plugins.metrics.model;
 import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.Test;
 
-import io.jenkins.plugins.metrics.model.measurement.MethodMetricsMeasurement;
-import io.jenkins.plugins.metrics.model.measurement.MethodMetricsMeasurement.MethodMetricsMeasurementBuilder;
-import io.jenkins.plugins.metrics.model.metric.IntegerMetric;
-import io.jenkins.plugins.metrics.model.metric.Metric;
-import io.jenkins.plugins.metrics.model.metric.MetricDefinition.MetricDefinitionBuilder;
-import io.jenkins.plugins.metrics.model.metric.MetricDefinition.Scope;
+import io.jenkins.plugins.metrics.model.MethodMetricsMeasurement.MethodMetricsMeasurementBuilder;
+import io.jenkins.plugins.metrics.model.MetricDefinition.MetricDefinitionBuilder;
+import io.jenkins.plugins.metrics.model.MetricDefinition.Scope;
 
 import static org.assertj.core.api.Assertions.*;
 

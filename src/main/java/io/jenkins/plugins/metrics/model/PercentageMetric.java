@@ -1,28 +1,29 @@
-package io.jenkins.plugins.metrics.model.metric;
+package io.jenkins.plugins.metrics.model;
 
 import edu.hm.hafner.util.Generated;
 
 import java.io.Serial;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
- * A {@link Metric} representing a double value.
+ * {@link Metric} for percentage metrics.
  */
-public final class DoubleMetric extends Metric {
+public final class PercentageMetric extends Metric {
     @Serial
-    private static final long serialVersionUID = -7838111350390919589L;
+    private static final long serialVersionUID = -239297826452518258L;
 
-    private final double value;
+    private final float value;
 
     /**
-     * Constructor for a double metric.
+     * Creates a new percentage metric.
      *
      * @param metricDefinition
      *         the definition of this metric
      * @param value
-     *         the double value
+     *         the percentage value as float
      */
-    public DoubleMetric(final MetricDefinition metricDefinition, final double value) {
+    public PercentageMetric(final MetricDefinition metricDefinition, final float value) {
         super(metricDefinition);
 
         this.value = value;
@@ -30,11 +31,11 @@ public final class DoubleMetric extends Metric {
 
     @Override
     public String renderValue() {
-        return "%.2f".formatted(value);
+        return String.format(Locale.ENGLISH, "%d%%", Math.round(value));
     }
 
     @Override
-    public Double rawValue() {
+    public Float rawValue() {
         return value;
     }
 
@@ -47,8 +48,8 @@ public final class DoubleMetric extends Metric {
         if (!super.equals(o)) {
             return false;
         }
-        var that = (DoubleMetric) o;
-        return Double.compare(value, that.value) == 0;
+        var that = (PercentageMetric) o;
+        return Float.compare(value, that.value) == 0;
     }
 
     @Override

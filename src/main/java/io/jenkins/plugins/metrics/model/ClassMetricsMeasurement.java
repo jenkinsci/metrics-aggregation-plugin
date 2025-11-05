@@ -1,9 +1,7 @@
-package io.jenkins.plugins.metrics.model.measurement;
+package io.jenkins.plugins.metrics.model;
 
 import java.io.Serial;
 import java.util.Map;
-
-import io.jenkins.plugins.metrics.model.metric.Metric;
 
 /**
  * {@link MetricsMeasurement} representing one class.

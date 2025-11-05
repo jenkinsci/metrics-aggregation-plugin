@@ -1,12 +1,10 @@
-package io.jenkins.plugins.metrics.model.measurement;
+package io.jenkins.plugins.metrics.model;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
 import java.io.Serial;
 import java.util.Map;
 import java.util.Objects;
-
-import io.jenkins.plugins.metrics.model.metric.Metric;
 
 /**
  * {@link MetricsMeasurement} for a method.

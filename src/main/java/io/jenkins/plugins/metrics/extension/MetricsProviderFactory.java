@@ -7,7 +7,7 @@ import java.util.Set;
 import hudson.ExtensionPoint;
 import hudson.model.Run;
 
-import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
+import io.jenkins.plugins.metrics.model.MetricDefinition;
 import io.jenkins.plugins.util.JenkinsFacade;
 
 /**

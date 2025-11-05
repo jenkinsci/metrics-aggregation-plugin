@@ -1,4 +1,4 @@
-package io.jenkins.plugins.metrics.model.metric;
+package io.jenkins.plugins.metrics.model;
 
 import edu.hm.hafner.util.Generated;
 
@@ -6,35 +6,40 @@ import java.io.Serial;
 import java.util.Objects;
 
 /**
- * {@link Metric} for percentage metrics.
+ * A {@link Metric} representing an integer value.
  */
-public class PercentageMetric extends Metric {
+public final class IntegerMetric extends Metric {
     @Serial
-    private static final long serialVersionUID = -239297826452518258L;
+    private static final long serialVersionUID = 179851851088742850L;
 
-    private final float value;
+    private final int value;
 
     /**
-     * Constructor for a percentage metric.
+     * Creates an integer metric.
      *
      * @param metricDefinition
      *         the definition of this metric
      * @param value
-     *         the percentage value as float
+     *         the integer value
      */
-    public PercentageMetric(final MetricDefinition metricDefinition, final float value) {
+    public IntegerMetric(final MetricDefinition metricDefinition, final int value) {
         super(metricDefinition);
 
         this.value = value;
     }
 
     @Override
-    public String renderValue() {
-        return "%d%%".formatted(Math.round(value));
+    public boolean needsRounding() {
+        return true;
     }
 
     @Override
-    public Float rawValue() {
+    public String renderValue() {
+        return String.valueOf(value);
+    }
+
+    @Override
+    public Integer rawValue() {
         return value;
     }
 
@@ -47,8 +52,8 @@ public class PercentageMetric extends Metric {
         if (!super.equals(o)) {
             return false;
         }
-        var that = (PercentageMetric) o;
-        return Float.compare(value, that.value) == 0;
+        var that = (IntegerMetric) o;
+        return value == that.value;
     }
 
     @Override

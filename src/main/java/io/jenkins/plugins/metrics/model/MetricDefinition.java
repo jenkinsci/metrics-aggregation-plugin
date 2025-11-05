@@ -1,4 +1,4 @@
-package io.jenkins.plugins.metrics.model.metric;
+package io.jenkins.plugins.metrics.model;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -34,7 +34,7 @@ public final class MetricDefinition implements Serializable, Comparable<MetricDe
     private final Set<Scope> scopes;
 
     /**
-     * Creates a new {@link MetricDefinition}.
+     * Creates a new {@link MetricDefinition}. See {@link MetricDefinitionBuilder} for building instances.
      *
      * @param id
      *         the id of the metric
@@ -157,6 +157,7 @@ public final class MetricDefinition implements Serializable, Comparable<MetricDe
         @CanIgnoreReturnValue
         public MetricDefinitionBuilder withDisplayName(final String displayName) {
             this.displayName = displayName;
+
             return this;
         }
 
@@ -171,6 +172,7 @@ public final class MetricDefinition implements Serializable, Comparable<MetricDe
         @CanIgnoreReturnValue
         public MetricDefinitionBuilder withDescription(final String description) {
             this.description = description;
+
             return this;
         }
 
@@ -185,6 +187,7 @@ public final class MetricDefinition implements Serializable, Comparable<MetricDe
         @CanIgnoreReturnValue
         public MetricDefinitionBuilder withReportedBy(final String reportedBy) {
             this.reportedBy = reportedBy;
+
             return this;
         }
 
@@ -199,6 +202,7 @@ public final class MetricDefinition implements Serializable, Comparable<MetricDe
         @CanIgnoreReturnValue
         public MetricDefinitionBuilder withPriority(final int priority) {
             this.priority = priority;
+
             return this;
         }
 

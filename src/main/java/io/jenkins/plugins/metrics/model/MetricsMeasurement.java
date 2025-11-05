@@ -1,4 +1,4 @@
-package io.jenkins.plugins.metrics.model.measurement;
+package io.jenkins.plugins.metrics.model;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
@@ -10,8 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-
-import io.jenkins.plugins.metrics.model.metric.Metric;
 
 /**
  * Measurement point of metrics. Combines the location of the measurement with the metrics measured there.

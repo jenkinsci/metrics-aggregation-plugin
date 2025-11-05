@@ -5,11 +5,11 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 
-import io.jenkins.plugins.metrics.model.measurement.ClassMetricsMeasurement.ClassMetricsMeasurementBuilder;
-import io.jenkins.plugins.metrics.model.measurement.MetricsMeasurement;
-import io.jenkins.plugins.metrics.model.metric.DoubleMetric;
-import io.jenkins.plugins.metrics.model.metric.MetricDefinition.MetricDefinitionBuilder;
-import io.jenkins.plugins.metrics.model.metric.MetricDefinition.Scope;
+import io.jenkins.plugins.metrics.model.ClassMetricsMeasurement.ClassMetricsMeasurementBuilder;
+import io.jenkins.plugins.metrics.model.DoubleMetric;
+import io.jenkins.plugins.metrics.model.MetricDefinition.MetricDefinitionBuilder;
+import io.jenkins.plugins.metrics.model.MetricDefinition.Scope;
+import io.jenkins.plugins.metrics.model.MetricsMeasurement;
 
 class MetricsViewTest {
     @Test

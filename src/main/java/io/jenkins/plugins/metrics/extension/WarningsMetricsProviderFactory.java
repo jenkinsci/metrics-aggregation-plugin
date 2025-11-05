@@ -14,13 +14,13 @@ import hudson.model.Run;
 import io.jenkins.plugins.analysis.core.model.AnalysisResult;
 import io.jenkins.plugins.analysis.core.model.ResultAction;
 import io.jenkins.plugins.forensics.miner.RepositoryStatistics;
-import io.jenkins.plugins.metrics.model.measurement.ClassMetricsMeasurement;
-import io.jenkins.plugins.metrics.model.measurement.ClassMetricsMeasurement.ClassMetricsMeasurementBuilder;
-import io.jenkins.plugins.metrics.model.measurement.MetricsMeasurement;
-import io.jenkins.plugins.metrics.model.metric.IntegerMetric;
-import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
-import io.jenkins.plugins.metrics.model.metric.MetricDefinition.MetricDefinitionBuilder;
-import io.jenkins.plugins.metrics.model.metric.MetricDefinition.Scope;
+import io.jenkins.plugins.metrics.model.ClassMetricsMeasurement;
+import io.jenkins.plugins.metrics.model.ClassMetricsMeasurement.ClassMetricsMeasurementBuilder;
+import io.jenkins.plugins.metrics.model.IntegerMetric;
+import io.jenkins.plugins.metrics.model.MetricDefinition;
+import io.jenkins.plugins.metrics.model.MetricDefinition.MetricDefinitionBuilder;
+import io.jenkins.plugins.metrics.model.MetricDefinition.Scope;
+import io.jenkins.plugins.metrics.model.MetricsMeasurement;
 
 /**
  * {@link MetricsProviderFactory} for the number of warnings and git forensics data. Uses the warnings-ng-plugin and

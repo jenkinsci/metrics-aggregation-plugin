@@ -22,11 +22,11 @@ import io.jenkins.plugins.datatables.DefaultAsyncTableContentProvider;
 import io.jenkins.plugins.datatables.TableModel;
 import io.jenkins.plugins.metrics.extension.MetricsProvider;
 import io.jenkins.plugins.metrics.extension.MetricsProviderFactory;
-import io.jenkins.plugins.metrics.model.measurement.ClassMetricsMeasurement;
-import io.jenkins.plugins.metrics.model.measurement.MetricsMeasurement;
-import io.jenkins.plugins.metrics.model.metric.Metric;
-import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
-import io.jenkins.plugins.metrics.model.metric.MetricDefinition.Scope;
+import io.jenkins.plugins.metrics.model.ClassMetricsMeasurement;
+import io.jenkins.plugins.metrics.model.Metric;
+import io.jenkins.plugins.metrics.model.MetricDefinition;
+import io.jenkins.plugins.metrics.model.MetricDefinition.Scope;
+import io.jenkins.plugins.metrics.model.MetricsMeasurement;
 
 /**
  * Build view for displaying metrics.

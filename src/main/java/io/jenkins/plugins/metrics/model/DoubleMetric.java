@@ -1,45 +1,41 @@
-package io.jenkins.plugins.metrics.model.metric;
+package io.jenkins.plugins.metrics.model;
 
 import edu.hm.hafner.util.Generated;
 
 import java.io.Serial;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
- * A {@link Metric} representing an integer value.
+ * A {@link Metric} representing a double value.
  */
-public class IntegerMetric extends Metric {
+public final class DoubleMetric extends Metric {
     @Serial
-    private static final long serialVersionUID = 179851851088742850L;
+    private static final long serialVersionUID = -7838111350390919589L;
 
-    private final int value;
+    private final double value;
 
     /**
-     * Constructor for a integer metric.
+     * Creates a new double metric.
      *
      * @param metricDefinition
      *         the definition of this metric
      * @param value
-     *         the integer value
+     *         the double value
      */
-    public IntegerMetric(final MetricDefinition metricDefinition, final int value) {
+    public DoubleMetric(final MetricDefinition metricDefinition, final double value) {
         super(metricDefinition);
 
         this.value = value;
     }
 
     @Override
-    public boolean needsRounding() {
-        return true;
-    }
-
-    @Override
     public String renderValue() {
-        return String.valueOf(value);
+        return String.format(Locale.ENGLISH, "%.2f", value);
     }
 
     @Override
-    public Integer rawValue() {
+    public Double rawValue() {
         return value;
     }
 
@@ -52,8 +48,8 @@ public class IntegerMetric extends Metric {
         if (!super.equals(o)) {
             return false;
         }
-        var that = (IntegerMetric) o;
-        return value == that.value;
+        var that = (DoubleMetric) o;
+        return Double.compare(value, that.value) == 0;
     }
 
     @Override

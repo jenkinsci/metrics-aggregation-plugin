@@ -7,16 +7,11 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
-import io.jenkins.plugins.metrics.model.measurement.ClassMetricsMeasurement;
-import io.jenkins.plugins.metrics.model.measurement.ClassMetricsMeasurement.ClassMetricsMeasurementBuilder;
-import io.jenkins.plugins.metrics.model.measurement.MethodMetricsMeasurement.MethodMetricsMeasurementBuilder;
-import io.jenkins.plugins.metrics.model.measurement.MetricsMeasurement.MetricsMeasurementBuilder;
-import io.jenkins.plugins.metrics.model.metric.DoubleMetric;
-import io.jenkins.plugins.metrics.model.metric.IntegerMetric;
-import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
-import io.jenkins.plugins.metrics.model.metric.MetricDefinition.MetricDefinitionBuilder;
-import io.jenkins.plugins.metrics.model.metric.MetricDefinition.Scope;
-import io.jenkins.plugins.metrics.model.metric.PercentageMetric;
+import io.jenkins.plugins.metrics.model.ClassMetricsMeasurement.ClassMetricsMeasurementBuilder;
+import io.jenkins.plugins.metrics.model.MethodMetricsMeasurement.MethodMetricsMeasurementBuilder;
+import io.jenkins.plugins.metrics.model.MetricDefinition.MetricDefinitionBuilder;
+import io.jenkins.plugins.metrics.model.MetricDefinition.Scope;
+import io.jenkins.plugins.metrics.model.MetricsMeasurement.MetricsMeasurementBuilder;
 
 import static org.assertj.core.api.Assertions.*;
 

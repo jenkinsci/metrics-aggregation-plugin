@@ -4,9 +4,8 @@ import org.junit.jupiter.api.Test;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-import io.jenkins.plugins.metrics.model.metric.MetricDefinition;
-import io.jenkins.plugins.metrics.model.metric.MetricDefinition.MetricDefinitionBuilder;
-import io.jenkins.plugins.metrics.model.metric.MetricDefinition.Scope;
+import io.jenkins.plugins.metrics.model.MetricDefinition.MetricDefinitionBuilder;
+import io.jenkins.plugins.metrics.model.MetricDefinition.Scope;
 
 import static io.jenkins.plugins.metrics.assertions.Assertions.*;
 

@@ -15,7 +15,7 @@ import hudson.views.ListViewColumn;
 import hudson.views.ListViewColumnDescriptor;
 
 import io.jenkins.plugins.metrics.extension.MetricsProviderFactory;
-import io.jenkins.plugins.metrics.model.metric.Metric;
+import io.jenkins.plugins.metrics.model.Metric;
 import io.jenkins.plugins.metrics.view.MetricsViewAction;
 
 /**
