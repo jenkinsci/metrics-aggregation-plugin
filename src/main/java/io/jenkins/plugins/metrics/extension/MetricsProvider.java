@@ -10,6 +10,7 @@ import io.jenkins.plugins.metrics.model.MetricsMeasurement;
 /**
  * Data class containing all metrics and entries for the detail page of a tool.
  */
+@SuppressWarnings("PMD.DataClass")
 public class MetricsProvider {
     private String origin;
 

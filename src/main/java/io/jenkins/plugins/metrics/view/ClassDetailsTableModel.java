@@ -30,6 +30,8 @@ public class ClassDetailsTableModel extends TableModel {
      */
     ClassDetailsTableModel(final List<MetricDefinition> supportedMetrics,
             final List<MethodMetricsMeasurement> metricsMeasurements) {
+        super();
+
         this.supportedMetrics = supportedMetrics;
         this.metricsMeasurements = metricsMeasurements;
     }

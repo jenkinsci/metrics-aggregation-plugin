@@ -27,11 +27,11 @@ class MetricTest {
 
     @Test
     void shouldCreateDoubleMetric() {
-        var metric = new DoubleMetric(DEFINITION, 3.14);
+        var metric = new DoubleMetric(DEFINITION, 12.35);
 
         assertThat(metric).hasId(ID).hasMetricDefinition(DEFINITION);
-        assertThat(metric.rawValue()).isEqualTo(3.14);
-        assertThat(metric.renderValue()).isEqualTo("3.14");
+        assertThat(metric.rawValue()).isEqualTo(12.35);
+        assertThat(metric.renderValue()).isEqualTo("12.35");
         assertThat(metric.needsRounding()).isFalse();
     }
 

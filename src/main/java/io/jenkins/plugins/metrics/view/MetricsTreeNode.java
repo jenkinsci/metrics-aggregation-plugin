@@ -87,11 +87,11 @@ public class MetricsTreeNode {
     public void collapsePackage() {
         while (getChildren().size() == 1) {
             var singleChild = getChildrenMap().values().iterator().next();
-            if (!name.isEmpty()) {
-                setName(name + "." + singleChild.getName());
+            if (name.isEmpty()) {
+                setName(singleChild.getName());
             }
             else {
-                setName(singleChild.getName());
+                setName(name + "." + singleChild.getName());
             }
             childrenMap = singleChild.getChildrenMap();
         }

@@ -47,6 +47,8 @@ public class MetricsView extends DefaultAsyncTableContentProvider implements Mod
      *         the {@link Run} that is shown in the view
      */
     public MetricsView(final Run<?, ?> build) {
+        super();
+
         this.owner = build;
         metricsMeasurements = MetricsProviderFactory.findAllFor(build).stream()
                 .map(MetricsProvider::getMetricsMeasurements)
@@ -166,7 +168,7 @@ public class MetricsView extends DefaultAsyncTableContentProvider implements Mod
      * @return the contents of the histogram as JSON
      */
     @JavaScriptMethod
-    @SuppressWarnings("unused") // used by jelly view
+    @SuppressWarnings({"unused", "PMD.CyclomaticComplexity"}) // used by jelly view
     public String getHistogram(final String metricId) {
         List<Double> values = getAllMetrics(metricId);
 
@@ -180,13 +182,12 @@ public class MetricsView extends DefaultAsyncTableContentProvider implements Mod
         final double min = statistics.getMin();
         final double max = statistics.getMax();
         final double iqr = statistics.getPercentile(75) - statistics.getPercentile(25);
-        final double stdDev = statistics.getStandardDeviation();
 
         final int numBins;
         double binWidth;
         if (iqr > 0) {
             // Freedman-Diaconis rule for calculating the binWidth
-            binWidth = (2 * iqr) / Math.cbrt(values.size());
+            binWidth = 2 * iqr / Math.cbrt(values.size());
             numBins = (int) Math.round((max - min) / binWidth);
         }
         else if (max - min > 0) {

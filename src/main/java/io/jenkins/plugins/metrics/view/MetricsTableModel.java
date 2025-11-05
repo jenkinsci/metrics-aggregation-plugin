@@ -34,6 +34,8 @@ public class MetricsTableModel extends TableModel {
      */
     public MetricsTableModel(final String id, final List<MetricDefinition> supportedMetrics,
             final List<ClassMetricsMeasurement> metricsMeasurements) {
+        super();
+
         this.id = id;
         this.supportedMetrics = supportedMetrics;
         this.metricsMeasurements = metricsMeasurements;

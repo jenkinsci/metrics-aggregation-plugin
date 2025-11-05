@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import io.jenkins.plugins.metrics.model.ClassMetricsMeasurement.ClassMetricsMeasurementBuilder;
 import io.jenkins.plugins.metrics.model.DoubleMetric;
@@ -11,11 +12,13 @@ import io.jenkins.plugins.metrics.model.MetricDefinition.MetricDefinitionBuilder
 import io.jenkins.plugins.metrics.model.MetricDefinition.Scope;
 import io.jenkins.plugins.metrics.model.MetricsMeasurement;
 
+import static org.assertj.core.api.Assertions.*;
+
 class MetricsViewTest {
     @Test
     void shouldGetHistogram() {
-        final var key = "key";
-        ArrayList<MetricsMeasurement> measurements = new ArrayList<>();
+        var key = "key";
+        List<MetricsMeasurement> measurements = new ArrayList<>();
         measurements.add(getMeasurementWithMetric(key, 5.0));
         measurements.add(getMeasurementWithMetric(key, 2.0));
         measurements.add(getMeasurementWithMetric(key, 1.1));
@@ -24,6 +27,8 @@ class MetricsViewTest {
         measurements.add(getMeasurementWithMetric(key, 17.0));
 
         measurements.add(getMeasurementWithMetric(key + "foo", 3.0));
+
+        assertThat(measurements).hasSize(7);
 
         /*
         Run run = mock(Run.class);
@@ -40,9 +45,9 @@ class MetricsViewTest {
     @Test
     @Disabled
     void shouldGetStatistics() {
-        final var key = "key";
+        var key = "key";
 
-        ArrayList<MetricsMeasurement> measurements = new ArrayList<>();
+        List<MetricsMeasurement> measurements = new ArrayList<>();
         measurements.add(getMeasurementWithMetric(key, 5.0));
         measurements.add(getMeasurementWithMetric(key, 2.0));
         measurements.add(getMeasurementWithMetric(key, 1.1));
@@ -50,6 +55,7 @@ class MetricsViewTest {
         measurements.add(getMeasurementWithMetric(key, 1.0));
         measurements.add(getMeasurementWithMetric(key, 17.0));
 
+        assertThat(measurements).hasSize(6);
         /*
         Run run = mock(Run.class);
         when(run.getAction(MetricsAction.class)).thenReturn(new MetricsAction(measurements));

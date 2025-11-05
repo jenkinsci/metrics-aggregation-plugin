@@ -7,7 +7,7 @@ import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -129,7 +129,7 @@ public final class MetricDefinition implements Serializable, Comparable<MetricDe
     @SuppressWarnings({"checkstyle:HiddenField", "ParameterHidesMemberVariable"})
     public static class MetricDefinitionBuilder {
         private final String id;
-        private final Set<Scope> scopes = new HashSet<>();
+        private final Set<Scope> scopes = EnumSet.noneOf(Scope.class);
 
         private String displayName = StringUtils.EMPTY;
         private String description = StringUtils.EMPTY;

@@ -23,7 +23,7 @@ class WarningsMetricsProviderFactoryTest {
      */
     @Test
     @Issue("JENKINS-61401")
-    void getMetricsWithMissingForensics() {
+    void shouldGetMetricsWithMissingForensics() {
         var warningsFactory = new WarningsMetricsProviderFactory();
 
         AnalysisResult analysisResult = mock(AnalysisResult.class);

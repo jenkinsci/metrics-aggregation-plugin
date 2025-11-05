@@ -13,11 +13,11 @@ public class MethodMetricsMeasurement extends MetricsMeasurement {
     @Serial
     private static final long serialVersionUID = 6103621887323104682L;
 
-    private String methodName = "";
-    private int beginLine = -1;
-    private int beginColumn = -1;
-    private int endLine = -1;
-    private int endColumn = -1;
+    private final String methodName;
+    private final int beginLine;
+    private final int beginColumn;
+    private final int endLine;
+    private final int endColumn;
 
     @SuppressWarnings("checkstyle:ParameterNumber")
     private MethodMetricsMeasurement(final Map<String, Metric> metrics,
@@ -129,6 +129,7 @@ public class MethodMetricsMeasurement extends MetricsMeasurement {
         @CanIgnoreReturnValue
         public MethodMetricsMeasurementBuilder withMethodName(final String methodName) {
             this.methodName = methodName;
+
             return this;
         }
 
@@ -143,6 +144,7 @@ public class MethodMetricsMeasurement extends MetricsMeasurement {
         @CanIgnoreReturnValue
         public MethodMetricsMeasurementBuilder withBeginLine(final int beginLine) {
             this.beginLine = beginLine;
+
             return this;
         }
 
@@ -157,6 +159,7 @@ public class MethodMetricsMeasurement extends MetricsMeasurement {
         @CanIgnoreReturnValue
         public MethodMetricsMeasurementBuilder withEndLine(final int endLine) {
             this.endLine = endLine;
+
             return this;
         }
 
@@ -171,6 +174,7 @@ public class MethodMetricsMeasurement extends MetricsMeasurement {
         @CanIgnoreReturnValue
         public MethodMetricsMeasurementBuilder withBeginColumn(final int beginColumn) {
             this.beginColumn = beginColumn;
+
             return this;
         }
 
@@ -185,6 +189,7 @@ public class MethodMetricsMeasurement extends MetricsMeasurement {
         @CanIgnoreReturnValue
         public MethodMetricsMeasurementBuilder withEndColumn(final int endColumn) {
             this.endColumn = endColumn;
+
             return this;
         }
 

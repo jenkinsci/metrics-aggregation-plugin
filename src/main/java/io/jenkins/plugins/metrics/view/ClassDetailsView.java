@@ -45,6 +45,8 @@ public class ClassDetailsView extends DefaultAsyncTableContentProvider implement
      *         the className for which the metrics should be shown
      */
     public ClassDetailsView(final Run<?, ?> owner, final String className) {
+        super();
+
         this.owner = owner;
 
         List<MetricsMeasurement> allMeasurements = MetricsProviderFactory.findAllFor(owner)
