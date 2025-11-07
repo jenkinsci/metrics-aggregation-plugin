@@ -57,7 +57,7 @@
     <mathjs.version>6.0.2</mathjs.version>
     <bootstrap-select.version>1.13.11</bootstrap-select.version>
 
-    <eclipse-collections.version>9.2.0</eclipse-collections.version>
+    <eclipse-collections.version>10.0.0</eclipse-collections.version>
 
     <commons.math.version>3.6.1</commons.math.version>
   </properties>
