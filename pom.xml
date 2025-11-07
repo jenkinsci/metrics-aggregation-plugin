@@ -55,7 +55,7 @@
     <maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
     <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
     <mathjs.version>6.0.2</mathjs.version>
-    <bootstrap-select.version>1.13.11</bootstrap-select.version>
+    <bootstrap-select.version>1.13.18</bootstrap-select.version>
 
     <eclipse-collections.version>9.2.0</eclipse-collections.version>
 
