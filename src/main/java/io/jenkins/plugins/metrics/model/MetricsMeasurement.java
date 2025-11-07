@@ -18,7 +18,8 @@ public abstract class MetricsMeasurement implements Serializable {
     @Serial
     private static final long serialVersionUID = 7472039462715167623L;
 
-    private final Map<String, Metric> metrics;
+    @SuppressWarnings("PMD.LooseCoupling")
+    private final HashMap<String, Metric> metrics;
     private final String fileName;
     private final String packageName;
     private final String className;

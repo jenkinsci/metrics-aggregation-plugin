@@ -81,16 +81,16 @@ public class MetricsViewAction implements RunAction2, StaplerProxy {
      * {@link TransientActionFactory} providing {@link MetricsViewAction}s.
      */
     @Extension
-    public static class ViewActionFactory extends TransientActionFactory<Run> {
-        @SuppressWarnings("rawtypes")
+    public static class ViewActionFactory extends TransientActionFactory<Run<?, ?>> {
+        @SuppressWarnings({"rawtypes", "unchecked"})
         @Override
-        public Class<Run> type() {
-            return Run.class;
+        public Class<Run<?, ?>> type() {
+            return (Class)Run.class;
         }
 
         @NonNull
         @Override
-        public Collection<? extends Action> createFor(@NonNull final Run target) {
+        public Collection<? extends Action> createFor(@NonNull final Run<?, ?> target) {
             return Set.of(new MetricsViewAction(target));
         }
     }
