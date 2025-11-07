@@ -31,7 +31,8 @@ public final class MetricDefinition implements Serializable, Comparable<MetricDe
     private final String description;
     private final String reportedBy;
     private final int priority;
-    private final Set<Scope> scopes;
+    @SuppressWarnings("PMD.LooseCoupling")
+    private final EnumSet<Scope> scopes;
 
     /**
      * Creates a new {@link MetricDefinition}. See {@link MetricDefinitionBuilder} for building instances.
@@ -56,7 +57,7 @@ public final class MetricDefinition implements Serializable, Comparable<MetricDe
         this.description = description;
         this.reportedBy = reportedBy;
         this.priority = priority;
-        this.scopes = Set.copyOf(scopes);
+        this.scopes = EnumSet.copyOf(scopes);
     }
 
     public String getDisplayName() {
