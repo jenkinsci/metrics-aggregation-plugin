@@ -1,0 +1,35 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:l="/lib/layout" xmlns:bs="/bootstrap">
+
+  <st:header name="Content-Type" value="text/html;charset=UTF-8"/>
+
+  <l:layout title="${%title}" norefresh="true">
+
+    <st:include it="${it.owner}" page="sidepanel.jelly"/>
+
+    <l:main-panel>
+      <st:adjunct includes="io.jenkins.plugins.jquery3"/>
+      <st:adjunct includes="io.jenkins.plugins.popper"/>
+      <st:adjunct includes="io.jenkins.plugins.bootstrap4"/>
+
+      <link rel="stylesheet" href="${resURL}/plugin/metrics-aggregation/css/custom-style.css"/>
+
+      <div class="fluid-container">
+
+        <h2 class="mb-3">${%title}</h2>
+
+        <div class="card-columns">
+          <j:forEach var="metric" items="${it.supportedMetrics}">
+            <bs:card title="${metric.displayName}">
+              <p class="card-subtitle mb-2 text-muted">${metric.id}</p>
+              <p class="card-text">${metric.description}</p>
+              <span class="text-muted">${metric.reportedBy}</span>
+            </bs:card>
+          </j:forEach>
+        </div>
+      </div>
+    </l:main-panel>
+
+  </l:layout>
+
+</j:jelly>

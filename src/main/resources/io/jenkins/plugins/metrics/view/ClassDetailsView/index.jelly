@@ -1,0 +1,102 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:l="/lib/layout" xmlns:bs="/bootstrap">
+
+  <st:header name="Content-Type" value="text/html;charset=UTF-8"/>
+
+  <l:layout title="${it.displayName}" norefresh="true">
+
+    <st:include it="${it.owner}" page="sidepanel.jelly"/>
+
+    <l:main-panel>
+      <st:adjunct includes="io.jenkins.plugins.jquery3"/>
+      <st:adjunct includes="io.jenkins.plugins.popper"/>
+      <st:adjunct includes="io.jenkins.plugins.bootstrap4"/>
+      <st:adjunct includes="io.jenkins.plugins.data-tables"/>
+      <st:adjunct includes="io.jenkins.plugins.data-tables-responsive"/>
+      <st:adjunct includes="io.jenkins.plugins.data-tables-colreorder"/>
+      <st:adjunct includes="io.jenkins.plugins.data-tables-buttons"/>
+      <st:adjunct includes="io.jenkins.plugins.echarts"/>
+
+      <!-- custom -->
+      <link rel="stylesheet" href="${resURL}/plugin/metrics-aggregation/css/custom-style.css"/>
+
+      <!-- bootstrap select -->
+      <link rel="stylesheet" href="${resURL}/plugin/metrics-aggregation/webjars/css/bootstrap-select.min.css"/>
+      <script src="${resURL}/plugin/metrics-aggregation/webjars/js/bootstrap-select.min.js"/>
+
+      <!-- math.js -->
+      <script src="${resURL}/plugin/metrics-aggregation/webjars/math.min.js"/>
+
+      <script src="${resURL}/plugin/metrics-aggregation/js/table.js"/>
+      <script src="${resURL}/plugin/metrics-aggregation/js/table-filter.js"/>
+      <script src="${resURL}/plugin/metrics-aggregation/js/metrics.js"/>
+
+      <div class="fluid-container">
+
+        <h2 class="mb-3">${it.displayName}</h2>
+        <h3 class="mb-3 text-muted">${%package} ${it.packageName}</h3>
+
+        <!-- class overview -->
+        <bs:card title="${%classOverview.title}" fontAwesomeIcon="list-alt" class="mb-4 project-overview">
+          <j:if test="${size(it.classOverview) > 0}">
+            <table class="table col-lg-4 col-md-6">
+              <thead>
+                <tr>
+                  <th>${%classOverview.metric}</th>
+                  <th>${%classOverview.value}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <j:forEach var="entry" items="${it.classOverview}">
+                  <tr>
+                    <td>${entry.key}</td>
+                    <td>${entry.value}</td>
+                  </tr>
+                </j:forEach>
+              </tbody>
+            </table>
+          </j:if>
+          <j:if test="${size(it.classOverview) == 0}">
+            ${%noDataAvailable}
+            <br/>
+          </j:if>
+        </bs:card>
+
+        <!-- metrics details (table) -->
+        <bs:card title="${%metricsDetails.title}" fontAwesomeIcon="table" class="metrics-details">
+
+          <j:if test="${size(it.supportedMetrics) > 0}">
+            <div class="row">
+              <div class="form-group col-md-6">
+                <label for="table-filter">${%metricsDetails.filter}</label>
+                <input type="text" class="form-control form-control-sm" id="table-filter"
+                       placeholder="${%metricsDetails.filter.placeholder}"/>
+                <div class="invalid-feedback"/>
+                <p class="form-text text-muted">
+                  ${%metricsDetails.variables}:
+                  <j:forEach var="metric" items="${it.supportedMetrics}">
+                    <span class="badge badge-light badge-pill mr-1" title="${metric.displayName}">${metric.id}</span>
+                  </j:forEach>
+                </p>
+              </div>
+              <div class="form-group col-md-6">
+                <label for="column-dropdown">${%metricsDetails.columns}</label>
+                <div id="column-dropdown"/>
+              </div>
+            </div>
+
+            <table class="table table-hover table-striped responsive display" id="metrics-table" width="100%"/>
+          </j:if>
+          <j:if test="${size(it.supportedMetrics) == 0}">
+            ${%noDataAvailable}
+          </j:if>
+        </bs:card>
+      </div>
+
+      <st:bind var="view" value="${it}" />
+
+    </l:main-panel>
+
+  </l:layout>
+
+</j:jelly>
