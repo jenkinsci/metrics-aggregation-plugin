@@ -13,7 +13,7 @@ public final class PercentageMetric extends Metric {
     @Serial
     private static final long serialVersionUID = -239297826452518258L;
 
-    private final float value;
+    private final double value;
 
     /**
      * Creates a new percentage metric.
@@ -23,7 +23,7 @@ public final class PercentageMetric extends Metric {
      * @param value
      *         the percentage value as float
      */
-    public PercentageMetric(final MetricDefinition metricDefinition, final float value) {
+    public PercentageMetric(final MetricDefinition metricDefinition, final double value) {
         super(metricDefinition);
 
         this.value = value;
@@ -35,7 +35,7 @@ public final class PercentageMetric extends Metric {
     }
 
     @Override
-    public Float rawValue() {
+    public Double rawValue() {
         return value;
     }
 
@@ -49,7 +49,7 @@ public final class PercentageMetric extends Metric {
             return false;
         }
         var that = (PercentageMetric) o;
-        return Float.compare(value, that.value) == 0;
+        return Double.compare(value, that.value) == 0;
     }
 
     @Override
