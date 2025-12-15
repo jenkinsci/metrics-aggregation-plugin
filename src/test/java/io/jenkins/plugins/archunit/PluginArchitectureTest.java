@@ -78,6 +78,7 @@ final class PluginArchitectureTest {
         private final List<Class<? extends Throwable>> allowedExceptions;
 
         @SafeVarargs
+        @SuppressWarnings("varargs")
         ExceptionHasNoContext(final Class<? extends Throwable>... allowedExceptions) {
             super("exception context is missing");
 

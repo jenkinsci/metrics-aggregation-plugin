@@ -16,6 +16,7 @@ import io.jenkins.plugins.metrics.model.MetricsMeasurement;
 /**
  * {@link TableModel} for the class details view.
  */
+@SuppressWarnings("deprecation")
 public class ClassDetailsTableModel extends TableModel {
     private final List<MetricDefinition> supportedMetrics;
     private final List<MethodMetricsMeasurement> metricsMeasurements;

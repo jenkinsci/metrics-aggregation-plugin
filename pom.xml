@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.jvnet.hudson.plugins</groupId>
     <artifactId>analysis-pom</artifactId>
-    <version>11.2812.vde3e22ec61c7</version>
+    <version>11.2867.v81ec3848d647</version>
     <relativePath />
   </parent>
 
@@ -50,7 +50,7 @@
 
     <module.name>${project.groupId}.metrics.aggregation</module.name>
 
-    <j2html.version>1.4.0</j2html.version>
+    <j2html.version>1.6.0</j2html.version>
 
     <maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
     <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
@@ -97,7 +97,7 @@
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>bootstrap4-api</artifactId>
-      <version>4.6.0-1</version>
+      <version>4.6.0-6</version>
     </dependency>
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
@@ -212,6 +212,15 @@
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/table*.js</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.assertj</groupId>
         <artifactId>assertj-assertions-generator-maven-plugin</artifactId>

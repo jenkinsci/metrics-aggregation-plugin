@@ -34,6 +34,8 @@ public final class MetricDefinition implements Serializable, Comparable<MetricDe
     private final Set<Scope> scopes;
     private final String originalLabel;
     private final Class<? extends Metric> kindOfValue;
+    @SuppressWarnings("PMD.LooseCoupling")
+    private final EnumSet<Scope> scopes;
 
     /**
      * Creates a new {@link MetricDefinition}. See {@link MetricDefinitionBuilder} for building instances.
@@ -60,7 +62,7 @@ public final class MetricDefinition implements Serializable, Comparable<MetricDe
         this.description = description;
         this.reportedBy = reportedBy;
         this.priority = priority;
-        this.scopes = Set.copyOf(scopes);
+        this.scopes = EnumSet.copyOf(scopes);
         this.originalLabel = originalLabel;
         this.kindOfValue = kindOfValue;
     }

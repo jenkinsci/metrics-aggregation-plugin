@@ -17,6 +17,7 @@ import static j2html.TagCreator.*;
 /**
  * {@link TableModel} for all metrics in a project overview.
  */
+@SuppressWarnings("deprecation")
 public class MetricsTableModel extends TableModel {
     private final List<MetricDefinition> supportedMetrics;
     private final List<ClassMetricsMeasurement> metricsMeasurements;
