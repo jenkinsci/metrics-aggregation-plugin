@@ -31,7 +31,6 @@ public final class MetricDefinition implements Serializable, Comparable<MetricDe
     private final String description;
     private final String reportedBy;
     private final int priority;
-    private final Set<Scope> scopes;
     private final String originalLabel;
     private final Class<? extends Metric> kindOfValue;
     @SuppressWarnings("PMD.LooseCoupling")
@@ -52,8 +51,12 @@ public final class MetricDefinition implements Serializable, Comparable<MetricDe
      *         the priority of a metric
      * @param scopes
      *         the scopes of a metric (class, method, or both)
+     * @param originalLabel
+     *         the label-id of the origin
+     * @param kindOfValue
+     *         defines if its percentage or int
      */
-    //TODO JAVADOC
+    @SuppressWarnings("checkstyle:ParameterNumber") //TODO
     private MetricDefinition(final String id, final String displayName, final String description,
             final String reportedBy, final int priority, final Set<Scope> scopes, final String originalLabel,
             final Class<? extends Metric> kindOfValue) {
