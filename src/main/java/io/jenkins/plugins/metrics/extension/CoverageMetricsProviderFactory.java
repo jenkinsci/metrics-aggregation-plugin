@@ -2,8 +2,12 @@ package io.jenkins.plugins.metrics.extension;
 
 import edu.hm.hafner.coverage.Metric;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import hudson.Extension;
 import hudson.model.Run;
@@ -198,22 +202,33 @@ public class CoverageMetricsProviderFactory extends MetricsProviderFactory {
 
     @Override
     protected MetricsProvider getMetricsProviderFor(final Run<?, ?> build) {
+        Map<String, ClassMetricsMeasurementBuilder> builders = new HashMap<>();
+        Map<String, Set<String>> seenMetricIds = new HashMap<>();
         var provider = new MetricsProvider();
         provider.setOrigin("code-coverage-plugin");
         var actions = build.getActions(CoverageBuildAction.class);
-        var measurements = new ArrayList<MetricsMeasurement>();
 
         for (CoverageBuildAction action : actions) {
             var root = action.getResult();
 
             for (var classNode : root.getAllClassNodes()) {
-                var builder = new ClassMetricsMeasurementBuilder()
-                        .withClassName(classNode.getName())
-                        .withFileName("fileNamePlaceholder")
-                        .withPackageName(classNode.getPackageName());
+                var className = classNode.getName();
+
+                var builder = builders.computeIfAbsent(
+                        className,
+                        n -> new ClassMetricsMeasurementBuilder()
+                                .withClassName(n)
+                                .withFileName("fileNamePlaceholder")
+                                .withPackageName(classNode.getPackageName())
+                );
+
+                var seen = seenMetricIds.computeIfAbsent(className, k -> new HashSet<>());
+
                 for (var metricDefinition : getAvailableMetricsFor(build)) {
                     var cov = classNode.getValue(Metric.valueOf(metricDefinition.getOriginalLabel()));
-                    if (cov.isPresent()) {
+
+                    if (cov.isPresent() && !seen.contains(metricDefinition.getId())) {
+                        seen.add(metricDefinition.getId());
                         var kindOfValueClass = metricDefinition.getKindOfValue();
                         if (kindOfValueClass == DoubleMetric.class) {
                             var covered = cov.get().asDouble();
@@ -227,10 +242,12 @@ public class CoverageMetricsProviderFactory extends MetricsProviderFactory {
                         }
                     }
                 }
-                measurements.add(builder.build());
             }
         }
-        provider.setMetricsMeasurements(measurements);
+        List<MetricsMeasurement> list = builders.values().stream()
+                .map(ClassMetricsMeasurementBuilder::build)
+                .collect(Collectors.toList());
+        provider.setMetricsMeasurements(list);
         return provider;
     }
 

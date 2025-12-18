@@ -31,7 +31,7 @@ public class CoverageMetricsProviderFactoryTest {
         var lineCoverage = new CoverageBuilder().withMetric(Metric.LINE).withCovered(96).withMissed(4).build();
         classNode.addValue(lineCoverage);
 
-        when(coverageResult.getAllClassNodes()).thenReturn(List.of(classNode));
+        when(coverageResult.getAllClassNodes()).thenReturn(List.of(classNode, classNode));
 
         var action = mock(CoverageBuildAction.class);
         when(action.getResult()).thenReturn(coverageResult);
