@@ -3,9 +3,9 @@ package io.jenkins.plugins.metrics.extension;
 import org.junit.Test;
 
 import edu.hm.hafner.coverage.ClassNode;
+import edu.hm.hafner.coverage.Coverage.CoverageBuilder;
 import edu.hm.hafner.coverage.Metric;
 import edu.hm.hafner.coverage.Node;
-import edu.hm.hafner.coverage.Value;
 
 import java.util.List;
 
@@ -28,7 +28,7 @@ public class CoverageMetricsProviderFactoryTest {
         var coverageMetricsProviderFactory = new CoverageMetricsProviderFactory();
         var coverageResult = mock(Node.class);
         var classNode = new ClassNode("com.example.MyClass");
-        var lineCoverage = new Value(Metric.LINE, 96);
+        var lineCoverage = new CoverageBuilder().withMetric(Metric.LINE).withCovered(96).withMissed(4).build();
         classNode.addValue(lineCoverage);
 
         when(coverageResult.getAllClassNodes()).thenReturn(List.of(classNode));
@@ -44,7 +44,5 @@ public class CoverageMetricsProviderFactoryTest {
         var measurement = measurements.get(0);
         var value = measurement.getMetric("LINE_COVERAGE");
         assertThat(value.get().doubleValue()).isEqualTo(96.0);
-
-        assertThat(measurements).isEqualTo(null);
     }
 }
