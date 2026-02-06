@@ -1,7 +1,6 @@
 # Jenkins Metrics Aggregation Plugin
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-yellow.svg)](https://opensource.org/licenses/MIT) 
-[![Jenkins](https://ci.jenkins.io/job/Plugins/job/metrics-aggregation-plugin/job/main/badge/icon)](https://ci.jenkins.io/job/Plugins/job/metrics-aggregation-plugin/job/main/)
 [![GitHub Actions](https://github.com/jenkinsci/metrics-aggregation-plugin/workflows/GitHub%20Actions/badge.svg)](https://github.com/jenkinsci/metrics-aggregation-plugin/actions)
 
 The Jenkins Metrics Aggregation plugin provides a unified view on metrics from various sources.
